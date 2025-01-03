@@ -26,8 +26,8 @@ contract OrganizationFactoryFacet is AccessControl {
     event OrganizationCreated(uint256 indexed id, address indexed organizationAddress, string name, address indexed admin, string description);
 
     constructor() {
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _setupRole(ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(ADMIN_ROLE, msg.sender);
     }
 
     /**

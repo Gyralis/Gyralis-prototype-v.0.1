@@ -6,8 +6,8 @@ import { ReentrancyGuardUpgradeable } from "@openzeppelin/contracts-upgradeable/
 import { DelegateContext } from  "../utils/DelegateContext.sol";
 import { DiamondLoupeBase } from "./loupe/DiamondLoupeBase.sol";
 import { IERC165 } from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import { IAccessControl } from "src/facets/access-control/IAccessControl.sol";
-import { IOwnable } from "src/facets/ownable/IOwnable.sol";
+import { IAccessControl } from "./access-control/IAccessControl.sol";
+import { IOwnable } from "./ownable/IOwnable.sol";
 
 abstract contract Facet is Initializable, ReentrancyGuardUpgradeable, DelegateContext, DiamondLoupeBase {
     error CallerIsNotOwner();
