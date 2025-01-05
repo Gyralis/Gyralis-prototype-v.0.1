@@ -7,7 +7,7 @@ import { MockFacetHelper } from "test/mocks/MockFacet.t.sol";
 import { IDiamondLoupeBase } from "src/facets/loupe/IDiamondLoupe.sol";
 import { DiamondLoupeFacet } from "src/facets/loupe/DiamondLoupeFacet.sol";
 import { DiamondCutFacetHelper } from "test/facets/cut/cut.t.sol";
-import { OwnableFacetHelper } from "test/facets/ownable/ownable.t.sol";
+// import { OwnableFacetHelper } from "test/facets/ownable/ownable.t.sol";
 import { IDiamondLoupe, IERC165 } from "src/facets/loupe/IDiamondLoupe.sol";
 import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 import { IDiamondCut } from "src/facets/cut/IDiamondCut.sol";
@@ -43,17 +43,17 @@ abstract contract DiamondLoupeFacetTest is IDiamondLoupeBase, FacetTest {
     function diamondInitParams() public override returns (Diamond.InitParams memory) {
         DiamondLoupeFacetHelper diamondLoupeHelper = new DiamondLoupeFacetHelper();
         DiamondCutFacetHelper diamondCutHelper = new DiamondCutFacetHelper();
-        OwnableFacetHelper ownableHelper = new OwnableFacetHelper();
+        // OwnableFacetHelper ownableHelper = new OwnableFacetHelper();
 
-        FacetCut[] memory baseFacets = new FacetCut[](3);
+        FacetCut[] memory baseFacets = new FacetCut[](2);
         baseFacets[0] = diamondLoupeHelper.makeFacetCut(FacetCutAction.Add);
         baseFacets[1] = diamondCutHelper.makeFacetCut(FacetCutAction.Add);
-        baseFacets[2] = ownableHelper.makeFacetCut(FacetCutAction.Add);
+        // baseFacets[2] = ownableHelper.makeFacetCut(FacetCutAction.Add);
 
-        MultiInit[] memory diamondInitData = new MultiInit[](3);
+        MultiInit[] memory diamondInitData = new MultiInit[](2);
         diamondInitData[0] = diamondLoupeHelper.makeInitData("");
         diamondInitData[1] = diamondCutHelper.makeInitData("");
-        diamondInitData[2] = ownableHelper.makeInitData(abi.encode(users.owner));
+        // diamondInitData[2] = ownableHelper.makeInitData(abi.encode(users.owner));
 
         return Diamond.InitParams({
             baseFacets: baseFacets,

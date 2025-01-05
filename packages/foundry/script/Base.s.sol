@@ -2,6 +2,7 @@
 pragma solidity >=0.8.20;
 
 import { Script } from "forge-std/Script.sol";
+import "forge-std/console2.sol";
 import { FacetHelper } from "../test/facets/Facet.t.sol";
 import { DiamondCutFacetHelper } from "../test/facets/cut/cut.t.sol";
 import { DiamondLoupeFacetHelper } from "../test/facets/loupe/loupe.t.sol";
@@ -14,19 +15,20 @@ import { AccessControlFacetHelper } from "../test/facets/access-control/access-c
 // import { ERC20BurnableFacetHelper } from "test/facets/erc20-burnable/erc20-burnable.t.sol";
 
 contract BaseScript is Script {
-    address internal deployer;
+    // address internal deployer;
     bytes32 internal salt;
     FacetHelper[] internal facetHelpers;
 
     modifier broadcaster() {
-        vm.startBroadcast(deployer);
+        vm.startBroadcast();
         _;
         vm.stopBroadcast();
     }
 
     function setUp() public virtual {
-        uint256 privateKey = vm.envUint("PRIVATE_KEY");
-        deployer = vm.rememberKey(privateKey);
+        // console2.log("ETH_KEYSTORE_ACCOUNT: %s",vm.envAddress("ETH_KEYSTORE_ACCOUNT"));
+        // uint256 privateKey = vm.envUint("ETH_KEYSTORE_ACCOUNT");
+        // deployer = vm.rememberKey(privateKey);
         salt = vm.envBytes32("SALT");
 
         facetHelpers.push(new DiamondCutFacetHelper());
