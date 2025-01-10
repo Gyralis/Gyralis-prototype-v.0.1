@@ -94,7 +94,7 @@ Update your package.json in packages/hardhat with the following command line opt
 
 **For foundry**
 
-Update your package.json in packages/foundry with the following command line option for the anvil chain.
+Update your package.json in packages/foundry with the following command line option for the anvil chain
 
 ```
 "chain": "anvil --host 0.0.0.0 --config-out localhost.json",
