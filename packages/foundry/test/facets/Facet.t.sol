@@ -39,5 +39,13 @@ abstract contract FacetHelper is IDiamond {
         return MultiInit({ init: facet(), initData: abi.encodeWithSelector(initializer()) });
     }
 
-    function creationCode() public pure virtual returns (bytes memory);
+    function creationCode() public pure virtual returns (bytes memory) ;
+    //@custom:nota Esta funcion es para montar los params en el diamante
+    function diamondFacet() public view virtual returns (FacetCut memory ) {
+      return FacetCut({
+        facet : facet(),
+        action : FacetCutAction.Add,
+        selectors : selectors()
+      });
+    }
 }

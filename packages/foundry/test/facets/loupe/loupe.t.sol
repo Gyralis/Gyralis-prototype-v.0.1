@@ -91,13 +91,13 @@ abstract contract DiamondLoupeFacetTest is IDiamondLoupeBase, FacetTest {
     }
 }
 
+
 contract DiamondLoupeFacetHelper is FacetHelper {
     DiamondLoupeFacet public diamondLoupe;
 
     constructor() {
         diamondLoupe = new DiamondLoupeFacet();
     }
-
     function facet() public view override returns (address) {
         return address(diamondLoupe);
     }
@@ -121,7 +121,7 @@ contract DiamondLoupeFacetHelper is FacetHelper {
         interfaces_[1] = type(IERC165).interfaceId;
     }
 
-    function creationCode() public pure override returns (bytes memory) {
+    function creationCode() public pure virtual override returns (bytes memory) {
         return type(DiamondLoupeFacet).creationCode;
     }
 }

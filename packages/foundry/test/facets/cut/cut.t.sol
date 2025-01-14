@@ -45,7 +45,6 @@ abstract contract DiamondCutFacetTest is IDiamondCutBase, FacetTest {
         });
     }
 }
-
 contract DiamondCutFacetHelper is FacetHelper {
     DiamondCutFacet public diamondCut;
 
@@ -71,7 +70,7 @@ contract DiamondCutFacetHelper is FacetHelper {
         interfaces[0] = type(IDiamondCut).interfaceId;
     }
 
-    function creationCode() public pure override returns (bytes memory) {
+    function creationCode() public pure virtual override returns (bytes memory) {
         return type(DiamondCutFacet).creationCode;
     }
 }
