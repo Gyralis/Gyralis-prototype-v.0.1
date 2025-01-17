@@ -100,8 +100,8 @@ function main() {
   const allGeneratedContracts = {};
 
   chains.forEach((chain) => {
-    console.log("Processing chain:", chain);
-    console.log("Deployments for chain:", deployments[chain]);
+    // console.log("Processing chain:", chain);
+    // console.log("Deployments for chain:", deployments[chain]);
 
     allGeneratedContracts[chain] = {};
     const broadCastObject = JSON.parse(
@@ -112,15 +112,15 @@ function main() {
     );
 
     transactionsCreate.forEach((transaction) => {
-      console.log("Processing transaction:", transaction);
-      console.log(
-        "Contract address in transaction:",
-        transaction.contractAddress
-      );
-      console.log(
-        "Deployment entry for contract address:",
-        deployments[chain]?.[transaction.contractAddress]
-      );
+      // console.log("Processing transaction:", transaction);
+      // console.log(
+      //   "Contract address in transaction:",
+      //   transaction.contractAddress
+      // );
+      // console.log(
+      //   "Deployment entry for contract address:",
+      //   deployments[chain]?.[transaction.contractAddress]
+      // );
 
       const artifact = getArtifactOfContract(transaction.contractName);
       allGeneratedContracts[chain][

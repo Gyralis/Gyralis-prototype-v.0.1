@@ -1,22 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.20;
 
-import { BaseTest } from "../Base.t.sol";
 import { IDiamond, Diamond } from "src/Diamond.sol";
-
-abstract contract FacetTest is IDiamond {
-    /// @dev Attach facet interface to diamond for testing
-    address public diamond;
-
-    function setUp() public virtual override {
-        super.setUp();
-
-        diamond = address(new Diamond(diamondInitParams()));
-    }
-
-    /// @dev Add facet as init param for diamond
-    function diamondInitParams() public virtual returns (Diamond.InitParams memory);
-}
 
 abstract contract FacetHelper is IDiamond {
     /// @dev Deploy facet contract in ctor and return address for testing.

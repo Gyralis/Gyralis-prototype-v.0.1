@@ -34,6 +34,8 @@ contract BaseScript is Script {
         facetHelpers.push(new DiamondCutFacetHelper());
         facetHelpers.push(new DiamondLoupeFacetHelper());
         facetHelpers.push(new AccessControlFacetHelper());
+        facetHelpers.push(new Organization());
+
         // facetHelpers.push(new OwnableFacetHelper());
         // facetHelpers.push(new Ownable2StepFacetHelper());
         // facetHelpers.push(new NFTOwnedFacetHelper());

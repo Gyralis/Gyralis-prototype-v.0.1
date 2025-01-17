@@ -3,22 +3,8 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./Organization.sol";
+import { OrganizationFactoryStorage } from "./OrganizationFactoryStorage.sol";
 
-library LibOrganizationFactory {
-    bytes32 constant STORAGE_POSITION = keccak256("diamond.organization.factory.storage");
-
-    struct OrganizationFactoryStorage {
-        mapping(uint256 => address) organizationById;
-        uint256 organizationCounter;
-    }
-
-    function organizationFactoryStorage() internal pure returns (OrganizationFactoryStorage storage ds) {
-        bytes32 position = STORAGE_POSITION;
-        assembly {
-            ds.slot := position
-        }
-    }
-}
 
 contract OrganizationFactoryFacet is AccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -43,7 +29,7 @@ contract OrganizationFactoryFacet is AccessControl {
 
         Organization organization = new Organization(name, admin,description);
 
-        LibOrganizationFactory.OrganizationFactoryStorage storage ds = LibOrganizationFactory.organizationFactoryStorage();
+        OrganizationFactoryStorage.Layout storage ds = OrganizationFactoryStorage.layout();
         uint256 newId = ds.organizationCounter++;
         ds.organizationById[newId] = address(organization);
 
@@ -56,7 +42,7 @@ contract OrganizationFactoryFacet is AccessControl {
      * @return address The address of the organization contract.
      */
     function getOrganizationById(uint256 id) external view returns (address) {
-        LibOrganizationFactory.OrganizationFactoryStorage storage ds = LibOrganizationFactory.organizationFactoryStorage();
+        OrganizationFactoryStorage.Layout storage ds = OrganizationFactoryStorage.layout();
         require(ds.organizationById[id] != address(0), "No organization found for this ID");
         return ds.organizationById[id];
     }
@@ -66,7 +52,7 @@ contract OrganizationFactoryFacet is AccessControl {
      * @return uint256 The total count of organizations.
      */
     function getOrganizationCount() external view returns (uint256) {
-        LibOrganizationFactory.OrganizationFactoryStorage storage ds = LibOrganizationFactory.organizationFactoryStorage();
+        OrganizationFactoryStorage.Layout storage ds = LibOrganizationFactory.layout();
         return ds.organizationCounter;
     }
 }
