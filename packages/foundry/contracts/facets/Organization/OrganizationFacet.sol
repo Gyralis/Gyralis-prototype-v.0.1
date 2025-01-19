@@ -21,7 +21,7 @@ library LibOrganization {
     }
 }
 
-contract Organization is AccessControl {
+contract OrganizationFacet is AccessControl {
     bytes32 public constant ORGANIZATION_ADMIN_ROLE = keccak256("ORGANIZATION_ADMIN_ROLE");
 
     event FaucetCreated(address indexed faucetAddress, string description);

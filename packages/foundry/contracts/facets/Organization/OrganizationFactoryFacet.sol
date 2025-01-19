@@ -2,16 +2,17 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "./Organization.sol";
+import {OrganizationFacet} from "./OrganizationFacet.sol";
+import { Facet } from "src/facets/Facet.sol";
+import {IOrganizationFactory} from "./IOrganizationFactory.sol";
 import { OrganizationFactoryStorage } from "./OrganizationFactoryStorage.sol";
 
 
-contract OrganizationFactoryFacet is AccessControl {
+contract OrganizationFactoryFacet is AccessControl, Facet, IOrganizationFactory {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
-    event OrganizationCreated(uint256 indexed id, address indexed organizationAddress, string name, address indexed admin, string description);
-
-    constructor() {
+     function OrganizationFactory_init() external onlyInitializing {
+        // _addInterface(type(IDiamondLoupe).interfaceId);
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(ADMIN_ROLE, msg.sender);
     }
@@ -27,7 +28,7 @@ contract OrganizationFactoryFacet is AccessControl {
         require(admin != address(0), "Admin address is invalid");
         require(bytes(description).length > 0, "Organization description is required");
 
-        Organization organization = new Organization(name, admin,description);
+        OrganizationFacet organization = new OrganizationFacet(name, admin,description);
 
         OrganizationFactoryStorage.Layout storage ds = OrganizationFactoryStorage.layout();
         uint256 newId = ds.organizationCounter++;
@@ -52,7 +53,7 @@ contract OrganizationFactoryFacet is AccessControl {
      * @return uint256 The total count of organizations.
      */
     function getOrganizationCount() external view returns (uint256) {
-        OrganizationFactoryStorage.Layout storage ds = LibOrganizationFactory.layout();
+        OrganizationFactoryStorage.Layout storage ds = OrganizationFactoryStorage.layout();
         return ds.organizationCounter;
     }
 }
