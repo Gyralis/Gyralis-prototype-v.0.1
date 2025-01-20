@@ -58,17 +58,11 @@ contract OrganizationFactoryFacet is AccessControl, Facet, IOrganizationFactory 
         require(diamondLoupeFacet != address(0), "DiamondLoupeFacet not found");
         require(organizationFacet != address(0), "OrganizationFacet not found");
 
-        // Prepare FacetCut array
-        IDiamond.FacetCut[] memory facetCuts = _prepareFacetCuts(facetRegistry, diamondCutFacet, diamondLoupeFacet, organizationFacet);
-
-        // Prepare MultiInit data
-        IDiamond.MultiInit[] memory diamondInitData = _prepareDiamondInitData(diamondCutFacet, diamondLoupeFacet, organizationFacet, name, admin, description);
-
         // Initialize the Diamond
         IDiamond.InitParams memory initParams = IDiamond.InitParams({
-            baseFacets: facetCuts,
+            baseFacets: _prepareFacetCuts(facetRegistry, diamondCutFacet, diamondLoupeFacet, organizationFacet),
             init: MULTI_INIT_ADDRESS,
-            initData: abi.encode(diamondInitData)
+            initData: abi.encode(_prepareDiamondInitData(diamondCutFacet, diamondLoupeFacet, organizationFacet, name, admin, description))
         });
 
         // Create the Diamond using the DiamondFactory
