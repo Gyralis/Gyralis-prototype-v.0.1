@@ -52,4 +52,8 @@ contract FacetRegistry is IFacetRegistry, FacetRegistryBase {
     function facetAddresses() external view returns (address[] memory) {
         return _facetAddresses();
     }
+
+     function getFacetBySelector(bytes4 selector) external view returns (address) {
+        return _getFacetBySelector(selector);
+     }
 }

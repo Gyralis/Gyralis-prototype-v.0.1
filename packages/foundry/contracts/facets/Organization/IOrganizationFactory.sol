@@ -22,7 +22,7 @@ interface IOrganizationFactory {
     /**
      * @notice Initializes the OrganizationFactoryFacet.
      */
-    function OrganizationFactory_init() external;
+    function OrganizationFactory_init(address diamondFactory, address facetRegistry) external;
 
     /**
      * @notice Creates a new Organization contract.

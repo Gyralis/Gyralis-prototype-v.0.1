@@ -16,6 +16,9 @@ interface IDiamondLoupeBase {
  *         See [EIP-2535](https://eips.ethereum.org/EIPS/eip-2535).
  */
 interface IDiamondLoupe is IDiamondLoupeBase, IERC165 {
+
+
+    function DiamondLoupe_init() external;
     /**
      * @notice Gets all facet addresses and the selectors of supported functions.
      * @return facetInfo An array of Facet structs.

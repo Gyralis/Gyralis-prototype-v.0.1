@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.20;
 
-import { FacetTest, FacetHelper, Diamond } from "test/facets/Facet.t.sol";
+import { FacetTest, FacetHelper, Diamond, IDiamond } from "test/facets/Facet.t.sol";
 import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 import { MockFacetHelper } from "test/mocks/MockFacet.t.sol";
 import { IDiamondCutBase, IDiamondCut } from "src/facets/cut/IDiamondCut.sol";
@@ -23,7 +23,7 @@ abstract contract DiamondCutFacetTest is IDiamondCutBase, FacetTest {
         mockFacetHelper = new MockFacetHelper();
     }
 
-    function diamondInitParams() public override returns (Diamond.InitParams memory) {
+    function diamondInitParams() public override returns (IDiamond.InitParams memory) {
        // OwnableFacetHelper ownableHelper = new OwnableFacetHelper();
         DiamondCutFacetHelper diamondCutHelper = new DiamondCutFacetHelper();
         DiamondLoupeFacetHelper diamondLoupeHelper = new DiamondLoupeFacetHelper();
@@ -38,7 +38,7 @@ abstract contract DiamondCutFacetTest is IDiamondCutBase, FacetTest {
         diamondInitData[1] = diamondCutHelper.makeInitData("");
         diamondInitData[2] = diamondLoupeHelper.makeInitData("");
 
-        return Diamond.InitParams({
+        return IDiamond.InitParams({
             baseFacets: baseFacets,
             init: MULTI_INIT_ADDRESS,
             initData: abi.encode(diamondInitData)

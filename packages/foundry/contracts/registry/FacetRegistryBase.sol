@@ -65,4 +65,17 @@ abstract contract FacetRegistryBase is IFacetRegistryBase {
     function _facetAddresses() internal view returns (address[] memory facets) {
         facets = FacetRegistryStorage.layout().facets.values();
     }
+
+    function _getFacetBySelector(bytes4 selector) internal view returns (address) {
+    address[] memory facets = _facetAddresses();
+    for (uint256 i = 0; i < facets.length; i++) {
+        bytes4[] memory selectors = _facetSelectors(facets[i]);
+        for (uint256 j = 0; j < selectors.length; j++) {
+            if (selectors[j] == selector) {
+                return facets[i];
+            }
+        }
+    }
+    revert("Facet for selector not found");
+}
 }

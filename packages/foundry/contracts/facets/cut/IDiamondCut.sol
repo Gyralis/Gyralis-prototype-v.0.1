@@ -9,6 +9,8 @@ import { IDiamondCutBase } from "./IDiamondCutBase.sol";
  * @notice Interface of the DiamondCut facet. See [EIP-2535](https://eips.ethereum.org/EIPS/eip-2535).
  */
 interface IDiamondCut is IDiamondCutBase {
+
+    function DiamondCut_init() external;
     /**
      * @notice Add/replace/remove any number of functions and optionally execute
      *         a function with delegatecall.

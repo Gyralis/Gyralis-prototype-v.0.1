@@ -53,4 +53,6 @@ interface IFacetRegistry {
      * @return facets The addresses of all registered facets.
      */
     function facetAddresses() external view returns (address[] memory facets);
+
+    function getFacetBySelector(bytes4 selector) external view returns (address);
 }

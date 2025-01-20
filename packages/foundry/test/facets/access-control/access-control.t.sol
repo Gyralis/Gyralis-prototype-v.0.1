@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.20;
 
-import { FacetTest, FacetHelper } from "../Facet.t.sol";
+import { FacetTest, FacetHelper, IDiamond } from "../Facet.t.sol";
 import { AccessControlFacet, IAccessControl } from "src/facets/access-control/AccessControlFacet.sol";
 import { Diamond } from "src/Diamond.sol";
 import { IAccessControlBase } from "src/facets/access-control/IAccessControl.sol";
@@ -15,13 +15,13 @@ abstract contract AccessControlFacetTest is IAccessControlBase, FacetTest {
         acl = IAccessControl(diamond);
     }
 
-    function diamondInitParams() public override returns (Diamond.InitParams memory) {
+    function diamondInitParams() public override returns (IDiamond.InitParams memory) {
         AccessControlFacetHelper aclHelper = new AccessControlFacetHelper();
 
         FacetCut[] memory baseFacets = new FacetCut[](1);
         baseFacets[0] = aclHelper.makeFacetCut(FacetCutAction.Add);
 
-        return Diamond.InitParams({
+        return IDiamond.InitParams({
             baseFacets: baseFacets,
             init: aclHelper.facet(),
             initData: abi.encodeWithSelector(aclHelper.initializer(), users.admin)

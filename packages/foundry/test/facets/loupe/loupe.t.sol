@@ -2,7 +2,7 @@
 pragma solidity >=0.8.20;
 
 import { BaseTest } from "test/Base.t.sol";
-import { FacetTest, FacetHelper, Diamond } from "test/facets/Facet.t.sol";
+import { FacetTest, FacetHelper, Diamond, IDiamond } from "test/facets/Facet.t.sol";
 import { MockFacetHelper } from "test/mocks/MockFacet.t.sol";
 import { IDiamondLoupeBase } from "src/facets/loupe/IDiamondLoupe.sol";
 import { DiamondLoupeFacet } from "src/facets/loupe/DiamondLoupeFacet.sol";
@@ -40,7 +40,7 @@ abstract contract DiamondLoupeFacetTest is IDiamondLoupeBase, FacetTest {
         diamondLoupe = IDiamondLoupe(diamond);
     }
 
-    function diamondInitParams() public override returns (Diamond.InitParams memory) {
+    function diamondInitParams() public override returns (IDiamond.InitParams memory) {
         DiamondLoupeFacetHelper diamondLoupeHelper = new DiamondLoupeFacetHelper();
         DiamondCutFacetHelper diamondCutHelper = new DiamondCutFacetHelper();
         // OwnableFacetHelper ownableHelper = new OwnableFacetHelper();
@@ -55,7 +55,7 @@ abstract contract DiamondLoupeFacetTest is IDiamondLoupeBase, FacetTest {
         diamondInitData[1] = diamondCutHelper.makeInitData("");
         // diamondInitData[2] = ownableHelper.makeInitData(abi.encode(users.owner));
 
-        return Diamond.InitParams({
+        return IDiamond.InitParams({
             baseFacets: baseFacets,
             init: MULTI_INIT_ADDRESS,
             initData: abi.encode(diamondInitData)
