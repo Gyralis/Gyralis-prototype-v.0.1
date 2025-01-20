@@ -2,6 +2,7 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import { Facet } from "src/facets/Facet.sol";
 
 library LibOrganization {
     bytes32 constant STORAGE_POSITION = keccak256("diamond.organization.storage");
@@ -21,13 +22,13 @@ library LibOrganization {
     }
 }
 
-contract OrganizationFacet is AccessControl {
+contract OrganizationFacet is AccessControl, Facet {
     bytes32 public constant ORGANIZATION_ADMIN_ROLE = keccak256("ORGANIZATION_ADMIN_ROLE");
 
     event FaucetCreated(address indexed faucetAddress, string description);
 
-    constructor(string memory _name, address _admin, string memory _description) {
-        require(bytes(_name).length > 0, "Organization name is required");
+    function Organization_init(string memory _name, address _admin, string memory _description) external onlyInitializing {
+         require(bytes(_name).length > 0, "Organization name is required");
         require(_admin != address(0), "Admin address is invalid");
         require(bytes(_description).length > 0, "Organization description is required");
 

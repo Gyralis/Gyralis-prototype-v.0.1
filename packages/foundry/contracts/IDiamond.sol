@@ -38,4 +38,17 @@ interface IDiamond {
         address init;
         bytes initData;
     }
+
+
+    /**
+     * @notice Represents initialization parameters for the Diamond.
+     * @param baseFacets The list of facets to add initially.
+     * @param init Address of the contract or facet used for initialization.
+     * @param initData Encoded data for the initialization call.
+     */
+    struct InitParams {
+        FacetCut[] baseFacets;
+        address init;
+        bytes initData;
+    }
 }

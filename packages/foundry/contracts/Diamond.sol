@@ -8,11 +8,6 @@ import { DiamondLoupeBase } from "./facets/loupe/DiamondLoupeBase.sol";
 import { IDiamond } from "./IDiamond.sol";
 
 contract Diamond is IDiamond, Proxy, DiamondCutBase, DiamondLoupeBase, Initializable {
-    struct InitParams {
-        FacetCut[] baseFacets;
-        address init;
-        bytes initData;
-    }
 
     constructor(InitParams memory initDiamondCut) initializer {
         _diamondCut(initDiamondCut.baseFacets, initDiamondCut.init, initDiamondCut.initData);

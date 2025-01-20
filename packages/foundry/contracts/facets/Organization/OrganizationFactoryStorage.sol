@@ -6,6 +6,9 @@ library OrganizationFactoryStorage {
     struct Layout {
         mapping(uint256 => address) organizationById;
         uint256 organizationCounter;
+        address diamondFactory;
+        address facetRegistry;
+
     }
 
     function layout() internal pure returns (Layout storage ds) {
