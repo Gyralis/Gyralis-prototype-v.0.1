@@ -25,13 +25,13 @@ pragma solidity >=0.8.20;
  **/
 function unpackData(bytes32 packedData)
   pure
-  returns (bytes4 selector, uint64 data, address facetAddress)
+  returns (bytes4 selector, bytes8 data, address facetAddress)
 {
     // Extract the first 4 bytes (function selector)
-    selector = bytes4(packedData >> (256 - 32));
+    selector = bytes4(packedData);
 
     // Extract the next 8 bytes (data)
-    data = uint64(uint256(packedData >> (256 - 64)));
+    data = bytes8(packedData << 32);
 
     // Extract the last 20 bytes (facet address)
     facetAddress = address(uint160(uint256(packedData)));
@@ -61,14 +61,14 @@ function unpackData(bytes32 packedData)
  **/
 function packData(
     bytes4 selector,
-    uint64 data,
+    bytes8 data,
     address facetAddress
 ) pure returns (bytes32) {
     require(facetAddress != address(0), "Facet address cannot be zero");
-
-    // Pack the selector, data, and facet address into a single bytes32
-    return (bytes32(selector) << (256 - 32)) | // Selector in the first 4 bytes
-           (bytes32(uint256(data)) << (256 - 64)) | // Data in the next 8 bytes
-           bytes32(uint256(uint160(facetAddress))); // Facet address in the last 20 bytes
+    return bytes32(
+        (uint256(uint32(selector)) << 224) | 
+        (uint256(uint64(data)) << 160) | 
+        uint256(uint160(facetAddress))       
+    );
 }
 

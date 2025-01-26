@@ -50,7 +50,7 @@ contract WLoopRegistryFacet is LoopRegistryFacet {
      */
     function addSelectorAndFacet(
         bytes4 selector,
-        uint32 version,
+        bytes8 version,
         address facetAddress
     ) external {
         require(facetAddress != address(0), "Facet address cannot be zero");
@@ -66,7 +66,7 @@ contract WLoopRegistryFacet is LoopRegistryFacet {
         // Update the registry with the packed data
         st.historic_facet_registry[selector] = packedData;
 
-        emit SelectorAndFacetAdded(selector, version, facetAddress);
+        emit SelectorAndFacetAdded(selector, uint32(bytes4(version)), facetAddress);
     }
 
     /// @notice Emitted when a new selector and facet are added to the registry.
@@ -166,13 +166,14 @@ contract LoopRegistryFacet_createLoopTest is LoopRegistry_BaseTest {
       bytes31 sybil = bytes31("SybilType");
       uint88 distStrategy = 12345;
       bool autoUpdate = true;
+      bytes8 bytes_version = bytes8(uint64(0x01) << 56);
 
       // Add mock selector and facet to the registry
       bytes4 selector = bytes4(keccak256("mockFunction()"));
       address facetAddress = address(0x4567890123456789012345678901234567890123);
-      bytes32 packedData = packData(selector, 1, facetAddress);
+      bytes32 packedData = packData(selector, bytes_version, facetAddress);
       
-      facet.addSelectorAndFacet(selector, 1, facetAddress);
+      facet.addSelectorAndFacet(selector, bytes_version, facetAddress);
 
       // Act
       //vm.expectEmit(address(facet));
