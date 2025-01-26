@@ -7,7 +7,7 @@ import {
   Loop,
   LoopRegistryFacet,
   LibLoopRegistrySt,
-  Functions,
+  Function,
   packData,
   unpackData
 } from "contracts/facets/loop-registry/loop_registry.sol";
@@ -29,7 +29,7 @@ contract DummyLoopImplementation {
 
   function init_loop(
     Loop calldata _loopData,
-    Functions[] calldata _facets
+    Function[] calldata _facets
   )external virtual {
     bytes32 _hashedData = keccak256(abi.encode(_loopData));
     if(_hashedData == 0x00 || _facets.length == 0x00) revert BAD_PARAMS_INITIALIZATION_FAILED();

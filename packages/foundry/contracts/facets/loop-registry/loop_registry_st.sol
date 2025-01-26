@@ -14,7 +14,7 @@ struct Loop {
     address distToken;   // [20] Dirección del token utilizado para distribución.
     string orgName;      // [...] Nombre de la organización asociada.
 }
-struct Functions{
+struct Function{
   bytes4 selector;
   address facet;
 }

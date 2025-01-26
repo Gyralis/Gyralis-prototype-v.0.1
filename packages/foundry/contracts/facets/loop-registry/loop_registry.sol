@@ -3,7 +3,7 @@
 pragma solidity >=0.8.20;
 
 import "@openzeppelin/contracts/proxy/Clones.sol";
-import {LibLoopRegistrySt,Loop,Functions} from './loop_registry_st.sol';
+import {LibLoopRegistrySt,Loop,Function} from './loop_registry_st.sol';
 import { unpackData,packData} from './utils.sol';
 /**
     Funciones a hacer :
@@ -76,7 +76,7 @@ abstract contract LoopRegistryFacet {
         });
         uint _l = st.loop_selectors.length;
         // Prepare selectors and facets
-        Functions[] memory loopFunctions = new Functions[](_l);
+        Function[] memory loopFunctions = new Function[](_l);
         if(_l == 0) revert LOOP_INITIALIZATION_FAILED();
     
         for (uint256 i = 0; i <_l; i++) {
@@ -86,7 +86,7 @@ abstract contract LoopRegistryFacet {
     
             if (facetAddress == address(0)) revert INVALID_FACET_FOR_SELECTOR(selector);
     
-            loopFunctions[i] = Functions({
+            loopFunctions[i] = Function({
                 selector: selector,
                 facet: facetAddress
             });
