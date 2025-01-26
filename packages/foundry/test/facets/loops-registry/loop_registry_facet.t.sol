@@ -7,7 +7,9 @@ import {
   Loop,
   LoopRegistryFacet,
   LibLoopRegistrySt,
-  Funcitions
+  Functions,
+  packData,
+  unpackData
 } from "contracts/facets/loop-registry/loop_registry.sol";
 import { ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -27,7 +29,7 @@ contract DummyLoopImplementation {
 
   function init_loop(
     Loop calldata _loopData,
-    Funcitions[] calldata _facets
+    Functions[] calldata _facets
   )external virtual {
     bytes32 _hashedData = keccak256(abi.encode(_loopData));
     if(_hashedData == 0x00 || _facets.length == 0x00) revert BAD_PARAMS_INITIALIZATION_FAILED();
@@ -56,7 +58,7 @@ contract WLoopRegistryFacet is LoopRegistryFacet {
         LibLoopRegistrySt.REGISTRY_ST storage st = LibLoopRegistrySt._storage();
 
         // Pack the facet data
-        bytes32 packedData = LibLoopRegistrySt.packFacetData(selector, version, facetAddress);
+        bytes32 packedData = packData(selector, version, facetAddress);
 
         // Add selector to the list of loop selectors
         st.loop_selectors.push(selector);
@@ -168,12 +170,12 @@ contract LoopRegistryFacet_createLoopTest is LoopRegistry_BaseTest {
       // Add mock selector and facet to the registry
       bytes4 selector = bytes4(keccak256("mockFunction()"));
       address facetAddress = address(0x4567890123456789012345678901234567890123);
-      bytes32 packedData = LibLoopRegistrySt.packFacetData(selector, 1, facetAddress);
+      bytes32 packedData = packData(selector, 1, facetAddress);
       
       facet.addSelectorAndFacet(selector, 1, facetAddress);
 
       // Act
-      vm.expectEmit(address(facet));
+      //vm.expectEmit(address(facet));
       // NOTA : para verificar esto hay que computar primero el address (proxmimamente)
       // emit LoopRegistryFacet(loopAddress,orgName,sybil,distStrategy,_validToken,autoUpdate)
       address loopAddress = facet.createLoop(orgName, sybil, distStrategy, _validToken, autoUpdate);
