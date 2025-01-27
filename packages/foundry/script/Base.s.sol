@@ -3,10 +3,11 @@ pragma solidity >=0.8.20;
 
 import { Script } from "forge-std/Script.sol";
 import "forge-std/console2.sol";
-import { FacetHelper } from "../test/facets/Facet.t.sol";
-import { DiamondCutFacetHelper } from "../test/facets/cut/cut.t.sol";
-import { DiamondLoupeFacetHelper } from "../test/facets/loupe/loupe.t.sol";
-import { AccessControlFacetHelper } from "../test/facets/access-control/access-control.t.sol";
+import { FacetHelper } from "../contracts/utils/FacetHelper.sol";
+import { DiamondCutFacetHelper } from "../contracts/utils/DiamondCutFacetHelper.sol";
+import { DiamondLoupeFacetHelper } from "../contracts/utils/DiamondLoupeFacetHelper.sol";
+import { AccessControlFacetHelper } from "../contracts/utils/AccessControlFacetHelper.sol";
+import {OrganizationFactoryHelper} from "../contracts/utils/OrganizationFactoryHelper.sol";
 // import { OwnableFacetHelper } from "test/facets/ownable/ownable.t.sol";
 // import { Ownable2StepFacetHelper } from "test/facets/ownable2step/ownable2step.t.sol";
 // import { NFTOwnedFacetHelper } from "test/facets/nft-owned/nft-owned.t.sol";
@@ -34,6 +35,8 @@ contract BaseScript is Script {
         facetHelpers.push(new DiamondCutFacetHelper());
         facetHelpers.push(new DiamondLoupeFacetHelper());
         facetHelpers.push(new AccessControlFacetHelper());
+        facetHelpers.push(new OrganizationFactoryHelper());
+        
         // facetHelpers.push(new OrganizationFacet());
 
         // facetHelpers.push(new OwnableFacetHelper());
