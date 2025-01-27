@@ -37,13 +37,5 @@ contract BaseScript is Script {
         facetHelpers.push(new AccessControlFacetHelper());
         facetHelpers.push(new OrganizationFactoryHelper());
         
-        // facetHelpers.push(new OrganizationFacet());
-
-        // facetHelpers.push(new OwnableFacetHelper());
-        // facetHelpers.push(new Ownable2StepFacetHelper());
-        // facetHelpers.push(new NFTOwnedFacetHelper());
-        // facetHelpers.push(new ERC20FacetHelper());
-        // facetHelpers.push(new ERC20MintableFacetHelper());
-        // facetHelpers.push(new ERC20BurnableFacetHelper());
     }
 }
