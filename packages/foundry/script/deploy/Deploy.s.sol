@@ -32,8 +32,9 @@ contract Deploy is BaseScript {
         // Prepare the init data for the facets
         IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](4);
         diamondInitData[0] = facetHelpers[0].makeInitData(""); //DiamondCut
-        diamondInitData[2] = facetHelpers[1].makeInitData(""); //DiamondLoupe
-        diamondInitData[3] = facetHelpers[2].makeInitData(abi.encode(msg.sender)); //AccessControl
+        diamondInitData[1] = facetHelpers[1].makeInitData(""); //DiamondLoupe
+        diamondInitData[2] = facetHelpers[2].makeInitData(abi.encode(msg.sender)); //AccessControl
+        diamondInitData[3] = facetHelpers[2].makeInitData(abi.encode(diamondFactory, registry)); //OrganizationFactory
 
 
 
