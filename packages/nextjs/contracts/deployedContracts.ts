@@ -6,14 +6,74 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
 const deployedContracts = {
   31337: {
-    YourContract: {
-      address: "0x700b6a60ce7eaaea56f065753d8dcb9653dbad35",
+    FacetRegistry: {
+      address: "0x2c4b93b614ddbfaf0807e8f4ca982e9f9c2e2aa4",
       abi: [
         {
-          type: "constructor",
+          type: "function",
+          name: "addFacet",
           inputs: [
             {
-              name: "_owner",
+              name: "facet",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "selectors",
+              type: "bytes4[]",
+              internalType: "bytes4[]",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "computeFacetAddress",
+          inputs: [
+            {
+              name: "salt",
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+            {
+              name: "creationCode",
+              type: "bytes",
+              internalType: "bytes",
+            },
+          ],
+          outputs: [
+            {
+              name: "facet",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "deployFacet",
+          inputs: [
+            {
+              name: "salt",
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+            {
+              name: "creationCode",
+              type: "bytes",
+              internalType: "bytes",
+            },
+            {
+              name: "selectors",
+              type: "bytes4[]",
+              internalType: "bytes4[]",
+            },
+          ],
+          outputs: [
+            {
+              name: "facet",
               type: "address",
               internalType: "address",
             },
@@ -21,80 +81,24 @@ const deployedContracts = {
           stateMutability: "nonpayable",
         },
         {
-          type: "receive",
-          stateMutability: "payable",
-        },
-        {
           type: "function",
-          name: "greeting",
+          name: "facetAddresses",
           inputs: [],
           outputs: [
             {
               name: "",
-              type: "string",
-              internalType: "string",
+              type: "address[]",
+              internalType: "address[]",
             },
           ],
           stateMutability: "view",
         },
         {
           type: "function",
-          name: "owner",
-          inputs: [],
-          outputs: [
-            {
-              name: "",
-              type: "address",
-              internalType: "address",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "premium",
-          inputs: [],
-          outputs: [
-            {
-              name: "",
-              type: "bool",
-              internalType: "bool",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "setGreeting",
+          name: "facetSelectors",
           inputs: [
             {
-              name: "_newGreeting",
-              type: "string",
-              internalType: "string",
-            },
-          ],
-          outputs: [],
-          stateMutability: "payable",
-        },
-        {
-          type: "function",
-          name: "totalCounter",
-          inputs: [],
-          outputs: [
-            {
-              name: "",
-              type: "uint256",
-              internalType: "uint256",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
-          name: "userGreetingCounter",
-          inputs: [
-            {
-              name: "",
+              name: "facet",
               type: "address",
               internalType: "address",
             },
@@ -102,52 +106,117 @@ const deployedContracts = {
           outputs: [
             {
               name: "",
-              type: "uint256",
-              internalType: "uint256",
+              type: "bytes4[]",
+              internalType: "bytes4[]",
             },
           ],
           stateMutability: "view",
         },
         {
           type: "function",
-          name: "withdraw",
-          inputs: [],
+          name: "removeFacet",
+          inputs: [
+            {
+              name: "facet",
+              type: "address",
+              internalType: "address",
+            },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
         {
           type: "event",
-          name: "GreetingChange",
+          name: "FacetRegistered",
           inputs: [
             {
-              name: "greetingSetter",
+              name: "facet",
               type: "address",
               indexed: true,
               internalType: "address",
             },
             {
-              name: "newGreeting",
-              type: "string",
+              name: "selectors",
+              type: "bytes4[]",
               indexed: false,
-              internalType: "string",
-            },
-            {
-              name: "premium",
-              type: "bool",
-              indexed: false,
-              internalType: "bool",
-            },
-            {
-              name: "value",
-              type: "uint256",
-              indexed: false,
-              internalType: "uint256",
+              internalType: "bytes4[]",
             },
           ],
           anonymous: false,
         },
+        {
+          type: "event",
+          name: "FacetUnregistered",
+          inputs: [
+            {
+              name: "facet",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "error",
+          name: "Create2EmptyBytecode",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "FacetRegistry_FacetAddressZero",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "FacetRegistry_FacetAlreadyRegistered",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "FacetRegistry_FacetMustHaveSelectors",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "FacetRegistry_FacetNotContract",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "FacetRegistry_FacetNotRegistered",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "FailedDeployment",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "InsufficientBalance",
+          inputs: [
+            {
+              name: "balance",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "needed",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        addFacet: "contracts/registry/IFacetRegistry.sol",
+        computeFacetAddress: "contracts/registry/IFacetRegistry.sol",
+        deployFacet: "contracts/registry/IFacetRegistry.sol",
+        facetAddresses: "contracts/registry/IFacetRegistry.sol",
+        facetSelectors: "contracts/registry/IFacetRegistry.sol",
+        removeFacet: "contracts/registry/IFacetRegistry.sol",
+      },
     },
   },
 } as const;
