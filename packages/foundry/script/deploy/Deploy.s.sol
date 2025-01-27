@@ -34,7 +34,6 @@ contract Deploy is BaseScript {
         diamondInitData[0] = facetHelpers[0].makeInitData(""); //DiamondCut
         diamondInitData[2] = facetHelpers[1].makeInitData(""); //DiamondLoupe
         diamondInitData[3] = facetHelpers[2].makeInitData(abi.encode(msg.sender)); //AccessControl
-        
 
 
 

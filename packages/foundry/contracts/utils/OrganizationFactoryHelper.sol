@@ -36,4 +36,15 @@ contract OrganizationFactoryHelper is FacetHelper {
     function creationCode() public pure override returns (bytes memory) {
         return type(OrganizationFactoryFacet).creationCode;
     }
+   
+    function makeInitData( bytes memory args) public view override returns (MultiInit memory) {
+    // Decode args as a tuple of two addresses
+        (address diamondFactory, address facetRegistry) = abi.decode(args, (address, address));
+        
+        return MultiInit({
+            init: facet(),
+            // Encode the selector with the two addresses
+            initData: abi.encodeWithSelector(initializer(), diamondFactory, facetRegistry)
+        });
+    }
 }
