@@ -62,7 +62,6 @@ contract Loop_Initializer_V0 is Initializable {
         st.loop_registry = _loopRegistry; // Address of the Loop registry contract.
         st.system = _system; // Address of the system managing this Loop.
             
-        emit DebugBytesArr('Adentro del init',_packedFns);
         // Validate and store function data
         uint256 p_len = _packedFns.length;
         if (p_len == 0) revert MUST_SEND_FNs(); // Revert if no functions are provided.
