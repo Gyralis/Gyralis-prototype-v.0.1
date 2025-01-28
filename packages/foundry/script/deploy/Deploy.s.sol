@@ -6,6 +6,7 @@ import { FacetRegistry } from "src/registry/FacetRegistry.sol";
 import {DiamondFactory } from "src/factory/DiamondFactory.sol";
 import  {IDiamond} from "src/Diamond.sol";
 import {DiamondCutFacetHelper} from "src/utils/DiamondCutFacetHelper.sol";
+import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 
 contract Deploy is BaseScript {
     function run() public broadcaster {
@@ -36,8 +37,15 @@ contract Deploy is BaseScript {
         diamondInitData[2] = facetHelpers[2].makeInitData(abi.encode(msg.sender)); //AccessControl
         diamondInitData[3] = facetHelpers[2].makeInitData(abi.encode(diamondFactory, registry)); //OrganizationFactory
 
+        // Initialize the Diamond
+        IDiamond.InitParams memory initParams = IDiamond.InitParams({
+            baseFacets: baseFacets,
+            init: MULTI_INIT_ADDRESS,
+            initData: abi.encode(diamondInitData)
+        });
 
-
+        // Create the Diamond using the DiamondFactory
+        address systemDiamond = diamondFactory.createDiamond(initParams);
 
 
     }
