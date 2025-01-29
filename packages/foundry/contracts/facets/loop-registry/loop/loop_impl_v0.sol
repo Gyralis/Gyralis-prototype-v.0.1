@@ -66,6 +66,9 @@ contract Loop_Implementation_V0 is ReentrancyGuardTransient {
 
     /// @dev Event emitted when a new epoch is registered.
     event EpochRegistered(uint8 epochId, uint64 startTimestamp, uint64 finishTimestamp, bytes32 merkleRoot);
+    
+    /// @dev Event emitted when a certain epoch is closed.
+    event EpochFinalized(uint8 epochId, uint64 startTimestamp, uint64 finishTimestamp, bytes32 merkleRoot);
 
     // -------------------------------------------- //
     //              MODIFIERS 
@@ -80,6 +83,7 @@ contract Loop_Implementation_V0 is ReentrancyGuardTransient {
     // -------------------------------------------- //
     //               AUTHORIZED FUNCTIONS
     // -------------------------------------------- //
+    event DebugUint8(string _smg, uint8 _m);
     /**
      * @notice Registers a new epoch.
      * @dev Only callable by the registry. Emits an event when successful.
@@ -95,11 +99,15 @@ contract Loop_Implementation_V0 is ReentrancyGuardTransient {
 
         uint8 current_epoch = st.current_epoch_id; 
 
+        emit DebugUint8('CurrentEpoch',current_epoch);
         if(current_epoch == 255 ) revert MAX_EPOCH_ID_REACHED();
         // Ensure the epoch ID is valid and sequential
         uint8 expectedNextEpochId = current_epoch + 1;
         
         if (nextEpochId != expectedNextEpochId) revert INVALID_EPOCH_ID();
+        st.id_to_epoch_info[current_epoch].finished=true;
+        Epoch memory _prev = st.id_to_epoch_info[current_epoch];
+        emit EpochFinalized(current_epoch,_prev.start_timestamp,_prev.finish_timestamp,_prev.merkle_root);
 
         // Store the new epoch
         st.id_to_epoch_info[nextEpochId] = _c;
@@ -117,6 +125,10 @@ contract Loop_Implementation_V0 is ReentrancyGuardTransient {
     // -------------------------------------------- //
     //               EXTERNAL FUNCTIONS
     // -------------------------------------------- //
+
+    function getEpochInfo(uint8 _id) external view returns(Epoch memory){
+      return LibEpochSt._storage().id_to_epoch_info[_id];
+    }
 
     /**
      * @notice Claims tokens for the current epoch based on Merkle proofs.
