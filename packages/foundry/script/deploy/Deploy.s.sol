@@ -86,6 +86,26 @@ contract Deploy is BaseScript {
         address systemDiamond = diamondFactory.createDiamond(initParams);
         console.log("Diamond deployed at:", systemDiamond);
 
+         //Call createOrganization through the Diamond**
+        console.log("Creating Organization...");
+
+        (bool success, bytes memory result) = systemDiamond.call(
+            abi.encodeWithSignature(
+                "createOrganization(string,address,string)",
+                "My Organization",
+                msg.sender,
+                "This is a test organization"
+            )
+        );
+
+        if (success) {
+            console.log("Organization Created Successfully!");
+        } else {
+            console.log("Organization Creation Failed!");
+            console.logBytes(result);
+        }
+
         console.log("Deployment Complete.");
     }
+    
 }
