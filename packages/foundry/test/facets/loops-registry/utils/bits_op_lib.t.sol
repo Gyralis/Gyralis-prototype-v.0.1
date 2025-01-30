@@ -4,7 +4,7 @@ pragma solidity >=0.8.20;
 import { Test, console2 } from "forge-std/Test.sol";
 import {BitOperations} from "contracts/facets/loop-registry/utils.sol";
 
-contract TestBitOperations is Test {
+contract BitOperationsLibTest is Test {
     function testIsBitSet() public {
         bytes32 data = bytes32(uint(0x02)); // 000...0010 (bit 1 is set)
         assertEq(BitOperations.isBitSet(data, 1), true, "Bit 1 should be set");
