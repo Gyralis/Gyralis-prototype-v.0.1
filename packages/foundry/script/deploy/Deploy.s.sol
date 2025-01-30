@@ -64,6 +64,7 @@ contract Deploy is BaseScript {
         console.log("DiamondLoupe init set with address:", facetAddresses[1]);
         console.log("AccessControl init set with address:", facetAddresses[2]);
         console.log("OrganizationFactory init set with address:", facetAddresses[3]);
+        console.log("Organization init set with address:", facetAddresses[4]);
 
         // Initialize the Diamond
         console.log("Initializing Diamond...");

@@ -53,7 +53,7 @@ contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFact
         address diamondLoupeFacet = IFacetRegistry(facetRegistry).getFacetBySelector(IDiamondLoupe.facets.selector);
 
         // Change for the IOrganization init selector when create the interface
-        address organizationFacet = IFacetRegistry(facetRegistry).getFacetBySelector(OrganizationFacet.Organization_init.selector);
+        address organizationFacet = IFacetRegistry(facetRegistry).getFacetBySelector(OrganizationFacet.getOrganizationName.selector);
 
         require(diamondCutFacet != address(0), "DiamondCutFacet not found");
         require(diamondLoupeFacet != address(0), "DiamondLoupeFacet not found");
