@@ -9,12 +9,12 @@ interface IOrganization {
     function Organization_init(string memory _name, address _admin, string memory _description) external;
 
     // View functions
-    function getName() external view returns (string memory);
-    function getAdmin() external view returns (address);
-    function getDescription() external view returns (string memory);
+    function getOrganizationName() external view returns (string memory);
+    function getOrganizationAdmin() external view returns (address);
+    function getOrganizationDescription() external view returns (string memory);
 
     // Functions to manage faucets
-    function createFaucet(string memory faucetDescription) external;
+    function createLoop(string memory faucetDescription) external;
 
     // Admin management functions
     function addAdmin(address newAdmin) external;

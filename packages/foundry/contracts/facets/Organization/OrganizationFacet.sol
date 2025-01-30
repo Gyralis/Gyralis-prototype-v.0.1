@@ -3,6 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import { Facet } from "src/facets/Facet.sol";
+import {IOrganization} from "./IOrganization.sol";
 
 library LibOrganization {
     bytes32 constant STORAGE_POSITION = keccak256("diamond.organization.storage");
@@ -22,10 +23,8 @@ library LibOrganization {
     }
 }
 
-contract OrganizationFacet is AccessControl, Facet {
+contract OrganizationFacet is IOrganization, AccessControl, Facet {
     bytes32 public constant ORGANIZATION_ADMIN_ROLE = keccak256("ORGANIZATION_ADMIN_ROLE");
-
-    event FaucetCreated(address indexed faucetAddress, string description);
 
     function Organization_init(string memory _name, address _admin, string memory _description) external onlyInitializing {
          require(bytes(_name).length > 0, "Organization name is required");
@@ -41,19 +40,19 @@ contract OrganizationFacet is AccessControl, Facet {
         _grantRole(ORGANIZATION_ADMIN_ROLE, _admin);
     }
 
-    function getName() external view returns (string memory) {
+    function getOrganizationName() external view returns (string memory) {
         return LibOrganization.organizationStorage().name;
     }
 
-    function getAdmin() external view returns (address) {
+    function getOrganizationAdmin() external view returns (address) {
         return LibOrganization.organizationStorage().admin;
     }
 
-    function getDescription() external view returns (string memory) {
+    function getOrganizationDescription() external view returns (string memory) {
         return LibOrganization.organizationStorage().description;
     }
 
-    function createFaucet(string memory faucetDescription) external onlyRole(ORGANIZATION_ADMIN_ROLE) {
+    function createLoop(string memory faucetDescription) external onlyRole(ORGANIZATION_ADMIN_ROLE) {
     
     }
 
