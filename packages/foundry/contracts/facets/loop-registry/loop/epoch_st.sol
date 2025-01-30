@@ -78,7 +78,6 @@ struct Epoch {
     bytes32 merkle_root;         // [32/32] Merkle root for the distribution, used to verify claims
 }
 
-import {BitMaps} from '@oz/utils/structs/BitMaps.sol';
 
 library LibEpochSt {
     /// @title EPOCH_ST
@@ -97,18 +96,33 @@ library LibEpochSt {
         /// start and finish timestamps, and distribution amounts.
         mapping(uint _epochId => Epoch) id_to_epoch_info;
 
-        /// @notice A BitMap used for efficiently tracking user participation or state within an epoch.
-        /// @dev The key of the BitMap (`uint`) is designed to use **only the first 20 bytes** to represent an Ethereum address.
-        /// The remaining 12 bytes in the `uint` key are unused, allowing for future extensions if necessary.
+        /// @notice A mapping used for efficiently tracking user claims within different epochs.
+        /// @dev Instead of using a BitMap with a `uint` key, we utilize a `mapping(address => bytes32)`,
+        /// where each address is mapped to a `bytes32` value that represents a compressed set of 256 bits.
+        /// Each bit in the `bytes32` value corresponds to whether the user has claimed a specific reward in a given epoch.
         ///
-        /// The BitMap's value (`uint`) represents a compressed set of 256 bits, where each bit corresponds to a specific state or
-        /// flag for the address within the context of an epoch. This design minimizes the amount of storage required while enabling
-        /// fast lookups and updates.
+        /// ### Why this approach?
+        /// - It allows us to efficiently track individual user claims while minimizing storage usage.
+        /// - Using a `mapping(address => bytes32)` provides direct access to a user's claim status without requiring additional computations.
+        /// - It ensures that each user can have a compact and structured way to record their claims for up to **256 different epochs** (`0 - 255`).
+        /// - The `bytes32` format is ideal since it naturally fits within a single storage slot, making it **gas-efficient**.
         ///
-        /// ### Usage:
-        /// - The combination of the BitMap and Merkle proofs allows us to store minimal data on-chain while enforcing correctness.
-        /// - By relying on Merkle proofs for verification, we reduce the need to store extensive user-specific data directly in the contract.
-        BitMaps.BitMap bit_map;
+        /// ### Merkle Proofs & Epoch Limits:
+        /// - We leverage **Merkle proofs** to verify the claim state of users off-chain, reducing the amount of stored data.
+        /// - Since epochs are strictly **limited to 256 (0 to 255)**, this approach ensures a **clear and well-packed structure**.
+        /// - The use of `bytes32` allows us to efficiently map epochs to claim states while keeping the contract logic straightforward.
+        ///
+        /// ### Example Representation:
+        /// - `0x000000000000000000000000000000000000000000000000000000000000000F`
+        ///   (Bits 0-3 are set → User has claimed rewards for **epochs 0 to 3**)
+        /// - `0x0000000000000000000000000000000000000000000000000000000000000000`
+        ///   (All bits are unset → User has **not claimed any reward**)
+        /// - `0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF`
+        ///   (All bits are set → User has **claimed all 256 epochs**)
+        ///
+        /// This design minimizes on-chain storage while allowing **fast lookups and updates**, ensuring efficient state tracking.
+        mapping(address => bytes32) userClaims;
+
    }
 
    /// @custom:storage-location erc7201:epoch_impl.diamond

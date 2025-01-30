@@ -168,3 +168,26 @@ contract Loop_ImplV0_EpochFns_Test is LoopImplV0_BaseTest {
         impl_v0.register_next_epoch(epochOverflow, 255);
     }
 }
+
+import { MerkleProof } from '@oz/utils/cryptography/MerkleProof.sol';
+
+contract Loop_ImplV0_EpochClaim_Test is LoopImplV0_BaseTest {
+    
+    /// @notice Generates leaf nodes for testing purposes.
+    /// @param _amLeafs Number of leaf nodes to generate.
+    /// @return bytes32[] Array of leaf hashes.
+    function _genLeafs(uint8 _amLeafs) internal view returns (bytes32[] memory) {
+        bytes32[] memory _r = new bytes32[](_amLeafs);
+        for (uint i = 0; i < _amLeafs; i++) {
+            _r[i] = keccak256(abi.encodePacked("USER#", i));
+        }
+        return _r;
+    }
+    function testClaimCurrentEpoch_invalidProof() public {
+      bytes32 [] memory _mockProofs = _genLeafs(33);
+      bytes32 _badLeaf = keccak256('BAD_LEAF');
+      vm.expectRevert(Loop_Implementation_V0.INVALID_PROOF.selector);
+      impl_v0.claim_current_epoch(_mockProofs,_badLeaf,1e6);
+    }
+
+}

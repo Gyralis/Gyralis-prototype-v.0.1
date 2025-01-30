@@ -14,16 +14,18 @@ pragma solidity ^0.8.0;
     
 */
 
-import { MerkleProof } from '@oz/utils/cryptography/MerkleProof.sol';
 import { Loop, Function, LibLoopSt } from './loop_st.sol';
-import { Epoch, BitMaps, LibEpochSt } from './epoch_st.sol';
+import { Epoch,LibEpochSt } from './epoch_st.sol';
+import { BitOperations } from '../utils.sol';
 import { ReentrancyGuardTransient } from '@oz/utils/ReentrancyGuardTransient.sol';
 import {IERC20} from '@oz/token/ERC20/IERC20.sol';
+import {MerkleProof} from  "@oz/utils/cryptography/MerkleProof.sol";
 /**
  * @title Loop Implementation V0
  * @dev Implements the core logic for managing epochs and claims in a loop-based distribution system.
  */
 contract Loop_Implementation_V0 is ReentrancyGuardTransient {
+    using BitOperations for bytes32;
     /// @notice Thrown when the provided leaf does not match the expected format or data.
     /// @dev This error is triggered if the `leaf` passed to the `claim_current_epoch` function 
     /// does not correspond to the packed data of epoch ID, amount, and address.
@@ -147,26 +149,28 @@ contract Loop_Implementation_V0 is ReentrancyGuardTransient {
 
         // Verify the Merkle proof
         Epoch memory epoch = st.id_to_epoch_info[currentEpochId];
-        require(MerkleProof.verify(proof, epoch.merkle_root, leaf), "INVALID_PROOF");
+
+        if( !MerkleProof.verify(proof, epoch.merkle_root, leaf) )revert INVALID_PROOF();
 
         // Verify the leaf data matches msg.sender and amount_to_claim
         bytes32 computedLeaf = keccak256(abi.encodePacked(currentEpochId, amount_to_claim, msg.sender));
-        require(computedLeaf == leaf, "INVALID_LEAF");
-
+        if(computedLeaf!=leaf) revert INVALID_LEAF();
+        // NOTE : from here on the code MUST be updated,
+        //        now, we use bits operations to check + update states
+        // --------------------------------------------
         // Check if the sender has already claimed using the BitMap
-        uint256 userKey = uint256(uint160(msg.sender)); // First 20 bytes are the address
-        require(!BitMaps.get(st.bit_map, userKey), "ALREADY_CLAIMED");
+        //uint256 userKey = uint256(uint160(msg.sender)); // First 20 bytes are the address
 
-        // Mark as claimed in the BitMap
-        BitMaps.set(st.bit_map, userKey);
+        //require(!BitMaps.get(st.bit_map, userKey), "ALREADY_CLAIMED");
 
-        // Transfer the tokens to the sender
-        // Assuming the token address is stored in LibLoopSt
-        address token = LibLoopSt._storage().basic_loop_info.distToken;
-        require(IERC20(token).transfer(msg.sender, amount_to_claim), "TOKEN_TRANSFER_FAILED");
+
+        //// Transfer the tokens to the sender
+        //// Assuming the token address is stored in LibLoopSt
+        //address token = LibLoopSt._storage().basic_loop_info.distToken;
+        //require(IERC20(token).transfer(msg.sender, amount_to_claim), "TOKEN_TRANSFER_FAILED");
 
         // Emit an event for the successful claim
-        emit TokensClaimed(currentEpochId, msg.sender, amount_to_claim);
+        //emit TokensClaimed(currentEpochId, msg.sender, amount_to_claim);
 
         return true;
     }

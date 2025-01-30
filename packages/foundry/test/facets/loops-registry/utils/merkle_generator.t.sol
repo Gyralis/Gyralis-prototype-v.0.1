@@ -7,7 +7,7 @@ import "@oz/utils/Strings.sol";
 import {MerkleTree} from 'test/mocks/merkle_helper.sol'; 
 
 contract MerkleTree_helperLibTest is Test{
-/// @notice Generates leaf nodes for testing purposes.
+    /// @notice Generates leaf nodes for testing purposes.
     /// @param _amLeafs Number of leaf nodes to generate.
     /// @return bytes32[] Array of leaf hashes.
     function _genLeafs(uint8 _amLeafs) internal view returns (bytes32[] memory) {
