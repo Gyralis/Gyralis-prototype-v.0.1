@@ -117,18 +117,16 @@ export const Header = () => {
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
           <HeaderMenuLinks />
         </ul>
-      </div>
-     
+      </div>     
       <div className="navbar-end flex-grow mr-4">
-        <SwitchTheme className="pointer-events-auto" />
-      {!isHomePage && (
-          <>
+        <SwitchTheme className="pointer-events-auto mr-1" />
+       {!isHomePage && (
+        <>
         <RainbowKitCustomConnectButton />
         <FaucetButton />
         </>
       )}
-      </div>
-    
+      </div>  
     </div>
   );
 };
