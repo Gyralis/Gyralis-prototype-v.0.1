@@ -5,13 +5,36 @@ import {Initializable} from '@oz-upgrades/proxy/utils/Initializable.sol';
 import {unpackData, packData} from '../utils.sol';
 import {LibLoopSt, Loop, Function} from './loop_st.sol';
 import {PackedDataUtils} from '../constants.sol';
+
+interface ILoop_Initializer_V0 {
+
+    /**
+     * @notice Initializes the Loop storage with metadata, authorized addresses, and functions.
+     * @dev This function sets up the following:
+     * - Basic Loop information such as version, sybil protection, distribution strategy, etc.
+     * - Important addresses including the sender, loop registry, and system address.
+     * - Function selectors mapped to packed data (version, status, and function address).
+     * @param _packedFns An array of packed function data, each containing the selector, additional metadata, and function address.
+     * @param _l A struct containing basic Loop metadata.
+     * @param _sender Address of the entity authorized to manage this Loop.
+     * @param _loopRegistry Address of the Loop registry contract.
+     * @param _system Address of the system responsible for managing this Loop.
+     */
+    function initialize_loop(
+        bytes32[] calldata _packedFns,
+        Loop calldata _l,
+        address _sender,
+        address _loopRegistry,
+        address _system
+    ) external ;
+}
 /**
  * @title Loop_Initializer_V0
  * @notice Contract for initializing Loop storage and registering functions for a Loop diamond proxy.
  * @dev This contract uses OpenZeppelin's Initializable for protection against reinitialization.
  * It configures essential loop metadata, authorized addresses, and function mappings within the storage structure.
 
-  @custom:todos 
+  @custom:todos
   1. Add authorization guard (and roles) into initializer
   2. Add epoch time (or strategy) into initializer (limited to 256 epochs and due math simplicity, SHOULD BE divisible into 2)
   3. Facets -> register (add authed address or regostry?)
@@ -61,7 +84,7 @@ contract Loop_Initializer_V0 is Initializable {
         st.authed = _sender; // Address authorized to manage the Loop.
         st.loop_registry = _loopRegistry; // Address of the Loop registry contract.
         st.system = _system; // Address of the system managing this Loop.
-            
+
         // Validate and store function data
         uint256 p_len = _packedFns.length;
         if (p_len == 0) revert MUST_SEND_FNs(); // Revert if no functions are provided.
@@ -85,4 +108,3 @@ contract Loop_Initializer_V0 is Initializable {
         emit LoopInitialized();
     }
 }
-

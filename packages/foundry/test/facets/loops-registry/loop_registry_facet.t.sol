@@ -3,7 +3,7 @@ pragma solidity >=0.8.20;
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { IDiamond } from "contracts/IDiamond.sol";
-import { 
+import {
   Loop,
   LoopRegistryFacet,
   LibLoopRegistrySt,
@@ -24,7 +24,7 @@ contract WERC20 is ERC20 {
 contract DummyLoopImplementation {
 
   event LoopInitialized(string indexed _orgName);
-  
+
   error BAD_PARAMS_INITIALIZATION_FAILED();
 
   function init_loop(
@@ -39,7 +39,11 @@ contract DummyLoopImplementation {
 
 
 contract WLoopRegistryFacet is LoopRegistryFacet {
-    constructor(address _impl, bytes4 _initializeSelector) LoopRegistryFacet(_impl, _initializeSelector) {}
+    constructor(address _impl, bytes4 _initializeSelector)  {
+        LibLoopRegistrySt.REGISTRY_ST storage st = LibLoopRegistrySt._storage();
+        st.initialize_selector = _initializeSelector;
+        st.loop_minimalImplementation = _impl;
+    }
 
     /**
      * @notice Adds a mock selector and facet to the registry.
@@ -153,9 +157,9 @@ contract LoopRegistryFacet_createLoopTest is LoopRegistry_BaseTest {
       string memory orgName = "ExampleOrg";
       bytes31 sybil = bytes31("SybilType");
       uint88 distStrategy = 12345;
-      address distToken = _validToken; 
+      address distToken = _validToken;
       bool autoUpdate = true;
-  
+
       // Act & Assert
       vm.expectRevert(abi.encodeWithSelector(LoopRegistryFacet.NO_LOOP_SELECTORS.selector));
       facet.createLoop(orgName, sybil, distStrategy, distToken, autoUpdate);
@@ -172,7 +176,7 @@ contract LoopRegistryFacet_createLoopTest is LoopRegistry_BaseTest {
       bytes4 selector = bytes4(keccak256("mockFunction()"));
       address facetAddress = address(0x4567890123456789012345678901234567890123);
       bytes32 packedData = packData(selector, bytes_version, facetAddress);
-      
+
       facet.addSelectorAndFacet(selector, bytes_version, facetAddress);
 
       // Act
@@ -194,7 +198,7 @@ contract LoopRegistryFacet_createLoopTest is LoopRegistry_BaseTest {
       bytes32 storedFacet = facet.getSelectorVData(selector,1);
       assertEq(storedFacet, packedData, "Facet data mismatch for selector");
     }
-    
+
 
 
 }

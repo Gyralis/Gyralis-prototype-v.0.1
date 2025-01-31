@@ -29,6 +29,7 @@ library LibLoopRegistrySt {
         bytes4 initialize_selector;
         address loop_minimalImplementation;
         uint80 latest_version;
+        address facet_registry;
 
         /// @notice Lista de todos los `loop_selectors` registrados.
         /// @dev Este array se utiliza para auditar y recorrer los selectores existentes.
