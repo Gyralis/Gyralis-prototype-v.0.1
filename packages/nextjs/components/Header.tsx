@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, LifebuoyIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import { SwitchTheme } from "./SwitchTheme";
 
 type HeaderMenuLink = {
   label: string;
@@ -25,39 +26,44 @@ export const menuLinks: HeaderMenuLink[] = [
   //   icon: <MagnifyingGlassIcon className="h-4 w-4" />,
   // },
   {
-    label: "Debug Contracts",
-    href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
-  },
-  {
     label: "Loop Protoype",
     href: "/prototype",
     icon: <LifebuoyIcon className="h-4 w-4" />,
+  },
+  {
+    label: "Debug Contracts",
+    href: "/debug",
+    icon: <BugAntIcon className="h-4 w-4" />,
   },
 ];
 
 export const HeaderMenuLinks = () => {
   const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
   return (
     <>
-      {menuLinks.map(({ label, href, icon }) => {
-        const isActive = pathname === href;
-        return (
-          <li key={href}>
-            <Link
-              href={href}
-              passHref
-              className={`${
-                isActive ? "bg-secondary shadow-md" : ""
-              } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col`}
-            >
-              {icon}
-              <span>{label}</span>
-            </Link>
-          </li>
-        );
-      })}
+    {!isHomePage && ( 
+      <>
+        {menuLinks.map(({ label, href, icon }) => {
+          const isActive = pathname === href;
+          return (
+            <li key={href}>
+              <Link
+                href={href}
+                passHref
+                className={`${
+                  isActive ? "bg-secondary shadow-md" : ""
+                } hover:bg-secondary hover:shadow-md focus:!bg-secondary active:!text-neutral py-1.5 px-3 text-sm rounded-full gap-2 grid grid-flow-col border-1`}
+              >
+                {icon}
+                <span>{label}</span>
+              </Link>
+            </li>
+          );
+        })}
+      </>
+    )}
     </>
   );
 };
@@ -72,6 +78,8 @@ export const Header = () => {
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
   );
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
@@ -110,10 +118,17 @@ export const Header = () => {
           <HeaderMenuLinks />
         </ul>
       </div>
+     
       <div className="navbar-end flex-grow mr-4">
+        <SwitchTheme className="pointer-events-auto" />
+      {!isHomePage && (
+          <>
         <RainbowKitCustomConnectButton />
         <FaucetButton />
+        </>
+      )}
       </div>
+    
     </div>
   );
 };
