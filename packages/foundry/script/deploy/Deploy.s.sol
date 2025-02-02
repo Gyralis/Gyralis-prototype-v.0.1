@@ -2,7 +2,7 @@
 pragma solidity >=0.8.20;
 
 import { BaseScript, FacetHelper } from "../Base.s.sol";
-import { FacetRegistry } from "src/registry/FacetRegistry.sol";
+import { FacetRegistry } from "src/facet_registry/FacetRegistry.sol";
 import {DiamondFactory } from "src/factory/DiamondFactory.sol";
 import  {IDiamond} from "src/Diamond.sol";
 import {DiamondCutFacetHelper} from "src/utils/DiamondCutFacetHelper.sol";
