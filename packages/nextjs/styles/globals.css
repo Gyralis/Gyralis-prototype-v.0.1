@@ -3,9 +3,9 @@
 @import "tailwindcss/utilities";
 
 :root,
-[data-theme] {
+/* [data-theme] {
   background: oklch(var(--b2));
-}
+} */
 
 body {
   min-height: 100vh;
