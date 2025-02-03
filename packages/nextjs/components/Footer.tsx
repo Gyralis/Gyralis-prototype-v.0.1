@@ -6,6 +6,7 @@ import { Faucet } from "~~/components/scaffold-eth";
 import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
 import { useGlobalState } from "~~/services/store/store";
 import { usePathname } from "next/navigation";
+import { SwitchTheme } from "./SwitchTheme";
 
 /**
  * Site footer
@@ -34,8 +35,9 @@ export const Footer = () => {
           </div>
         </div>
       </div>
-      <div className="w-full">
-    
+      <div className="w-full flex justify-end">
+      <SwitchTheme className="pointer-events-auto mr-4" />
+     
            {/* Powered by 1hive ... */}
       </div>
     </div>

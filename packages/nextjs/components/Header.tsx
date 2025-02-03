@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, LifebuoyIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
-import { SwitchTheme } from "./SwitchTheme";
 
 type HeaderMenuLink = {
   label: string;
@@ -118,14 +117,13 @@ export const Header = () => {
           <HeaderMenuLinks />
         </ul>
       </div>     
-      <div className="navbar-end flex-grow mr-4">
-        <SwitchTheme className="pointer-events-auto mr-1" />
-       {!isHomePage && (
+      <div className="navbar-end flex-grow mr-4">   
+       {!isHomePage ? (
         <>
         <RainbowKitCustomConnectButton />
         <FaucetButton />
         </>
-      )}
+      ): ( <Link href={"/prototype"}>Prototype</Link>)}
       </div>  
     </div>
   );
