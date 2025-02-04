@@ -30,3 +30,7 @@ p {
 .btn.btn-ghost {
   @apply shadow-none;
 }
+
+.border2 {
+ border: 2px solid black;
+}

@@ -4,7 +4,7 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, LifebuoyIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, LifebuoyIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
@@ -25,7 +25,7 @@ export const menuLinks: HeaderMenuLink[] = [
   //   icon: <MagnifyingGlassIcon className="h-4 w-4" />,
   // },
   {
-    label: "Loop Protoype",
+    label: "Protoype",
     href: "/prototype",
     icon: <LifebuoyIcon className="h-4 w-4" />,
   },
@@ -123,7 +123,7 @@ export const Header = () => {
         <RainbowKitCustomConnectButton />
         <FaucetButton />
         </>
-      ): ( <Link href={"/prototype"}>Prototype</Link>)}
+      ): ( <Link href={"/prototype"} className="flex items-center justify-center gap-1 hover:opacity-85"><ArrowRightIcon width={16} height={16}/> Prototype</Link>)}
       </div>  
     </div>
   );
