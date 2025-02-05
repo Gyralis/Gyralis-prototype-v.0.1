@@ -3,13 +3,11 @@ pragma solidity >=0.8.20;
 
 import { Test, console2 } from "forge-std/Test.sol";
 import { IDiamond } from "contracts/IDiamond.sol";
-import {
+import { 
   Loop,
   LoopRegistryFacet,
   LibLoopRegistrySt,
-  Function,
-  packData,
-  unpackData
+  Funcitions
 } from "contracts/facets/loop-registry/loop_registry.sol";
 import { ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
@@ -24,12 +22,12 @@ contract WERC20 is ERC20 {
 contract DummyLoopImplementation {
 
   event LoopInitialized(string indexed _orgName);
-
+  
   error BAD_PARAMS_INITIALIZATION_FAILED();
 
   function init_loop(
     Loop calldata _loopData,
-    Function[] calldata _facets
+    Funcitions[] calldata _facets
   )external virtual {
     bytes32 _hashedData = keccak256(abi.encode(_loopData));
     if(_hashedData == 0x00 || _facets.length == 0x00) revert BAD_PARAMS_INITIALIZATION_FAILED();
@@ -39,11 +37,7 @@ contract DummyLoopImplementation {
 
 
 contract WLoopRegistryFacet is LoopRegistryFacet {
-    constructor(address _impl, bytes4 _initializeSelector)  {
-        LibLoopRegistrySt.REGISTRY_ST storage st = LibLoopRegistrySt._storage();
-        st.initialize_selector = _initializeSelector;
-        st.loop_minimalImplementation = _impl;
-    }
+    constructor(address _impl, bytes4 _initializeSelector) LoopRegistryFacet(_impl, _initializeSelector) {}
 
     /**
      * @notice Adds a mock selector and facet to the registry.
@@ -54,7 +48,7 @@ contract WLoopRegistryFacet is LoopRegistryFacet {
      */
     function addSelectorAndFacet(
         bytes4 selector,
-        bytes8 version,
+        uint32 version,
         address facetAddress
     ) external {
         require(facetAddress != address(0), "Facet address cannot be zero");
@@ -62,7 +56,7 @@ contract WLoopRegistryFacet is LoopRegistryFacet {
         LibLoopRegistrySt.REGISTRY_ST storage st = LibLoopRegistrySt._storage();
 
         // Pack the facet data
-        bytes32 packedData = packData(selector, version, facetAddress);
+        bytes32 packedData = LibLoopRegistrySt.packFacetData(selector, version, facetAddress);
 
         // Add selector to the list of loop selectors
         st.loop_selectors.push(selector);
@@ -70,7 +64,7 @@ contract WLoopRegistryFacet is LoopRegistryFacet {
         // Update the registry with the packed data
         st.historic_facet_registry[selector] = packedData;
 
-        emit SelectorAndFacetAdded(selector, uint32(bytes4(version)), facetAddress);
+        emit SelectorAndFacetAdded(selector, version, facetAddress);
     }
 
     /// @notice Emitted when a new selector and facet are added to the registry.
@@ -157,9 +151,9 @@ contract LoopRegistryFacet_createLoopTest is LoopRegistry_BaseTest {
       string memory orgName = "ExampleOrg";
       bytes31 sybil = bytes31("SybilType");
       uint88 distStrategy = 12345;
-      address distToken = _validToken;
+      address distToken = _validToken; 
       bool autoUpdate = true;
-
+  
       // Act & Assert
       vm.expectRevert(abi.encodeWithSelector(LoopRegistryFacet.NO_LOOP_SELECTORS.selector));
       facet.createLoop(orgName, sybil, distStrategy, distToken, autoUpdate);
@@ -170,17 +164,16 @@ contract LoopRegistryFacet_createLoopTest is LoopRegistry_BaseTest {
       bytes31 sybil = bytes31("SybilType");
       uint88 distStrategy = 12345;
       bool autoUpdate = true;
-      bytes8 bytes_version = bytes8(uint64(0x01) << 56);
 
       // Add mock selector and facet to the registry
       bytes4 selector = bytes4(keccak256("mockFunction()"));
       address facetAddress = address(0x4567890123456789012345678901234567890123);
-      bytes32 packedData = packData(selector, bytes_version, facetAddress);
-
-      facet.addSelectorAndFacet(selector, bytes_version, facetAddress);
+      bytes32 packedData = LibLoopRegistrySt.packFacetData(selector, 1, facetAddress);
+      
+      facet.addSelectorAndFacet(selector, 1, facetAddress);
 
       // Act
-      //vm.expectEmit(address(facet));
+      vm.expectEmit(address(facet));
       // NOTA : para verificar esto hay que computar primero el address (proxmimamente)
       // emit LoopRegistryFacet(loopAddress,orgName,sybil,distStrategy,_validToken,autoUpdate)
       address loopAddress = facet.createLoop(orgName, sybil, distStrategy, _validToken, autoUpdate);
@@ -198,7 +191,7 @@ contract LoopRegistryFacet_createLoopTest is LoopRegistry_BaseTest {
       bytes32 storedFacet = facet.getSelectorVData(selector,1);
       assertEq(storedFacet, packedData, "Facet data mismatch for selector");
     }
-
+    
 
 
 }
