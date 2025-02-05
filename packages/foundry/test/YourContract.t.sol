@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-
-// Prueba para ver si sube bien
 import "forge-std/Test.sol";
 import "../contracts/YourContract.sol";
 

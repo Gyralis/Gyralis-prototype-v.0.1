@@ -11,8 +11,7 @@ node_modules
 
 # eslint
 .eslintcache
-# vim
-*.sw?
+
 # misc
 .DS_Store
 

@@ -60,7 +60,7 @@ contract AccessControlFacetHelper is FacetHelper {
         interfaces[0] = type(IAccessControl).interfaceId;
     }
 
-    function creationCode() public pure virtual override returns (bytes memory) {
+    function creationCode() public pure override returns (bytes memory) {
         return type(AccessControlFacet).creationCode;
     }
 
