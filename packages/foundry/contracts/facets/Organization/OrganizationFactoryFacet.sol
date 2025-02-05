@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
+import {AccessControlBase} from "../access-control/AccessControlBase.sol";
 import {OrganizationFacet} from "./OrganizationFacet.sol";
 import { Facet } from "src/facets/Facet.sol";
 import {IOrganizationFactory} from "./IOrganizationFactory.sol";
@@ -10,19 +10,20 @@ import {IDiamondCut} from "../cut/IDiamondCut.sol";
 import {IDiamondLoupe} from "../loupe/IDiamondLoupe.sol";
 import {IOrganization} from "./IOrganization.sol";
 import {IDiamond} from "../../IDiamond.sol";
-import {IFacetRegistry} from "../../facet_registry/IFacetRegistry.sol";
+import {IFacetRegistry} from "../../registry/IFacetRegistry.sol";
 import {IDiamondFactory} from "../../factory/IDiamondFactory.sol";
 import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 
+import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 
-contract OrganizationFactoryFacet is AccessControl, Facet, IOrganizationFactory {
+
+contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFactory {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
      
     function OrganizationFactory_init(address diamondFactory, address facetRegistry) external onlyInitializing {
         // _addInterface(type(IDiamondLoupe).interfaceId);
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(ADMIN_ROLE, msg.sender);
+        _setUserRole(msg.sender, DEFAULT_ADMIN_ROLE, true);
         OrganizationFactoryStorage.Layout storage ds = OrganizationFactoryStorage.layout();
         ds.diamondFactory = diamondFactory;
         ds.facetRegistry = facetRegistry;
@@ -52,7 +53,7 @@ contract OrganizationFactoryFacet is AccessControl, Facet, IOrganizationFactory 
         address diamondLoupeFacet = IFacetRegistry(facetRegistry).getFacetBySelector(IDiamondLoupe.facets.selector);
 
         // Change for the IOrganization init selector when create the interface
-        address organizationFacet = IFacetRegistry(facetRegistry).getFacetBySelector(OrganizationFacet.Organization_init.selector);
+        address organizationFacet = IFacetRegistry(facetRegistry).getFacetBySelector(OrganizationFacet.getOrganizationName.selector);
 
         require(diamondCutFacet != address(0), "DiamondCutFacet not found");
         require(diamondLoupeFacet != address(0), "DiamondLoupeFacet not found");

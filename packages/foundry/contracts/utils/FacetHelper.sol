@@ -14,14 +14,14 @@ abstract contract FacetHelper is IDiamond {
     function supportedInterfaces() public pure virtual returns (bytes4[] memory);
 
     /// @dev On replace, the other facet with the same selectors is replaced.
-    function makeFacetCut(FacetCutAction action) public view returns (FacetCut memory) {
-        return FacetCut({ action: action, facet: facet(), selectors: selectors() });
+    function makeFacetCut(address _facet,FacetCutAction action) public view returns (FacetCut memory) {
+        return FacetCut({ action: action, facet: _facet, selectors: selectors() });
     }
 
     /// @dev Initializers accepting arguments can override this function
     //       and decode the arguments here.
-    function makeInitData(bytes memory) public view virtual returns (MultiInit memory) {
-        return MultiInit({ init: facet(), initData: abi.encodeWithSelector(initializer()) });
+    function makeInitData(address _facet, bytes memory) public view virtual returns (MultiInit memory) {
+        return MultiInit({ init: _facet, initData: abi.encodeWithSelector(initializer()) });
     }
 
     function creationCode() public pure virtual returns (bytes memory);
