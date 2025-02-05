@@ -10,7 +10,7 @@ import {IDiamondCut} from "../cut/IDiamondCut.sol";
 import {IDiamondLoupe} from "../loupe/IDiamondLoupe.sol";
 import {IOrganization} from "./IOrganization.sol";
 import {IDiamond} from "../../IDiamond.sol";
-import {IFacetRegistry} from "../../registry/IFacetRegistry.sol";
+import {IFacetRegistry} from "../../facet_registry/IFacetRegistry.sol";
 import {IDiamondFactory} from "../../factory/IDiamondFactory.sol";
 import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 
