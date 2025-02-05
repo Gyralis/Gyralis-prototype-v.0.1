@@ -8,7 +8,7 @@ const Page: NextPage = async ({ params }: { params: { id: string } }) => {
 
     return (
         <div>
-            <h1>Page ID: {id}</h1>
+            <h1>Organization page: {id}</h1>
             <p>This is a dynamic page with the ID: {id}</p>
         </div>
     );

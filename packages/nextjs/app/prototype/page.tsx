@@ -1,6 +1,7 @@
 
 import type { NextPage } from "next";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
 
 export const metadata = getMetadata({
@@ -65,6 +66,7 @@ const  Example = () => {
                 >
                   
                   Active Loops
+                  <ArrowUpRightIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
                 </a>
               </div>
            
