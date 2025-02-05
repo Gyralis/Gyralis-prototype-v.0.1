@@ -3,8 +3,8 @@ pragma solidity >=0.8.20;
 
 import { BaseTest } from "../Base.t.sol";
 import { MockFacetHelper } from "test/mocks/MockFacet.t.sol";
-import { FacetRegistry } from "src/facet_registry/FacetRegistry.sol";
-import { IFacetRegistryBase } from "src/facet_registry/IFacetRegistryBase.sol";
+import { FacetRegistry } from "src/registry/FacetRegistry.sol";
+import { IFacetRegistryBase } from "src/registry/IFacetRegistryBase.sol";
 
 abstract contract FacetRegistryTest is IFacetRegistryBase, BaseTest {
     FacetRegistry public facetRegistry;
