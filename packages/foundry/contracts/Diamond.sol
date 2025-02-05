@@ -3,7 +3,6 @@ pragma solidity >=0.8.20;
 
 import { Proxy } from "@openzeppelin/contracts/proxy/Proxy.sol";
 import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-
 import { DiamondCutBase } from "./facets/cut/DiamondCutBase.sol";
 import { DiamondLoupeBase } from "./facets/loupe/DiamondLoupeBase.sol";
 import { IDiamond } from "./IDiamond.sol";

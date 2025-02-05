@@ -38,7 +38,7 @@ contract MockFacetHelper is FacetHelper {
         interfaces[0] = type(IMockFacet).interfaceId;
     }
 
-    function creationCode() public pure virtual override returns (bytes memory) {
+    function creationCode() public pure override returns (bytes memory) {
         return type(MockFacet).creationCode;
     }
 }
