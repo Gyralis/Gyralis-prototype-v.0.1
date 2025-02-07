@@ -13,6 +13,13 @@ import { ILoop } from "./ILoop.sol";
 
 contract LoopFactoryFacet is Facet, ILoopFactory {
 
+    function LoopFactory_init(address diamondFactory, address facetRegistry) external onlyInitializing {
+        _setUserRole(msg.sender, DEFAULT_ADMIN_ROLE, true);
+        LoopFactoryStorage.Layout storage ds = LoopFactoryStorage.layout();
+        ds.diamondFactory = diamondFactory;
+        ds.facetRegistry = facetRegistry;
+    }
+
     function createLoop(
         address organization,
         address token,
@@ -22,6 +29,8 @@ contract LoopFactoryFacet is Facet, ILoopFactory {
         // Ensure caller is a registered Organization
         OrganizationFactoryStorage.Layout storage orgDs = OrganizationFactoryStorage.layout();
         require(orgDs.organizationById[organization] != address(0), "LoopFactory: Caller is not a registered Organization");
+
+        
 
         // Load Loop Factory Storage
         LoopFactoryStorage.Layout storage ds = LoopFactoryStorage.layout();
