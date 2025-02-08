@@ -64,7 +64,7 @@ contract LoopFacet is AccessControlBase {
     }
 
     /**
-    * @notice Set percent per period (Only `LOOP_ADMIN_ROLE` can call this)
+    * @notice Set percent per period (Only `DEFAULT_ADMIN_ROLE` can call this)
     * @param _percentPerPeriod Percent of total balance distributed each period
     */
     function setPercentPerPeriod(uint256 _percentPerPeriod) external onlyAuthorized {
