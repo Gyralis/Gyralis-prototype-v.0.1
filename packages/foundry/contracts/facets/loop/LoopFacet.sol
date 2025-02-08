@@ -2,40 +2,28 @@
 pragma solidity ^0.8.20;
 
 import "./LoopStorage.sol";
+import { ILoop } from "./ILoop.sol";
 import { AccessControlBase } from "../access-control/AccessControlBase.sol";
-import { IAccessControl } from "../access-control/IAccessControl.sol";
+import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 
-contract LoopFacet is AccessControlBase {
-    error InvalidPeriodLength();
-    error InvalidPeriodPercentage();
-    error AlreadyRegistered();
-    error CannotClaim();
-    error FaucetBalanceIsZero();
-    error NotAuthorized();
-
+contract LoopFacet is ILoop, AccessControlBase {
     uint256 public constant ONE_HUNDRED_PERCENT = 1e18;
     bytes32 public constant LOOP_ADMIN_ROLE = keccak256("LOOP_ADMIN_ROLE");
 
-    event Initialize(address token, uint256 periodLength, uint256 percentPerPeriod);
-    event SetPercentPerPeriod(uint256 percentPerPeriod);
-    event Claim(address claimer, uint256 periodNumber, uint256 payout);
-    event Register(address sender, uint256 periodNumber);
-    event Withdraw(address admin, address to, uint256 amount);
-
     /**
-    * @notice Initializes the LoopFacet with permissions.
-    * @param _token Token distributed by the loop
-    * @param _loopAdmin The organization that manages this loop
-    * @param _periodLength Length of each distribution period
-    * @param _percentPerPeriod Percent of total balance distributed each period
-    */
+     * @notice Initializes the LoopFacet with permissions.
+     * @param _token Token distributed by the loop
+     * @param _loopAdmin The organization that manages this loop
+     * @param _periodLength Length of each distribution period
+     * @param _percentPerPeriod Percent of total balance distributed each period
+     */
     function Loop_init(
         ERC20 _token,
         address _loopAdmin,
         uint256 _periodLength,
         uint256 _percentPerPeriod
-    ) external {
+    ) external override {
         if (_periodLength == 0) revert InvalidPeriodLength();
         if (_percentPerPeriod > ONE_HUNDRED_PERCENT) revert InvalidPeriodPercentage();
         if (_loopAdmin == address(0)) revert NotAuthorized();
@@ -54,10 +42,10 @@ contract LoopFacet is AccessControlBase {
     }
 
     /**
-    * @notice Set percent per period (Only `DEFAULT_ADMIN_ROLE` can call this)
-    * @param _percentPerPeriod Percent of total balance distributed each period
-    */
-    function setPercentPerPeriod(uint256 _percentPerPeriod) external onlyAuthorized {
+     * @notice Set percent per period (Only `LOOP_ADMIN_ROLE` can call this)
+     * @param _percentPerPeriod Percent of total balance distributed each period
+     */
+    function setPercentPerPeriod(uint256 _percentPerPeriod) external override onlyAuthorized {
         if (_percentPerPeriod > ONE_HUNDRED_PERCENT) revert InvalidPeriodPercentage();
 
         LoopStorage.layout().percentPerPeriod = _percentPerPeriod;
@@ -65,9 +53,9 @@ contract LoopFacet is AccessControlBase {
     }
 
     /**
-    * @notice Register for the next period and claim if registered for the current period.
-    */
-    function claimAndRegister() external {
+     * @notice Register for the next period and claim if registered for the current period.
+     */
+    function claimAndRegister() external override {
         LoopStorage.Layout storage ds = LoopStorage.layout();
         LoopStorage.Claimer storage claimer = ds.claimers[msg.sender];
 
@@ -86,9 +74,9 @@ contract LoopFacet is AccessControlBase {
     }
 
     /**
-    * @notice Claim from the faucet without registering for the next period.
-    */
-    function claim() external {
+     * @notice Claim from the faucet without registering for the next period.
+     */
+    function claim() external override {
         LoopStorage.Layout storage ds = LoopStorage.layout();
         LoopStorage.Claimer storage claimer = ds.claimers[msg.sender];
         uint256 currentPeriod = getCurrentPeriod();
@@ -99,10 +87,10 @@ contract LoopFacet is AccessControlBase {
     }
 
     /**
-    * @notice Withdraw the faucet's entire balance of the distributed token.
-    * @param _to Address to withdraw to
-    */
-    function withdrawDeposit(address _to) external onlyAuthorized {
+     * @notice Withdraw the faucet's entire balance of the distributed token.
+     * @param _to Address to withdraw to
+     */
+    function withdrawDeposit(address _to) external override onlyAuthorized {
         LoopStorage.Layout storage ds = LoopStorage.layout();
         uint256 balance = ds.token.balanceOf(address(this));
         ds.token.transfer(_to, balance);
@@ -110,17 +98,17 @@ contract LoopFacet is AccessControlBase {
     }
 
     /**
-    * @notice Get the current period number.
-    */
-    function getCurrentPeriod() public view returns (uint256) {
+     * @notice Get the current period number.
+     */
+    function getCurrentPeriod() public view override returns (uint256) {
         return (block.timestamp - LoopStorage.layout().firstPeriodStart) / LoopStorage.layout().periodLength;
     }
 
     /**
-    * @notice Get a specific period's individual payouts. For future and uninitialized periods, it will return 0.
-    * @param _periodNumber Period number
-    */
-    function getPeriodIndividualPayout(uint256 _periodNumber) public view returns (uint256) {
+     * @notice Get a specific period's individual payouts. For future and uninitialized periods, it will return 0.
+     * @param _periodNumber Period number
+     */
+    function getPeriodIndividualPayout(uint256 _periodNumber) public view override returns (uint256) {
         LoopStorage.Layout storage ds = LoopStorage.layout();
         LoopStorage.Period storage period = ds.periods[_periodNumber];
         return _getPeriodIndividualPayout(period);
