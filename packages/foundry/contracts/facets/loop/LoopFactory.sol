@@ -34,24 +34,18 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
        require(
         orgDs.organizationByAddress[organization] != 0,
         "LoopFactory: Caller is not a registered Organization"
-    );
-
-        
+    );   
 
         // Load Loop Factory Storage
         LoopFactoryStorage.Layout storage ds = LoopFactoryStorage.layout();
 
-        // Retrieve DiamondFactory and FacetRegistry
-        address diamondFactory = ds.diamondFactory;
-        address facetRegistry = ds.facetRegistry;
-
-        require(diamondFactory != address(0), "LoopFactory: Invalid DiamondFactory address");
-        require(facetRegistry != address(0), "LoopFactory: Invalid FacetRegistry address");
+        require(ds.diamondFactory != address(0), "LoopFactory: Invalid DiamondFactory address");
+        require(ds.facetRegistry != address(0), "LoopFactory: Invalid FacetRegistry address");
 
         // Get Required Facet Addresses
-        address diamondCutFacet = IFacetRegistry(facetRegistry).getFacetBySelector(IDiamondCut.diamondCut.selector);
-        address diamondLoupeFacet = IFacetRegistry(facetRegistry).getFacetBySelector(IDiamondLoupe.facets.selector);
-        address loopFacet = IFacetRegistry(facetRegistry).getFacetBySelector(ILoop.Loop_init.selector);
+        address diamondCutFacet = IFacetRegistry(ds.facetRegistry).getFacetBySelector(IDiamondCut.diamondCut.selector);
+        address diamondLoupeFacet = IFacetRegistry(ds.facetRegistry).getFacetBySelector(IDiamondLoupe.facets.selector);
+        address loopFacet = IFacetRegistry(ds.facetRegistry).getFacetBySelector(ILoop.Loop_init.selector);
 
         require(diamondCutFacet != address(0), "LoopFactory: DiamondCutFacet not found");
         require(diamondLoupeFacet != address(0), "LoopFactory: DiamondLoupeFacet not found");
@@ -59,7 +53,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
 
         // Initialize the Loop Diamond
         IDiamond.InitParams memory initParams = IDiamond.InitParams({
-            baseFacets: _prepareFacetCuts(facetRegistry, diamondCutFacet, diamondLoupeFacet, loopFacet),
+            baseFacets: _prepareFacetCuts(ds.facetRegistry, diamondCutFacet, diamondLoupeFacet, loopFacet),
             init: MULTI_INIT_ADDRESS,
             initData: abi.encode(
                 _prepareDiamondInitData(diamondCutFacet, diamondLoupeFacet, loopFacet, organization, token, periodLength, percentPerPeriod)
@@ -67,7 +61,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         });
 
         // Deploy Loop Diamond
-        address newLoop = IDiamondFactory(diamondFactory).createDiamond(initParams);
+        address newLoop = IDiamondFactory(ds.diamondFactory).createDiamond(initParams);
 
         // Store Loop Data
         uint256 newLoopId = ds.loopCounter++;
