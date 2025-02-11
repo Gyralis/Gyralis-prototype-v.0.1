@@ -5,6 +5,7 @@ library OrganizationFactoryStorage {
 
     struct Layout {
         mapping(uint256 => address) organizationById;
+        mapping(address => uint256) organizationByAddress;
         uint256 organizationCounter;
         address diamondFactory;
         address facetRegistry;

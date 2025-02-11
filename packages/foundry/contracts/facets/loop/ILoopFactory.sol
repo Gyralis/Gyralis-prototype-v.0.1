@@ -15,10 +15,7 @@ interface ILoopFactory {
         address organization,
         address token,
         uint256 periodLength,
-        uint256 percentPerPeriod,
-        bytes32 brightIdContext,
-        address brightIdVerifier,
-        uint256 minimumEthBalance
+        uint256 percentPerPeriod
     ) external;
 
     function getLoopsByOrganization(address organization) external view returns (address[] memory);

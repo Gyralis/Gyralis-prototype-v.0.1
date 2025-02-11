@@ -72,6 +72,7 @@ contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFact
         // Store the new organization's Diamond address
         uint256 newId = ds.organizationCounter++;
         ds.organizationById[newId] = newDiamond;
+        ds.organizationByAddress[newDiamond] = newId;
 
         
         emit OrganizationCreated(newId, newDiamond, name, admin, description);

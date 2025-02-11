@@ -1,17 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
+import {AccessControlBase} from "../access-control/AccessControlBase.sol";
 import { Facet } from "src/facets/Facet.sol";
 import { ILoopFactory } from "./ILoopFactory.sol";
+import {IDiamondCut} from "../cut/IDiamondCut.sol";
+import {IDiamondLoupe} from "../loupe/IDiamondLoupe.sol";
 import { LoopFactoryStorage } from "./LoopFactoryStorage.sol";
 import { IDiamond } from "../../IDiamond.sol";
 import { IFacetRegistry } from "../../registry/IFacetRegistry.sol";
 import { IDiamondFactory } from "../../factory/IDiamondFactory.sol";
-import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
+import { MULTI_INIT_ADDRESS, DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 import { OrganizationFactoryStorage } from "../Organization/OrganizationFactoryStorage.sol";
 import { ILoop } from "./ILoop.sol";
 
-contract LoopFactoryFacet is Facet, ILoopFactory {
+contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
 
     function LoopFactory_init(address diamondFactory, address facetRegistry) external onlyInitializing {
         _setUserRole(msg.sender, DEFAULT_ADMIN_ROLE, true);
@@ -28,7 +31,10 @@ contract LoopFactoryFacet is Facet, ILoopFactory {
     ) external {
         // Ensure caller is a registered Organization
         OrganizationFactoryStorage.Layout storage orgDs = OrganizationFactoryStorage.layout();
-        require(orgDs.organizationById[organization] != address(0), "LoopFactory: Caller is not a registered Organization");
+       require(
+        orgDs.organizationByAddress[organization] != 0,
+        "LoopFactory: Caller is not a registered Organization"
+    );
 
         
 
@@ -43,8 +49,8 @@ contract LoopFactoryFacet is Facet, ILoopFactory {
         require(facetRegistry != address(0), "LoopFactory: Invalid FacetRegistry address");
 
         // Get Required Facet Addresses
-        address diamondCutFacet = IFacetRegistry(facetRegistry).getFacetBySelector(IDiamond.diamondCut.selector);
-        address diamondLoupeFacet = IFacetRegistry(facetRegistry).getFacetBySelector(IDiamond.facets.selector);
+        address diamondCutFacet = IFacetRegistry(facetRegistry).getFacetBySelector(IDiamondCut.diamondCut.selector);
+        address diamondLoupeFacet = IFacetRegistry(facetRegistry).getFacetBySelector(IDiamondLoupe.facets.selector);
         address loopFacet = IFacetRegistry(facetRegistry).getFacetBySelector(ILoop.Loop_init.selector);
 
         require(diamondCutFacet != address(0), "LoopFactory: DiamondCutFacet not found");
@@ -77,7 +83,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory {
         address diamondLoupeFacet,
         address loopFacet
     ) internal view returns (IDiamond.FacetCut[] memory facetCuts) {
-        facetCuts = new IDiamond.FacetCut ;
+        facetCuts = new IDiamond.FacetCut[](3);
 
         facetCuts[0] = IDiamond.FacetCut({
             facet: diamondCutFacet,
@@ -123,7 +129,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory {
 
         // Initialize LoopFacet
         diamondInitData[2] = IDiamond.MultiInit({
-            init: organizationFacet,
+            init: loopFacet,
             initData: abi.encodeWithSelector(ILoop(loopFacet).Loop_init.selector, organization, token, periodLength, percentPerPeriod)
         });
     }
