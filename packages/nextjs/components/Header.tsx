@@ -25,7 +25,7 @@ export const menuLinks: HeaderMenuLink[] = [
   //   icon: <MagnifyingGlassIcon className="h-4 w-4" />,
   // },
   {
-    label: "Protoype",
+    label: "Explore",
     href: "/prototype",
     icon: <LifebuoyIcon className="h-4 w-4" />,
   },

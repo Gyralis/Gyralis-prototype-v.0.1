@@ -1,5 +1,9 @@
 
 import { NextPage } from 'next';
+import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/20/solid'
+import Debug from '~~/app/debug/page';
+import { DebugContracts } from '../_components/DebugContracts';
+
 
 const Page: NextPage<{ params: { id: string } }> = async ({ params }) => {
     
@@ -9,35 +13,17 @@ const Page: NextPage<{ params: { id: string } }> = async ({ params }) => {
         <div>
             {/* <h1>Organization page: {id}</h1>
             <p>This is a dynamic page with the ID: {id}</p> */}
-            <OrganizationHeader />
+            <OrganizationHeader title={id} />
+            <LoopComponent />
         </div>
     );
 };
 
 export default Page;
 
-import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/20/solid'
 
-const profile = {
-  name: '1hive DAO',
-  email: 'ricardo.cooper@example.com',
-  avatar:
-    'https://images.unsplash.com/photo-1463453091185-61582044d556?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=1024&h=1024&q=80',
-  backgroundImage:
-    'https://images.unsplash.com/photo-1444628838545-ac4016a5418a?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80',
-  fields: [
-    ['Phone', '(555) 123-4567'],
-    ['Email', 'ricardocooper@example.com'],
-    ['Title', 'Senior Front-End Developer'],
-    ['Team', 'Product Development'],
-    ['Location', 'San Francisco'],
-    ['Sits', 'Oasis, 4th floor'],
-    ['Salary', '$145,000'],
-    ['Birthday', 'June 8, 1990'],
-  ],
-}
 
-const OrganizationHeader =()=> {
+const OrganizationHeader =({ title }: { title: string })=> {
   return (
     <div>
       <div className='bg-yellow-100 h-28 lg:h-38'>
@@ -46,12 +32,12 @@ const OrganizationHeader =()=> {
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 ">
         <div className="-mt-12 sm:-mt-16 sm:flex sm:items-end sm:space-x-5 ">
           <div className="flex">
-            <img alt="" src={"/1hive-logo.svg"} className="size-24 transition-all ease-in-out duration-300 bg-white hover:scale-105 hover:rotate-12 rounded-full ring-4 ring-white sm:size-32" />
+            <img alt="" src={"/1hive-logo.svg"} className="size-24 transition-all ease-in-out duration-300 bg-white hover:scale-105 hover:rotate-12 rounded-full ring-4 ring-white sm:size-28" />
           </div>
             
           <div className="mt-6 sm:flex sm:min-w-0 sm:flex-1 sm:items-center sm:justify-end sm:pb-1 ">
             <div className="mt-6 min-w-0 flex-1 sm:hidden md:block ">
-              <h1 className="truncate text-2xl font-bold text-gray-900">{profile.name}</h1>
+              <h1 className="truncate text-2xl font-bold text-gray-900">{title}</h1>
              {/* <p>des</p> */}
             </div>
            
@@ -80,9 +66,46 @@ const OrganizationHeader =()=> {
         
         </div>
         <div className="mt-6 hidden min-w-0 flex-1 sm:block md:hidden">
-          <h1 className="truncate text-2xl font-bold text-gray-900">{profile.name}</h1>
+          <h1 className="truncate text-2xl font-bold text-gray-900">{title}</h1>
         </div>
       </div>
     </div>
+  )
+}
+
+
+const LoopComponent = () => {
+  return (
+    <main className="mt-5 pb-8">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
+            <h1 className="sr-only">Page title</h1>
+            {/* Main 3 column grid */}
+            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+              {/* Left column */}
+              <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+                <section aria-labelledby="section-1-title">
+                  <h2 id="section-1-title" className="sr-only">
+                    Section title
+                  </h2>
+                  <div className="overflow-hidden rounded-lg bg-slate-300 shadow">
+                    <div className="p-6">{/* Your content */}</div>
+                  </div>
+                </section>
+              </div>
+
+              {/* Right column */}
+              <div className="">
+                <section aria-labelledby="section-2-title">
+                
+                  <div className="rounded-lg bg-slate-200 shadow">
+                    <div className="p-6  flex items-center justify-center">{/* Your content */}
+                      {/* <DebugContracts /> */}
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </main>
   )
 }
