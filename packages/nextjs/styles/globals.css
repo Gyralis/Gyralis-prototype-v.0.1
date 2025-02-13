@@ -26,7 +26,6 @@ h1 {
 }
 
 h2 {
-  font-family: var(--font-chakra);
   font-size: 36px;
   font-weight: 600;
   line-height: 46px;
@@ -44,6 +43,7 @@ h4 {
   line-height: auto;
   text-align: left;
 
+
   /* @media only screen and (max-width: 680px) {
     font-size: 1.75rem;
   } */
@@ -53,7 +53,7 @@ h4 {
 h5,
 .subtitle {
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 22px;
   text-align: left;
 }
