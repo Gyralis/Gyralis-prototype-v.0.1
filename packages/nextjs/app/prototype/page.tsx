@@ -31,7 +31,7 @@ export default Prototype;
 const people = [
   {
     name: '1hive',
-    title: '1Hive is a DAO that issues and distributes a digital currency called Honey.',
+    description: '1Hive is a DAO that issues and distributes a digital currency called Honey.',
     role: 'Admin',
     imageUrl:
       'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',  },
@@ -50,10 +50,10 @@ const  Example = () => {
           <div className="flex flex-1 flex-col p-8">
             {/* <img alt="" src={"/1hive-logo.png"} className="mx-auto shrink-0 rounded-full border2" /> */}
             <Image alt="" src={"/1hive-logo.svg"} className="mx-auto shrink-0 rounded-full" width={100} height={100} />
-            <h3 className="mt-6 text-2xl font-bold text-gray-900">{person.name}</h3>
+            <h2 className="mt-6 font-bold text-gray-900 text-center">{person.name}</h2>
             <dl className="mt-1 flex grow flex-col justify-between">
-              <dt className="sr-only">Title</dt>
-              <dd className="text-sm text-gray-500">{person.title}</dd>
+              <dt className="sr-only">description</dt>
+              <dd className="text-sm text-gray-500">{person.description}</dd>
       
             </dl>
           </div>

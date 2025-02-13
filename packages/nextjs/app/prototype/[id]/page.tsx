@@ -1,6 +1,7 @@
 
 import { NextPage } from 'next';
-import { EnvelopeIcon, PhoneIcon } from '@heroicons/react/20/solid'
+import { EnvelopeIcon, PhoneIcon, ArrowTopRightOnSquareIcon } from '@heroicons/react/24/outline'
+import { ShieldCheckIcon, ShieldExclamationIcon } from '@heroicons/react/24/solid';
 import Debug from '~~/app/debug/page';
 import { DebugContracts } from '../_components/DebugContracts';
 
@@ -26,7 +27,7 @@ export default Page;
 const OrganizationHeader =({ title }: { title: string })=> {
   return (
     <div>
-      <div className='bg-yellow-100 h-28 lg:h-38'>
+      <div className='bg-yellow-100 h-28 lg:h-40'>
         {/* <img alt="" src={profile.backgroundImage} className="h-32 w-full object-cover lg:h-48" /> */}
       </div>
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 ">
@@ -103,12 +104,25 @@ const LoopComponent = () => {
                       <DebugContracts />
                       <div className='card-white w-full flex flex-col items-start gap-2'>
                         <div className='relative'>
+                          <ShieldCheckIcon className='absolute top-0 -left-8 h-6 w-6 text-green-500'/>
                       <h3 className="font-bold">Loop Shield: <span>Gitcoin Passport</span></h3>
                       <h5 className="font-bold">Score required: <span>15</span></h5>
                       <h5 className="font-bold">Your score: <span>20</span></h5>
                       </div>
-                      <div className='flex flex-col items-start '>
-                      <h3 className="font-bold">Participation Criteria: <span>1hive Member in GardensV2</span></h3>
+                      <div className='flex flex-col items-start relative'>
+                      <ShieldExclamationIcon className='absolute top-0 -left-8 h-6 w-6 text-red-500'/>
+
+                      <h3 className="font-bold">
+                        Participation Criteria:{" "}
+                        <a
+                          href="https://app.gardens.fund/gardens/100/0x71850b7e9ee3f13ab46d67167341e4bdc905eef9/0xe2396fe2169ca026962971d3b2e373ba925b6257"
+                          target="_blank"
+                          rel=""
+                          className='font-normal hover:underline transition-all ease-in-out duration-300'
+                        >
+                          1hive Member in GardensV2
+                        </a>
+                      </h3>
                       </div>
                       </div>
                     </div>
