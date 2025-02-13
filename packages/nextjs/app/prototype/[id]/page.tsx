@@ -76,6 +76,7 @@ const OrganizationHeader =({ title }: { title: string })=> {
 
 const LoopComponent = () => {
   return (
+    
     <main className="mt-5 pb-8">
           <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
             <h1 className="sr-only">Page title</h1>
@@ -87,8 +88,8 @@ const LoopComponent = () => {
                   <h2 id="section-1-title" className="sr-only">
                     Section title
                   </h2>
-                  <div className="overflow-hidden rounded-lg bg-slate-300 shadow">
-                    <div className="p-6">{/* Your content */}</div>
+                  <div className="overflow-hidden rounded-3xl bg-slate-50 shadow">
+                    <div className="p-6">{/* Your content */}<h3>Loop content</h3></div>
                   </div>
                 </section>
               </div>
@@ -97,9 +98,19 @@ const LoopComponent = () => {
               <div className="">
                 <section aria-labelledby="section-2-title">
                 
-                  <div className="rounded-lg bg-slate-200 shadow">
-                    <div className="p-6  flex items-center justify-center">{/* Your content */}
-                      {/* <DebugContracts /> */}
+                  <div className="rounded-3xl bg-slate-50 shadow">
+                    <div className="p-6 flex flex-col gap-10 items-start justify-center">{/* Your content */}
+                      <DebugContracts />
+                      <div className='card-white w-full flex flex-col items-start gap-2'>
+                        <div className='relative'>
+                      <h3 className="font-bold">Loop Shield: <span>Gitcoin Passport</span></h3>
+                      <h5 className="font-bold">Score required: <span>15</span></h5>
+                      <h5 className="font-bold">Your score: <span>20</span></h5>
+                      </div>
+                      <div className='flex flex-col items-start '>
+                      <h3 className="font-bold">Participation Criteria: <span>1hive Member in GardensV2</span></h3>
+                      </div>
+                      </div>
                     </div>
                   </div>
                 </section>
