@@ -35,7 +35,7 @@ contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFact
      * @param admin The address of the organization admin.
      * @param admin The description of the organization .
      */
-    function createOrganization(string memory name, address admin, string memory description) external {
+    function createOrganization(string memory name, address admin, string memory description) external returns (address) {
         require(bytes(name).length > 0, "Organization name is required");
         require(admin != address(0), "Admin address is invalid");
         require(bytes(description).length > 0, "Organization description is required");
@@ -76,6 +76,8 @@ contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFact
 
         
         emit OrganizationCreated(newId, newDiamond, name, admin, description);
+
+        return newDiamond;
 }
 
 

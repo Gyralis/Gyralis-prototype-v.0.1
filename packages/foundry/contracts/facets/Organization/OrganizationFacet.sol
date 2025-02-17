@@ -1,37 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import { Facet } from "src/facets/Facet.sol";
-import {IOrganization} from "./IOrganization.sol";
-
-library LibOrganization {
-    bytes32 constant STORAGE_POSITION = keccak256("diamond.organization.storage");
-
-    struct OrganizationStorage {
-        string name;
-        address admin;
-        string description;
-        mapping(address => bool) faucets;
-    }
-
-    function organizationStorage() internal pure returns (OrganizationStorage storage os) {
-        bytes32 position = STORAGE_POSITION;
-        assembly {
-            os.slot := position
-        }
-    }
-}
+import { IOrganization } from "./IOrganization.sol";
+import { ILoopFactory } from "../Loop/ILoopFactory.sol";
+import { OrganizationStorage } from "./OrganizationStorage.sol";
+import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract OrganizationFacet is IOrganization, AccessControl, Facet {
     bytes32 public constant ORGANIZATION_ADMIN_ROLE = keccak256("ORGANIZATION_ADMIN_ROLE");
 
     function Organization_init(string memory _name, address _admin, string memory _description) external onlyInitializing {
-         require(bytes(_name).length > 0, "Organization name is required");
+        require(bytes(_name).length > 0, "Organization name is required");
         require(_admin != address(0), "Admin address is invalid");
         require(bytes(_description).length > 0, "Organization description is required");
 
-        LibOrganization.OrganizationStorage storage os = LibOrganization.organizationStorage();
+        OrganizationStorage.Layout storage os = OrganizationStorage.layout();
         os.name = _name;
         os.admin = _admin;
         os.description = _description;
@@ -41,19 +25,23 @@ contract OrganizationFacet is IOrganization, AccessControl, Facet {
     }
 
     function getOrganizationName() external view returns (string memory) {
-        return LibOrganization.organizationStorage().name;
+        return OrganizationStorage.layout().name;
     }
 
     function getOrganizationAdmin() external view returns (address) {
-        return LibOrganization.organizationStorage().admin;
+        return OrganizationStorage.layout().admin;
     }
 
     function getOrganizationDescription() external view returns (string memory) {
-        return LibOrganization.organizationStorage().description;
+        return OrganizationStorage.layout().description;
     }
 
-    function createLoop(string memory faucetDescription) external onlyRole(ORGANIZATION_ADMIN_ROLE) {
-    
+    function createLoop(address loopFactory, address token, uint256 periodLength, uint256 percentPerPeriod) external onlyRole(ORGANIZATION_ADMIN_ROLE) {
+        require(loopFactory != address(0), "Invalid LoopFactory address");
+        require(token != address(0), "Invalid token address");
+
+        ILoopFactory(loopFactory).createLoop(address(this), token, periodLength, percentPerPeriod);
+        OrganizationStorage.layout().faucets[address(this)] = true;
     }
 
     function addAdmin(address newAdmin) external onlyRole(DEFAULT_ADMIN_ROLE) {

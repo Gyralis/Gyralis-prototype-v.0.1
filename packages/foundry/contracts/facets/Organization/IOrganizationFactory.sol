@@ -30,7 +30,7 @@ interface IOrganizationFactory {
      * @param admin The address of the organization admin.
      * @param description The description of the organization.
      */
-    function createOrganization(string memory name, address admin, string memory description) external;
+    function createOrganization(string memory name, address admin, string memory description) external returns (address);
 
     /**
      * @notice Fetches an organization address by ID.

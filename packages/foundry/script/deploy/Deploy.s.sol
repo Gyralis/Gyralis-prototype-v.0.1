@@ -52,12 +52,13 @@ contract Deploy is BaseScript {
 
         // Prepare the Init Data for the Facets
         console.log("Setting up initialization data for facets...");
-        IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](4);
+        IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](5);
 
         diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], ""); // DiamondCut
         diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
         diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
         diamondInitData[3] = facetHelpers[3].makeInitData(facetAddresses[3], abi.encode(diamondFactory, registry)); // OrganizationFactory
+        diamondInitData[4] = facetHelpers[5].makeInitData(facetAddresses[5], abi.encode(diamondFactory, registry)); // LoopFactory
 
         // Log Init Data
         console.log("DiamondCut init set with address:", facetAddresses[0]);
@@ -65,6 +66,7 @@ contract Deploy is BaseScript {
         console.log("AccessControl init set with address:", facetAddresses[2]);
         console.log("OrganizationFactory init set with address:", facetAddresses[3]);
         console.log("Organization init set with address:", facetAddresses[4]);
+        console.log("LoopFactory init set with address:", facetAddresses[5]);
 
         // Initialize the Diamond
         console.log("Initializing Diamond...");
@@ -99,14 +101,21 @@ contract Deploy is BaseScript {
             )
         );
 
-        if (success) {
+        printResult(success, result);
+
+        console.log("Deployment Complete.");
+    }
+
+    function printResult(bool success, bytes memory result) public pure{
+         if (success) {
             console.log("Organization Created Successfully!");
+            address newOrganization = abi.decode(result, (address));
+            console.log("Organization Created Successfully at address:", newOrganization);
         } else {
             console.log("Organization Creation Failed!");
             console.logBytes(result);
         }
 
-        console.log("Deployment Complete.");
     }
     
 }

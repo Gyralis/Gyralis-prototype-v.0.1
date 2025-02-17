@@ -9,6 +9,8 @@ import { DiamondLoupeFacetHelper } from "../contracts/utils/DiamondLoupeFacetHel
 import { AccessControlFacetHelper } from "../contracts/utils/AccessControlFacetHelper.sol";
 import { OrganizationFactoryHelper } from "../contracts/utils/OrganizationFactoryHelper.sol";
 import { OrganizationHelper } from "../contracts/utils/OrganizationHelper.sol";
+
+import {LoopFactoryHelper} from "../contracts/utils/LoopFactoryHelper.sol";
 // import { OwnableFacetHelper } from "test/facets/ownable/ownable.t.sol";
 // import { Ownable2StepFacetHelper } from "test/facets/ownable2step/ownable2step.t.sol";
 // import { NFTOwnedFacetHelper } from "test/facets/nft-owned/nft-owned.t.sol";
@@ -38,6 +40,7 @@ contract BaseScript is Script {
         facetHelpers.push(new AccessControlFacetHelper());
         facetHelpers.push(new OrganizationFactoryHelper());
         facetHelpers.push(new OrganizationHelper());
+        facetHelpers.push(new LoopFactoryHelper());
         
     }
 }

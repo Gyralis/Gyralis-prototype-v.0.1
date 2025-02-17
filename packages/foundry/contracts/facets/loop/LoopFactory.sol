@@ -32,7 +32,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         // Ensure caller is a registered Organization
         OrganizationFactoryStorage.Layout storage orgDs = OrganizationFactoryStorage.layout();
        require(
-        orgDs.organizationByAddress[organization] != 0,
+        orgDs.organizationByAddress[msg.sender] != 0,
         "LoopFactory: Caller is not a registered Organization"
     );   
 
