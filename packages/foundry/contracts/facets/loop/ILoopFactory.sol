@@ -16,7 +16,7 @@ interface ILoopFactory {
         address token,
         uint256 periodLength,
         uint256 percentPerPeriod
-    ) external;
+    ) external returns (address newLoop);
 
     function getLoopsByOrganization(address organization) external view returns (address[] memory);
 }

@@ -14,7 +14,7 @@ interface IOrganization {
     function getOrganizationDescription() external view returns (string memory);
 
     // Functions to manage loops
-    function createLoop(address loopFactory, address token, uint256 periodLength, uint256 percentPerPeriod) external;
+    function createNewLoop(address loopFactory, address token, uint256 periodLength, uint256 percentPerPeriod) external returns (address);
 
     // Admin management functions
     function addAdmin(address newAdmin) external;

@@ -28,7 +28,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         address token,
         uint256 periodLength,
         uint256 percentPerPeriod
-    ) external {
+    ) external returns (address newLoop) {
         // Ensure caller is a registered Organization
         OrganizationFactoryStorage.Layout storage orgDs = OrganizationFactoryStorage.layout();
        require(
@@ -61,7 +61,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         });
 
         // Deploy Loop Diamond
-        address newLoop = IDiamondFactory(ds.diamondFactory).createDiamond(initParams);
+        newLoop = IDiamondFactory(ds.diamondFactory).createDiamond(initParams);
 
         // Store Loop Data
         uint256 newLoopId = ds.loopCounter++;

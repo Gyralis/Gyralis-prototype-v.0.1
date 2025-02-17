@@ -36,12 +36,21 @@ contract OrganizationFacet is IOrganization, AccessControl, Facet {
         return OrganizationStorage.layout().description;
     }
 
-    function createLoop(address loopFactory, address token, uint256 periodLength, uint256 percentPerPeriod) external onlyRole(ORGANIZATION_ADMIN_ROLE) {
-        require(loopFactory != address(0), "Invalid LoopFactory address");
+    function createNewLoop(address systemDiamond, address token, uint256 periodLength, uint256 percentPerPeriod) external onlyRole(ORGANIZATION_ADMIN_ROLE) returns (address newLoop) {
+        require(systemDiamond != address(0), "Invalid SystemDiamond address");
         require(token != address(0), "Invalid token address");
 
-        ILoopFactory(loopFactory).createLoop(address(this), token, periodLength, percentPerPeriod);
-        OrganizationStorage.layout().faucets[address(this)] = true;
+        (bool loopSuccess, bytes memory loopResult) = systemDiamond.call(
+            abi.encodeWithSignature(
+                "createLoop(address,address,uint256,uint256)",
+                address(this),
+                token,
+                periodLength,
+                percentPerPeriod 
+            ));
+        
+        newLoop = abi.decode(loopResult, (address));
+        emit LoopCreated(newLoop, token, periodLength, percentPerPeriod);
     }
 
     function addAdmin(address newAdmin) external onlyRole(DEFAULT_ADMIN_ROLE) {

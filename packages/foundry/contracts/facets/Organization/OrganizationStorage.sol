@@ -7,7 +7,6 @@ library OrganizationStorage {
         string name;
         address admin;
         string description;
-        mapping(address => bool) faucets;
     }
 
     function layout() internal pure returns (Layout storage ds) {

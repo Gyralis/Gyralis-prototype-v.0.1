@@ -5,7 +5,9 @@ import { BaseScript, FacetHelper } from "../Base.s.sol";
 import { FacetRegistry } from "src/registry/FacetRegistry.sol";
 import { DiamondFactory } from "src/factory/DiamondFactory.sol";
 import { IDiamond } from "src/Diamond.sol";
+import {TestToken} from "src/utils/TestToken.sol";
 import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
+
 
 import "forge-std/console.sol";
 
@@ -101,7 +103,33 @@ contract Deploy is BaseScript {
             )
         );
 
+        address newOrganization = abi.decode(result, (address));
+
         printResult(success, result);
+
+        TestToken newToken = new TestToken("TestToken", "TTK");
+        console.log("Token Created Successfully at address:", address(newToken));
+
+        console.log("Creating Loop through Organization Diamond...");
+        (bool loopSuccess, bytes memory loopResult) = newOrganization.call(
+            abi.encodeWithSignature(
+                "createNewLoop(address,address,uint256,uint256)",
+                systemDiamond, // LoopFactory address
+                address(newToken), // Replace with actual token address
+                86400, // Example period length (1 day in seconds)
+                1000000000000000000 // Example percentage (100% in 1e18 precision)
+            )
+        );
+        
+
+        if (loopSuccess) {
+            console.log("Loop Created Successfully!");
+            address newLoop = abi.decode(loopResult, (address));
+            console.log("Loop Created at address:", newLoop);
+        } else {
+            console.log("Loop Creation Failed!");
+            console.logBytes(loopResult);
+        }
 
         console.log("Deployment Complete.");
     }
