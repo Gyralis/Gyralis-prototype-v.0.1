@@ -4,9 +4,11 @@ pragma solidity >=0.8.20;
 import { IAccessControl, IAccessControlBase } from "./IAccessControl.sol";
 import { AccessControlStorage } from "./AccessControlStorage.sol";
 import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
+import "forge-std/console2.sol";
 
 abstract contract AccessControlBase is IAccessControlBase {
     modifier onlyAuthorized() {
+        console2.log("HELLO ", msg.sender);
         if (!_canCall(msg.sender, msg.sig)) revert AccessControl_CallerIsNotAuthorized();
         _;
     }

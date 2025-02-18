@@ -13,6 +13,7 @@ import { IDiamondFactory } from "../../factory/IDiamondFactory.sol";
 import { MULTI_INIT_ADDRESS, DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 import { OrganizationFactoryStorage } from "../Organization/OrganizationFactoryStorage.sol";
 import { ILoop } from "./ILoop.sol";
+import "forge-std/console2.sol";
 
 contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
 
@@ -31,6 +32,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
     ) external returns (address newLoop) {
         // Ensure caller is a registered Organization
         OrganizationFactoryStorage.Layout storage orgDs = OrganizationFactoryStorage.layout();
+
        require(
         orgDs.organizationByAddress[msg.sender] != 0,
         "LoopFactory: Caller is not a registered Organization"
@@ -45,7 +47,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         // Get Required Facet Addresses
         address diamondCutFacet = IFacetRegistry(ds.facetRegistry).getFacetBySelector(IDiamondCut.diamondCut.selector);
         address diamondLoupeFacet = IFacetRegistry(ds.facetRegistry).getFacetBySelector(IDiamondLoupe.facets.selector);
-        address loopFacet = IFacetRegistry(ds.facetRegistry).getFacetBySelector(ILoop.Loop_init.selector);
+        address loopFacet = IFacetRegistry(ds.facetRegistry).getFacetBySelector(ILoop.claimAndRegister.selector);
 
         require(diamondCutFacet != address(0), "LoopFactory: DiamondCutFacet not found");
         require(diamondLoupeFacet != address(0), "LoopFactory: DiamondLoupeFacet not found");

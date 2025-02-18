@@ -12,7 +12,9 @@ import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 import "forge-std/console.sol";
 
 contract Deploy is BaseScript {
-    function run() public broadcaster {
+    function run() public {
+        address deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
+        vm.startBroadcast(deployer);
         console.log("Starting Deployment...");
 
         // Create the Facet Registry
@@ -94,20 +96,22 @@ contract Deploy is BaseScript {
          //Call createOrganization through the Diamond**
         console.log("Creating Organization...");
 
+
         (bool success, bytes memory result) = systemDiamond.call(
             abi.encodeWithSignature(
                 "createOrganization(string,address,string)",
-                "My Organization",
-                msg.sender,
-                "This is a test organization"
+                "1Hive",
+                deployer,
+                "1Hive DAO Organization"
             )
         );
 
         address newOrganization = abi.decode(result, (address));
 
+
         printResult(success, result);
 
-        TestToken newToken = new TestToken("TestToken", "TTK");
+        TestToken newToken = new TestToken("Honey", "HNY");
         console.log("Token Created Successfully at address:", address(newToken));
 
         console.log("Creating Loop through Organization Diamond...");
@@ -115,9 +119,9 @@ contract Deploy is BaseScript {
             abi.encodeWithSignature(
                 "createNewLoop(address,address,uint256,uint256)",
                 systemDiamond, // LoopFactory address
-                address(newToken), // Replace with actual token address
-                86400, // Example period length (1 day in seconds)
-                1000000000000000000 // Example percentage (100% in 1e18 precision)
+                address(newToken), // New token address
+                300, 
+                100000000000000000 // Example percentage (100% in 1e18 precision)
             )
         );
         
@@ -132,6 +136,7 @@ contract Deploy is BaseScript {
         }
 
         console.log("Deployment Complete.");
+        vm.stopBroadcast();
     }
 
     function printResult(bool success, bytes memory result) public pure{

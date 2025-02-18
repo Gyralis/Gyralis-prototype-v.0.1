@@ -5,10 +5,10 @@ import { Facet } from "src/facets/Facet.sol";
 import { IOrganization } from "./IOrganization.sol";
 import { ILoopFactory } from "../Loop/ILoopFactory.sol";
 import { OrganizationStorage } from "./OrganizationStorage.sol";
-import { AccessControl } from "@openzeppelin/contracts/access/AccessControl.sol";
+import {AccessControlBase} from "../access-control/AccessControlBase.sol";
+import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 
-contract OrganizationFacet is IOrganization, AccessControl, Facet {
-    bytes32 public constant ORGANIZATION_ADMIN_ROLE = keccak256("ORGANIZATION_ADMIN_ROLE");
+contract OrganizationFacet is IOrganization, AccessControlBase, Facet {
 
     function Organization_init(string memory _name, address _admin, string memory _description) external onlyInitializing {
         require(bytes(_name).length > 0, "Organization name is required");
@@ -20,8 +20,7 @@ contract OrganizationFacet is IOrganization, AccessControl, Facet {
         os.admin = _admin;
         os.description = _description;
 
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
-        _grantRole(ORGANIZATION_ADMIN_ROLE, _admin);
+        _setUserRole(_admin,DEFAULT_ADMIN_ROLE, true);
     }
 
     function getOrganizationName() external view returns (string memory) {
@@ -36,7 +35,7 @@ contract OrganizationFacet is IOrganization, AccessControl, Facet {
         return OrganizationStorage.layout().description;
     }
 
-    function createNewLoop(address systemDiamond, address token, uint256 periodLength, uint256 percentPerPeriod) external onlyRole(ORGANIZATION_ADMIN_ROLE) returns (address newLoop) {
+    function createNewLoop(address systemDiamond, address token, uint256 periodLength, uint256 percentPerPeriod) external onlyAuthorized returns (address newLoop) {        
         require(systemDiamond != address(0), "Invalid SystemDiamond address");
         require(token != address(0), "Invalid token address");
 
@@ -53,13 +52,13 @@ contract OrganizationFacet is IOrganization, AccessControl, Facet {
         emit LoopCreated(newLoop, token, periodLength, percentPerPeriod);
     }
 
-    function addAdmin(address newAdmin) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addAdmin(address newAdmin) external onlyAuthorized {
         require(newAdmin != address(0), "Invalid admin address");
-        grantRole(ORGANIZATION_ADMIN_ROLE, newAdmin);
+        _setUserRole(newAdmin, DEFAULT_ADMIN_ROLE, true);
     }
 
-    function removeAdmin(address adminToRemove) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function removeAdmin(address adminToRemove) external onlyAuthorized {
         require(adminToRemove != address(0), "Invalid admin address");
-        revokeRole(ORGANIZATION_ADMIN_ROLE, adminToRemove);
+        _setUserRole(adminToRemove, DEFAULT_ADMIN_ROLE, false);
     }
 }

@@ -27,7 +27,7 @@ deploy:
 
 deploy-diamond:
 	@if [ "$(RPC_URL)" = "localhost" ]; then \
-		forge script script/deploy/Deploy.s.sol --rpc-url localhost --password betinairis1529 --broadcast --legacy --ffi; \
+		forge script script/deploy/Deploy.s.sol --rpc-url localhost --password localhost --broadcast --legacy --ffi; \
 	else \
 		forge script script/deploy/Deploy.s.sol --rpc-url $(RPC_URL) --broadcast --legacy --ffi; \
 	fi	
