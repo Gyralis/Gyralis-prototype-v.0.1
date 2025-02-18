@@ -5,12 +5,16 @@ import { BaseScript, FacetHelper } from "../Base.s.sol";
 import { FacetRegistry } from "src/registry/FacetRegistry.sol";
 import { DiamondFactory } from "src/factory/DiamondFactory.sol";
 import { IDiamond } from "src/Diamond.sol";
+import {TestToken} from "src/utils/TestToken.sol";
 import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
+
 
 import "forge-std/console.sol";
 
 contract Deploy is BaseScript {
-    function run() public broadcaster {
+    function run() public {
+        address deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
+        vm.startBroadcast(deployer);
         console.log("Starting Deployment...");
 
         // Create the Facet Registry
@@ -52,12 +56,13 @@ contract Deploy is BaseScript {
 
         // Prepare the Init Data for the Facets
         console.log("Setting up initialization data for facets...");
-        IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](4);
+        IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](5);
 
         diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], ""); // DiamondCut
         diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
         diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
         diamondInitData[3] = facetHelpers[3].makeInitData(facetAddresses[3], abi.encode(diamondFactory, registry)); // OrganizationFactory
+        diamondInitData[4] = facetHelpers[5].makeInitData(facetAddresses[5], abi.encode(diamondFactory, registry)); // LoopFactory
 
         // Log Init Data
         console.log("DiamondCut init set with address:", facetAddresses[0]);
@@ -65,6 +70,7 @@ contract Deploy is BaseScript {
         console.log("AccessControl init set with address:", facetAddresses[2]);
         console.log("OrganizationFactory init set with address:", facetAddresses[3]);
         console.log("Organization init set with address:", facetAddresses[4]);
+        console.log("LoopFactory init set with address:", facetAddresses[5]);
 
         // Initialize the Diamond
         console.log("Initializing Diamond...");
@@ -90,23 +96,59 @@ contract Deploy is BaseScript {
          //Call createOrganization through the Diamond**
         console.log("Creating Organization...");
 
+
         (bool success, bytes memory result) = systemDiamond.call(
             abi.encodeWithSignature(
                 "createOrganization(string,address,string)",
-                "My Organization",
-                msg.sender,
-                "This is a test organization"
+                "1Hive",
+                deployer,
+                "1Hive DAO Organization"
             )
         );
 
-        if (success) {
+        address newOrganization = abi.decode(result, (address));
+
+
+        printResult(success, result);
+
+        TestToken newToken = new TestToken("Honey", "HNY");
+        console.log("Token Created Successfully at address:", address(newToken));
+
+        console.log("Creating Loop through Organization Diamond...");
+        (bool loopSuccess, bytes memory loopResult) = newOrganization.call(
+            abi.encodeWithSignature(
+                "createNewLoop(address,address,uint256,uint256)",
+                systemDiamond, // LoopFactory address
+                address(newToken), // New token address
+                300, 
+                100000000000000000 // Example percentage (100% in 1e18 precision)
+            )
+        );
+        
+
+        if (loopSuccess) {
+            console.log("Loop Created Successfully!");
+            address newLoop = abi.decode(loopResult, (address));
+            console.log("Loop Created at address:", newLoop);
+        } else {
+            console.log("Loop Creation Failed!");
+            console.logBytes(loopResult);
+        }
+
+        console.log("Deployment Complete.");
+        vm.stopBroadcast();
+    }
+
+    function printResult(bool success, bytes memory result) public pure{
+         if (success) {
             console.log("Organization Created Successfully!");
+            address newOrganization = abi.decode(result, (address));
+            console.log("Organization Created Successfully at address:", newOrganization);
         } else {
             console.log("Organization Creation Failed!");
             console.logBytes(result);
         }
 
-        console.log("Deployment Complete.");
     }
     
 }

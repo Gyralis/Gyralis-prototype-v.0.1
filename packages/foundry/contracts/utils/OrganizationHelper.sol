@@ -19,7 +19,7 @@ contract OrganizationHelper is FacetHelper {
     function selectors() public view override returns (bytes4[] memory selectors_) {
          selectors_ = new bytes4[](6);
          selectors_[0] = organization.addAdmin.selector;
-         selectors_[1] = organization.createLoop.selector;
+         selectors_[1] = organization.createNewLoop.selector;
          selectors_[2] = organization.getOrganizationAdmin.selector;
          selectors_[3] = organization.getOrganizationDescription.selector;
          selectors_[4] = organization.getOrganizationName.selector;

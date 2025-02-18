@@ -16,6 +16,8 @@ import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 
 import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 
+import "forge-std/console2.sol";
+
 
 contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFactory {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -35,7 +37,7 @@ contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFact
      * @param admin The address of the organization admin.
      * @param admin The description of the organization .
      */
-    function createOrganization(string memory name, address admin, string memory description) external {
+    function createOrganization(string memory name, address admin, string memory description) external returns (address) {
         require(bytes(name).length > 0, "Organization name is required");
         require(admin != address(0), "Admin address is invalid");
         require(bytes(description).length > 0, "Organization description is required");
@@ -70,11 +72,13 @@ contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFact
         address newDiamond = IDiamondFactory(diamondFactory).createDiamond(initParams);
 
         // Store the new organization's Diamond address
-        uint256 newId = ds.organizationCounter++;
+        uint256 newId = ++ds.organizationCounter;
         ds.organizationById[newId] = newDiamond;
-
+        ds.organizationByAddress[newDiamond] = newId;
         
         emit OrganizationCreated(newId, newDiamond, name, admin, description);
+
+        return newDiamond;
 }
 
 

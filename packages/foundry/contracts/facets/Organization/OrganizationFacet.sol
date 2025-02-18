@@ -1,68 +1,64 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import { Facet } from "src/facets/Facet.sol";
-import {IOrganization} from "./IOrganization.sol";
+import { IOrganization } from "./IOrganization.sol";
+import { ILoopFactory } from "../Loop/ILoopFactory.sol";
+import { OrganizationStorage } from "./OrganizationStorage.sol";
+import {AccessControlBase} from "../access-control/AccessControlBase.sol";
+import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 
-library LibOrganization {
-    bytes32 constant STORAGE_POSITION = keccak256("diamond.organization.storage");
-
-    struct OrganizationStorage {
-        string name;
-        address admin;
-        string description;
-        mapping(address => bool) faucets;
-    }
-
-    function organizationStorage() internal pure returns (OrganizationStorage storage os) {
-        bytes32 position = STORAGE_POSITION;
-        assembly {
-            os.slot := position
-        }
-    }
-}
-
-contract OrganizationFacet is IOrganization, AccessControl, Facet {
-    bytes32 public constant ORGANIZATION_ADMIN_ROLE = keccak256("ORGANIZATION_ADMIN_ROLE");
+contract OrganizationFacet is IOrganization, AccessControlBase, Facet {
 
     function Organization_init(string memory _name, address _admin, string memory _description) external onlyInitializing {
-         require(bytes(_name).length > 0, "Organization name is required");
+        require(bytes(_name).length > 0, "Organization name is required");
         require(_admin != address(0), "Admin address is invalid");
         require(bytes(_description).length > 0, "Organization description is required");
 
-        LibOrganization.OrganizationStorage storage os = LibOrganization.organizationStorage();
+        OrganizationStorage.Layout storage os = OrganizationStorage.layout();
         os.name = _name;
         os.admin = _admin;
         os.description = _description;
 
-        _grantRole(DEFAULT_ADMIN_ROLE, _admin);
-        _grantRole(ORGANIZATION_ADMIN_ROLE, _admin);
+        _setUserRole(_admin,DEFAULT_ADMIN_ROLE, true);
     }
 
     function getOrganizationName() external view returns (string memory) {
-        return LibOrganization.organizationStorage().name;
+        return OrganizationStorage.layout().name;
     }
 
     function getOrganizationAdmin() external view returns (address) {
-        return LibOrganization.organizationStorage().admin;
+        return OrganizationStorage.layout().admin;
     }
 
     function getOrganizationDescription() external view returns (string memory) {
-        return LibOrganization.organizationStorage().description;
+        return OrganizationStorage.layout().description;
     }
 
-    function createLoop(string memory faucetDescription) external onlyRole(ORGANIZATION_ADMIN_ROLE) {
-    
+    function createNewLoop(address systemDiamond, address token, uint256 periodLength, uint256 percentPerPeriod) external onlyAuthorized returns (address newLoop) {        
+        require(systemDiamond != address(0), "Invalid SystemDiamond address");
+        require(token != address(0), "Invalid token address");
+
+        (bool loopSuccess, bytes memory loopResult) = systemDiamond.call(
+            abi.encodeWithSignature(
+                "createLoop(address,address,uint256,uint256)",
+                address(this),
+                token,
+                periodLength,
+                percentPerPeriod 
+            ));
+        
+        newLoop = abi.decode(loopResult, (address));
+        emit LoopCreated(newLoop, token, periodLength, percentPerPeriod);
     }
 
-    function addAdmin(address newAdmin) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function addAdmin(address newAdmin) external onlyAuthorized {
         require(newAdmin != address(0), "Invalid admin address");
-        grantRole(ORGANIZATION_ADMIN_ROLE, newAdmin);
+        _setUserRole(newAdmin, DEFAULT_ADMIN_ROLE, true);
     }
 
-    function removeAdmin(address adminToRemove) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function removeAdmin(address adminToRemove) external onlyAuthorized {
         require(adminToRemove != address(0), "Invalid admin address");
-        revokeRole(ORGANIZATION_ADMIN_ROLE, adminToRemove);
+        _setUserRole(adminToRemove, DEFAULT_ADMIN_ROLE, false);
     }
 }

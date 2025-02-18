@@ -8,7 +8,4 @@ address constant MULTI_INIT_ADDRESS = 0xD1a302d1A302d1A302d1A302d1A302D1A302D1a3
 uint8 constant DEFAULT_ADMIN_ROLE = 0;
 
 /// @dev Role value for minting.
-uint8 constant MINTER_ROLE = 1;
-
-/// @dev Role value for burning.
-uint8 constant BURNER_ROLE = 2;
+uint8 constant LOOP_ADMIN_ROLE = 1;
