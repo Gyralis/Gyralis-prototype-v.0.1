@@ -11,17 +11,76 @@ body {
   min-height: 100vh;
 }
 
-h1,
-h2,
+
+h1 {
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+  font-size: 52px;
+  font-weight: 700;
+  line-height: 56px;
+  text-align: left;
+
+  /* @media only screen and (max-width: 680px) {
+    font-size: 2.5rem;
+  } */
+}
+
+h2 {
+  font-size: 36px;
+  font-weight: 600;
+  line-height: 46px;
+  text-align: left;
+
+  /* @media only screen and (max-width: 680px) {
+    font-size: 2rem;
+  } */
+}
+
 h3,
 h4 {
-  margin-bottom: 0.5rem;
-  line-height: 1;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: auto;
+  text-align: left;
+
+
+  /* @media only screen and (max-width: 680px) {
+    font-size: 1.75rem;
+  } */
+}
+
+/* subtitle 1 */
+h5,
+.subtitle {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 22px;
+  text-align: left;
 }
 
 p {
-  margin: 1rem 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+  text-align: left;
+
+  /* @media only screen and (max-width: 680px) {
+    font-size: 1rem;
+  } */
 }
+
+span {
+  font-size: 1rem;
+  font-weight: 400;
+}
+
+button {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 18.4px;
+  text-align: left;
+}
+
 
 .btn {
   @apply shadow-md;
@@ -29,4 +88,12 @@ p {
 
 .btn.btn-ghost {
   @apply shadow-none;
+}
+
+.border2 {
+ border: 2px solid black;
+}
+
+.card-white{
+  @apply bg-base-100 border-base-300 border shadow-md shadow-secondary rounded-2xl px-6 lg:px-10 space-y-2 py-4;
 }

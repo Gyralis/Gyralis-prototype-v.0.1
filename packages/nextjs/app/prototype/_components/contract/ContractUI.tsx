@@ -57,7 +57,7 @@ export const ContractUI = ({ contractName, className = "" }: ContractUIProps) =>
             </div>
             {targetNetwork && (
               <p className="my-0 text-sm">
-                <span className="font-bold">Network</span>:{" "}
+                <h5 className="font-bold">Network</h5>:{" "}
                 <span style={{ color: networkColor }}>{targetNetwork.name}</span>
               </p>
             )}
