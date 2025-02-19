@@ -19,13 +19,14 @@ import {LoopHelper} from "../contracts/utils/LoopHelper.sol";
 // import { ERC20BurnableFacetHelper } from "test/facets/erc20-burnable/erc20-burnable.t.sol";
 
 contract BaseScript is Script {
-    // address internal deployer;
     bytes32 internal salt;
     FacetHelper[] internal facetHelpers;
-
-    modifier broadcaster() {
-        address deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
-        vm.startBroadcast(deployer);
+    address deployer;
+    uint _testerPk = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 ;
+    modifier broadcaster() virtual{
+        //address deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
+        //vm.startBroadcast(deployer);
+        vm.startBroadcast(_testerPk);
         _;
         vm.stopBroadcast();
     }
@@ -36,7 +37,8 @@ contract BaseScript is Script {
         // deployer = vm.rememberKey(privateKey);
 
 
-        salt = vm.envBytes32("SALT");
+        //salt = vm.envBytes32("SALT");
+        salt = keccak256('MASSIVA_LA_SALT_BRO');
 
         facetHelpers.push(new DiamondCutFacetHelper());
         facetHelpers.push(new DiamondLoupeFacetHelper());
@@ -45,7 +47,7 @@ contract BaseScript is Script {
         facetHelpers.push(new OrganizationHelper());
         facetHelpers.push(new LoopFactoryHelper());
         facetHelpers.push(new LoopHelper());
-        
+
     }
     function resolveKeystoreAccount(string memory accountName) internal returns (address) {
     string[] memory inputs = new string[](4);

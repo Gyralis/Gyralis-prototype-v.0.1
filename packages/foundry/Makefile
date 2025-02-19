@@ -30,7 +30,7 @@ deploy-diamond:
 		forge script script/deploy/Deploy.s.sol --rpc-url localhost --password localhost --broadcast --legacy --ffi; \
 	else \
 		forge script script/deploy/Deploy.s.sol --rpc-url $(RPC_URL) --broadcast --legacy --ffi; \
-	fi	
+	fi
 
 # Build and deploy target
 build-and-deploy: build deploy generate-abis
@@ -95,4 +95,3 @@ verify:
 	forge script script/VerifyAll.s.sol --ffi --rpc-url $(RPC_URL)
 
 build-and-verify: build verify
-

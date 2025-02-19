@@ -12,14 +12,48 @@ import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 import "forge-std/console.sol";
 
 contract Deploy is BaseScript {
-    function run() public {
-        address deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
-        vm.startBroadcast(deployer);
+    event EventFacetAddresses(string _msg, FacetAddresses f);
+    event EventDeployedContracts(string _msg, DeployedContracts d);
+
+    struct FacetAddresses {
+        address diamond_cut ;
+        address diamond_loupe ;
+        address access_control ;
+        address organization_registry ;
+        address organization_helper ;
+        address loop_factory_helper;
+        address loop_helper;
+    }
+    struct DeployedContracts {
+        address facet_registry;
+        address factory_diamond;
+        address system_diamond;
+        address test_token_address;
+        address organization;
+        address loop;
+    }
+    FacetAddresses f;
+    DeployedContracts d;
+    modifier wrapDeployment(){
         console.log("Starting Deployment...");
+        _;
+        wrap_deployment();
+    }
+    modifier broadcaster() override {
+        vm.startBroadcast(_testerPk);
+        _;
+        vm.stopBroadcast();
+    }
+    function run() public wrapDeployment broadcaster {
+        //deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
+        deployer =  0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
 
         // Create the Facet Registry
         FacetRegistry registry = new FacetRegistry();
-        console.log("FacetRegistry deployed at:", address(registry));
+        d.facet_registry = address(registry);
+        {
+            console.log("FacetRegistry deployed at:", address(registry));
+        }
 
         // Deploy the Facets
         address[] memory facetAddresses = new address[](facetHelpers.length);
@@ -40,7 +74,10 @@ contract Deploy is BaseScript {
 
         // Deploy the Diamond Factory
         DiamondFactory diamondFactory = new DiamondFactory();
-        console.log("DiamondFactory deployed at:", address(diamondFactory));
+        {
+            d.factory_diamond = address(diamondFactory);
+            console.log("DiamondFactory deployed at:",d.factory_diamond);
+        }
 
         // Log All Facet Addresses
         console.log("Facet addresses:");
@@ -53,16 +90,25 @@ contract Deploy is BaseScript {
         for (uint256 i = 0; i < facetHelpers.length; i++) {
             baseFacets[i] = facetHelpers[i].makeFacetCut(facetAddresses[i],IDiamond.FacetCutAction.Add);
         }
+            console.log("Setting up initialization data for facets...");
+            IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](5);
+        {
+            // Prepare the Init Data for the Facets
+            diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], ""); // DiamondCut
+            diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
+            diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
+            diamondInitData[3] = facetHelpers[3].makeInitData(facetAddresses[3], abi.encode(diamondFactory, registry)); // OrganizationFactory
+            diamondInitData[4] = facetHelpers[5].makeInitData(facetAddresses[5], abi.encode(diamondFactory, registry)); // LoopFactory
 
-        // Prepare the Init Data for the Facets
-        console.log("Setting up initialization data for facets...");
-        IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](5);
+            f.diamond_cut = facetAddresses[0];
+            f.diamond_loupe = facetAddresses[1];
+            f.access_control = facetAddresses[2];
+            f.organization_registry = facetAddresses[3];
+            f.organization_helper = facetAddresses[4];
+            f.loop_factory_helper= facetAddresses[5];
+            f.loop_helper= facetAddresses[6];
+        }
 
-        diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], ""); // DiamondCut
-        diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
-        diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
-        diamondInitData[3] = facetHelpers[3].makeInitData(facetAddresses[3], abi.encode(diamondFactory, registry)); // OrganizationFactory
-        diamondInitData[4] = facetHelpers[5].makeInitData(facetAddresses[5], abi.encode(diamondFactory, registry)); // LoopFactory
 
         // Log Init Data
         console.log("DiamondCut init set with address:", facetAddresses[0]);
@@ -90,14 +136,14 @@ contract Deploy is BaseScript {
 
         // Deploy the Diamond
         console.log("Creating the Diamond...");
-        address systemDiamond = diamondFactory.createDiamond(initParams);
-        console.log("Diamond deployed at:", systemDiamond);
+        d.system_diamond = diamondFactory.createDiamond(initParams);
+        console.log("Diamond deployed at:", d.system_diamond);
 
          //Call createOrganization through the Diamond**
         console.log("Creating Organization...");
 
 
-        (bool success, bytes memory result) = systemDiamond.call(
+        (bool success, bytes memory result) = d.system_diamond.call(
             abi.encodeWithSignature(
                 "createOrganization(string,address,string)",
                 "1Hive",
@@ -106,39 +152,78 @@ contract Deploy is BaseScript {
             )
         );
 
-        address newOrganization = abi.decode(result, (address));
-
+        d.organization = abi.decode(result, (address));
 
         printResult(success, result);
 
         TestToken newToken = new TestToken("Honey", "HNY");
-        console.log("Token Created Successfully at address:", address(newToken));
+        d.test_token_address = address(newToken);
+        console.log("Token Created Successfully at address:", d.test_token_address);
 
         console.log("Creating Loop through Organization Diamond...");
-        (bool loopSuccess, bytes memory loopResult) = newOrganization.call(
+        (bool loopSuccess, bytes memory loopResult) = d.organization.call(
             abi.encodeWithSignature(
                 "createNewLoop(address,address,uint256,uint256)",
-                systemDiamond, // LoopFactory address
+                d.system_diamond, // LoopFactory address
                 address(newToken), // New token address
-                300, 
+                300,
                 100000000000000000 // Example percentage (100% in 1e18 precision)
             )
         );
-        
+
 
         if (loopSuccess) {
             console.log("Loop Created Successfully!");
-            address newLoop = abi.decode(loopResult, (address));
-            console.log("Loop Created at address:", newLoop);
+            d.loop = abi.decode(loopResult, (address));
+            console.log("Loop Created at address:", d.loop);
         } else {
             console.log("Loop Creation Failed!");
             console.logBytes(loopResult);
         }
-
-        console.log("Deployment Complete.");
-        vm.stopBroadcast();
     }
+    string root;
+    string path;
+    string chainIdStr ;
+    function wrap_deployment() internal {
+        console.log("Deployment Complete.");
+        emit EventFacetAddresses('wrapping_up::facets',f);
+        emit EventDeployedContracts('wrapping_up::contracts',d);
 
+        {
+            root = vm.projectRoot();
+            path = string.concat(root, "/deployments/");
+            chainIdStr = vm.toString(block.chainid);
+            path = string.concat(path, string.concat(chainIdStr, ".json"));
+
+            // Inicializa el JSON con una clave base
+            string memory jsonWrite = "jsonWrite";
+
+            // facets
+            vm.serializeString(jsonWrite, "DiamondCutFacet", vm.toString(f.diamond_cut));
+            vm.serializeString(jsonWrite, "DiamondLoupeFacet", vm.toString(f.diamond_loupe));
+            vm.serializeString(jsonWrite, "AccessControlFacet", vm.toString(f.access_control));
+            vm.serializeString(jsonWrite, "OrganizationFactoryFacet", vm.toString(f.organization_registry));
+            vm.serializeString(jsonWrite, "OrganizationFacet", vm.toString(f.organization_helper));
+            vm.serializeString(jsonWrite, "LoopFactoryFacet", vm.toString(f.loop_factory_helper));
+            vm.serializeString(jsonWrite, "LoopFacet", vm.toString(f.loop_helper));
+
+            // deployments
+            vm.serializeString(jsonWrite, "facet_registry", vm.toString(d.facet_registry));
+            vm.serializeString(jsonWrite, "factory_diamond", vm.toString(d.factory_diamond));
+            vm.serializeString(jsonWrite, "system_diamond", vm.toString(d.system_diamond));
+            vm.serializeString(jsonWrite, "test_token_address", vm.toString(d.test_token_address));
+            vm.serializeString(jsonWrite, "organization", vm.toString(d.organization));
+            vm.serializeString(jsonWrite, "loop", vm.toString(d.loop));
+
+            // Agregar el nombre de la red (corrigiendo el tipo de dato)
+            vm.serializeString(jsonWrite, "force_abis", "true");
+            jsonWrite = vm.serializeString(jsonWrite, "networkName", chainIdStr);
+
+            // Escribir el JSON en el archivo
+            vm.writeJson(jsonWrite, path);
+        }
+
+    }
     function printResult(bool success, bytes memory result) public pure{
          if (success) {
             console.log("Organization Created Successfully!");
@@ -148,7 +233,6 @@ contract Deploy is BaseScript {
             console.log("Organization Creation Failed!");
             console.logBytes(result);
         }
-
     }
-    
+
 }

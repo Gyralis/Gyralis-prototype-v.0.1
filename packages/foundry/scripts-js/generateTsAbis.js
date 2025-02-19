@@ -38,7 +38,6 @@ function getArtifactOfContract(contractName) {
   const artifactJson = JSON.parse(
     readFileSync(`${current_path_to_artifacts}/${contractName}.json`)
   );
-
   return artifactJson;
 }
 
@@ -75,6 +74,37 @@ function getInheritedFunctions(mainArtifact) {
   return inheritedFunctions;
 }
 
+/**
+ * Retorna la lista de facets para un contrato específico.
+ * @param {string} key - Nombre del contrato
+ * @returns {string[]} Lista de facets
+ */
+function getFacetsForContract(key) {
+  const facetsMap = {
+    system_diamond: [
+      "AccessControlFacet",
+      "DiamondCutFacet",
+      "DiamondLoupeFacet",
+      "LoopFactoryFacet",
+      "OrganizationFactoryFacet",
+    ],
+    organization: ["DiamondCutFacet", "DiamondLoupeFacet", "OrganizationFacet"],
+    loop: ["DiamondCutFacet", "DiamondLoupeFacet", "LoopFacet"],
+    test_token_address: ["TestToken"],
+  };
+
+  return facetsMap[key] || [];
+}
+
+/**
+ * Obtiene la ABI combinada de los facets especificados.
+ * @param {string[]} facets - Lista de facets
+ * @returns {object[]} ABI combinada de los facets
+ */
+function getFacetsAbi(facets) {
+  return facets.flatMap((facet) => getArtifactOfContract(facet).abi);
+}
+
 function main() {
   const current_path_to_broadcast = join(
     __dirname,
@@ -94,44 +124,53 @@ function main() {
     var deploymentObject = JSON.parse(
       readFileSync(`${current_path_to_deployments}/${chain}.json`)
     );
+    console.log("deploymentObject", deploymentObject);
     deployments[chain] = deploymentObject;
   });
 
   const allGeneratedContracts = {};
 
   chains.forEach((chain) => {
-    // console.log("Processing chain:", chain);
-    // console.log("Deployments for chain:", deployments[chain]);
-
     allGeneratedContracts[chain] = {};
-    const broadCastObject = JSON.parse(
-      readFileSync(`${current_path_to_broadcast}/${chain}/run-latest.json`)
-    );
-    const transactionsCreate = broadCastObject.transactions.filter(
-      (transaction) => transaction.transactionType == "CREATE"
-    );
 
-    transactionsCreate.forEach((transaction) => {
-      // console.log("Processing transaction:", transaction);
-      // console.log(
-      //   "Contract address in transaction:",
-      //   transaction.contractAddress
-      // );
-      // console.log(
-      //   "Deployment entry for contract address:",
-      //   deployments[chain]?.[transaction.contractAddress]
-      // );
+    // Leer archivo de broadcast
+    const broadcastFilePath = `${current_path_to_broadcast}/${chain}/run-latest.json`;
+    let broadCastObject;
 
-      const artifact = getArtifactOfContract(transaction.contractName);
-      allGeneratedContracts[chain][
-        deployments[chain]?.[transaction.contractAddress] ||
-          transaction.contractName
-      ] = {
-        address: transaction.contractAddress,
-        abi: artifact.abi,
-        inheritedFunctions: getInheritedFunctions(artifact),
-      };
-    });
+    try {
+      broadCastObject = JSON.parse(readFileSync(broadcastFilePath));
+    } catch (error) {
+      console.error(`Error reading file for chain ${chain}:`, error.message);
+      return; // Evita continuar con esta cadena si falla la lectura
+    }
+
+    // Procesamiento de contratos con ABI forzado
+    if (deployments[chain].force_abis) {
+      Object.entries(deployments[chain]).forEach(([key, contract]) => {
+        const facets = getFacetsForContract(key);
+        if (facets.length > 0) {
+          allGeneratedContracts[chain][key] = {
+            address: contract,
+            abi: getFacetsAbi(facets),
+          };
+        }
+      });
+    }
+
+    // Procesamiento de contratos creados en la transacción
+    broadCastObject.transactions
+      .filter((transaction) => transaction.transactionType === "CREATE")
+      .forEach((transaction) => {
+        const artifact = getArtifactOfContract(transaction.contractName);
+        allGeneratedContracts[chain][
+          deployments[chain]?.[transaction.contractAddress] ||
+            transaction.contractName
+        ] = {
+          address: transaction.contractAddress,
+          abi: artifact.abi,
+          inheritedFunctions: getInheritedFunctions(artifact),
+        };
+      });
   });
 
   const TARGET_DIR = "../nextjs/contracts/";
