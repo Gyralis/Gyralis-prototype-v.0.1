@@ -1,10 +1,14 @@
+"use client";
 
-import type { NextPage } from "next";
-import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
-import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import Image from "next/image";
+import type { NextPage } from "next";
+import { useReadContract } from "wagmi";
+import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
+import organizationFactory from "~~/contracts/OrganizationFactoryFacet.json";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth/useTargetNetwork";
+import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
 
-export const metadata = getMetadata({
+const metadata = getMetadata({
   title: "Debug Contracts",
   description: "Debug your deployed 🏗 Scaffold-ETH 2 contracts in an easy way",
 });
@@ -12,37 +16,57 @@ export const metadata = getMetadata({
 const Prototype: NextPage = () => {
   return (
     <div className="py-10">
-          <header>
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-              <h1 className="text-3xl font-bold tracking-tight text-gray-900">Explore organizations</h1>
-            </div>
-          </header>
-          <main>
-            <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8"><Example/></div>
-         
-          </main>
-      </div>
+      <header>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Explore organizations</h1>
+        </div>
+      </header>
+      <main>
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <Example />
+        </div>
+      </main>
+    </div>
   );
 };
 
 export default Prototype;
 
-
 const people = [
   {
-    name: '1hive',
-    description: '1Hive is a DAO that issues and distributes a digital currency called Honey.',
-    role: 'Admin',
+    name: "1hive",
+    description: "1Hive is a DAO that issues and distributes a digital currency called Honey.",
+    role: "Admin",
     imageUrl:
-      'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60',  },
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60",
+  },
+];
 
+const Example = () => {
+  const { targetNetwork } = useTargetNetwork();
 
-]
+  const {
+    data: result,
+    isFetching,
+    refetch,
+    error,
+  } = useReadContract({
+    address: "0x6781aef9f065c7C5659aC7EEa34C3003b5377087",
+    functionName: "getOrganizationById",
+    abi: organizationFactory.abi,
+    chainId: targetNetwork.id,
+    args: [1],
+    query: {
+      retry: false,
+    },
+  });
 
-const  Example = () => {
+  console.log("Diamond Call Result:", result);
+  console.log("Diamond Call isFetching:", isFetching);
+  console.log("Diamond Call error:", error);
   return (
     <ul role="list" className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-      {people.map((person) => (
+      {people.map(person => (
         <li
           key={person.name}
           className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow shadow-md cursor-pointer hover:shadow-lg transition-all ease-in-out duration-300"
@@ -54,7 +78,6 @@ const  Example = () => {
             <dl className="mt-1 flex grow flex-col justify-between">
               <dt className="sr-only">description</dt>
               <dd className="text-sm text-gray-500">{person.description}</dd>
-      
             </dl>
           </div>
           <div>
@@ -64,19 +87,14 @@ const  Example = () => {
                   href={`/prototype/${person.name}`}
                   className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900"
                 >
-                  
                   Active Loops
                   <ArrowUpRightIcon className="h-5 w-5 text-gray-900" aria-hidden="true" />
                 </a>
               </div>
-           
             </div>
           </div>
         </li>
       ))}
     </ul>
-  )
-}
-
-
-
+  );
+};
