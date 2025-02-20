@@ -167,14 +167,15 @@ contract Deploy is BaseScript {
                 d.system_diamond, // LoopFactory address
                 address(newToken), // New token address
                 300,
-                100000000000000000 // Example percentage (100% in 1e18 precision)
+                100000000000000000 // Example percentage (10% in 1e18 precision)
             )
         );
-
 
         if (loopSuccess) {
             console.log("Loop Created Successfully!");
             d.loop = abi.decode(loopResult, (address));
+            console.log("Minting tokens to Loop Diamond...");
+            newToken.transfer(d.loop, 1000 * 1e18);  // Transfer 1K tokens to the Loop Diamond
             console.log("Loop Created at address:", d.loop);
         } else {
             console.log("Loop Creation Failed!");
