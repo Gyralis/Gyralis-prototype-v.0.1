@@ -167,7 +167,7 @@ contract Deploy is BaseScript {
                 d.system_diamond, // LoopFactory address
                 address(newToken), // New token address
                 300,
-                100000000000000000 // Example percentage (100% in 1e18 precision)
+                100000000000000000 // Example percentage (10% in 1e18 precision)
             )
         );
 

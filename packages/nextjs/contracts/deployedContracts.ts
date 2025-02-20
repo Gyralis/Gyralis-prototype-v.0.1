@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     loop: {
-      address: "0xbe826025Bae16eF36193270dce38970C87eDF15d",
+      address: "0xED179b78D5781f93eb169730D8ad1bE7313123F4",
       abi: [
         {
           type: "function",
@@ -740,7 +740,7 @@ const deployedContracts = {
       ],
     },
     organization: {
-      address: "0xf3A0988DCDfddf56861be7413ce85dB4402bDC82",
+      address: "0x06B1D212B8da92b83AF328De5eef4E211Da02097",
       abi: [
         {
           type: "function",
@@ -1411,7 +1411,7 @@ const deployedContracts = {
       ],
     },
     system_diamond: {
-      address: "0xD6CcB4Cfb12893d8090ACf4205FEDda604B50691",
+      address: "0x94099942864EA81cCF197E9D71ac53310b1468D8",
       abi: [
         {
           type: "function",
@@ -2557,7 +2557,7 @@ const deployedContracts = {
       ],
     },
     test_token_address: {
-      address: "0x8198f5d8F8CfFE8f9C413d98a0A55aEB8ab9FbB7",
+      address: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
       abi: [
         {
           type: "constructor",
@@ -2886,7 +2886,7 @@ const deployedContracts = {
       ],
     },
     FacetRegistry: {
-      address: "0x5081a39b8a5f0e35a8d959395a630b68b74dd30f",
+      address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
       abi: [
         {
           type: "function",
@@ -3107,10 +3107,18 @@ const deployedContracts = {
           ],
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        addFacet: "contracts/registry/IFacetRegistry.sol",
+        computeFacetAddress: "contracts/registry/IFacetRegistry.sol",
+        deployFacet: "contracts/registry/IFacetRegistry.sol",
+        facetAddresses: "contracts/registry/IFacetRegistry.sol",
+        facetSelectors: "contracts/registry/IFacetRegistry.sol",
+        getFacetBySelector: "contracts/registry/IFacetRegistry.sol",
+        removeFacet: "contracts/registry/IFacetRegistry.sol",
+      },
     },
     DiamondFactory: {
-      address: "0xdc11f7e700a4c898ae5caddb1082cffa76512add",
+      address: "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6",
       abi: [
         {
           type: "function",
@@ -3190,10 +3198,12 @@ const deployedContracts = {
           inputs: [],
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        createDiamond: "contracts/factory/IDiamondFactory.sol",
+      },
     },
     TestToken: {
-      address: "0x8198f5d8f8cffe8f9c413d98a0a55aeb8ab9fbb7",
+      address: "0xb7f8bc63bbcad18155201308c8f3540b07f84f5e",
       abi: [
         {
           type: "constructor",
@@ -3520,7 +3530,19 @@ const deployedContracts = {
           ],
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        allowance: "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+        approve: "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+        balanceOf: "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+        decimals: "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+        name: "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+        symbol: "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+        totalSupply:
+          "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+        transfer: "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+        transferFrom:
+          "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol",
+      },
     },
   },
 } as const;
