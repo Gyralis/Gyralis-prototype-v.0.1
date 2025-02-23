@@ -10,8 +10,20 @@ import { IDiamondFactory } from "./IDiamondFactory.sol";
  * NOTE: This contract is structured so that it can be a facet itself.
  */
 contract DiamondFactory is IDiamondFactory, DiamondFactoryBase {
+
+    constructor() {
+        owner = msg.sender;
+        emit OwnerSet(owner);
+    }
+
     /// @inheritdoc IDiamondFactory
-    function createDiamond(Diamond.InitParams calldata initParams) external returns (address diamond) {
+    function createDiamond(Diamond.InitParams calldata initParams) external override onlyAuthorized returns (address diamond) {
         diamond = _createDiamond(initParams);
+    }
+
+     function setSystemDiamond(address _systemDiamond) external {
+        require(msg.sender == owner, "Not owner");
+        systemDiamond = _systemDiamond;
+        emit SystemDiamondSet(_systemDiamond);
     }
 }
