@@ -171,10 +171,11 @@ contract Deploy is BaseScript {
             )
         );
 
-
         if (loopSuccess) {
             console.log("Loop Created Successfully!");
             d.loop = abi.decode(loopResult, (address));
+            console.log("Minting tokens to Loop Diamond...");
+            newToken.transfer(d.loop, 1000 * 1e18);  // Transfer 1K tokens to the Loop Diamond
             console.log("Loop Created at address:", d.loop);
         } else {
             console.log("Loop Creation Failed!");

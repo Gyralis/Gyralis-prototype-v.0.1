@@ -17,13 +17,15 @@ contract LoopHelper is FacetHelper {
     }
 
     function selectors() public view override returns (bytes4[] memory selectors_) {
-         selectors_ = new bytes4[](6);
+         selectors_ = new bytes4[](8);
          selectors_[0] = loop.setPercentPerPeriod.selector;
          selectors_[1] = loop.withdrawDeposit.selector;
          selectors_[2] = loop.claim.selector;
          selectors_[3] = loop.claimAndRegister.selector;
          selectors_[4] = loop.getCurrentPeriod.selector;
          selectors_[5] = loop.getPeriodIndividualPayout.selector;
+         selectors_[6] = loop.getLoopDetails.selector;
+         selectors_[7] = loop.getCurrentPeriodData.selector;
     }
 
     function initializer() public view override returns (bytes4) {

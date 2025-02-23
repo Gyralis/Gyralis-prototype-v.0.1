@@ -114,6 +114,32 @@ contract LoopFacet is ILoop, AccessControlBase {
         return _getPeriodIndividualPayout(period);
     }
 
+    /**
+     * @notice Get the loop details.
+     * @return token The token address associated with the loop
+     * @return periodLength Length of each distribution period
+     * @return percentPerPeriod Percent of total balance distributed each period
+     * @return firstPeriodStart Timestamp when the first period started
+     */
+    function getLoopDetails() external view returns (address token, uint256 periodLength, uint256 percentPerPeriod, uint256 firstPeriodStart) {
+        LoopStorage.Layout storage ds = LoopStorage.layout();
+        return (address(ds.token), ds.periodLength, ds.percentPerPeriod, ds.firstPeriodStart);
+    }
+
+    /**
+     * @notice Get data of the current period.
+     * @return totalRegisteredUsers The total number of users registered for this period
+     * @return maxPayout The maximum payout for this period
+     */
+    function getCurrentPeriodData() external view returns (uint256 totalRegisteredUsers, uint256 maxPayout) {
+        LoopStorage.Layout storage ds = LoopStorage.layout();
+        uint256 currentPeriod = getCurrentPeriod();
+        LoopStorage.Period storage period = ds.periods[currentPeriod];
+
+        return (period.totalRegisteredUsers, period.maxPayout);
+    }
+
+
     function _canClaim(LoopStorage.Claimer storage claimer, uint256 currentPeriod) internal view returns (bool) {
         bool userRegisteredCurrentPeriod = claimer.registeredForPeriod == currentPeriod;
         bool userYetToClaimCurrentPeriod = claimer.latestClaimPeriod < currentPeriod;
