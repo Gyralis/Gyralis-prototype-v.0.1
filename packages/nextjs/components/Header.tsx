@@ -4,7 +4,7 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bars3Icon, BugAntIcon, MagnifyingGlassIcon, LifebuoyIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
+import { HomeModernIcon, BugAntIcon,Bars3Icon, MagnifyingGlassIcon, LifebuoyIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
@@ -18,12 +18,8 @@ export const menuLinks: HeaderMenuLink[] = [
   {
     label: "Home",
     href: "/",
+    icon: <HomeModernIcon className="h-4 w-4" />,
   },
-  // {
-  //   label: "Subgraph",
-  //   href: "/subgraph",
-  //   icon: <MagnifyingGlassIcon className="h-4 w-4" />,
-  // },
   {
     label: "Explore",
     href: "/prototype",
@@ -93,7 +89,7 @@ export const Header = () => {
           >
             <Bars3Icon className="h-1/2" />
           </label>
-          {isDrawerOpen && (
+          {/* {isDrawerOpen && (
             <ul
               tabIndex={0}
               className="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-box w-52"
@@ -103,7 +99,7 @@ export const Header = () => {
             >
               <HeaderMenuLinks />
             </ul>
-          )}
+          )} */}
         </div>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex relative w-10 h-10">
@@ -113,9 +109,9 @@ export const Header = () => {
             <span className="font-bold leading-tight">Gyralis</span>      
           </div>
         </Link>
-        <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
+        {/* <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
           <HeaderMenuLinks />
-        </ul>
+        </ul> */}
       </div>     
       <div className="navbar-end flex-grow mr-4">   
        {!isHomePage ? (
