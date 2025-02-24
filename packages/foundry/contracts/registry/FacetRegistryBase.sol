@@ -11,6 +11,13 @@ abstract contract FacetRegistryBase is IFacetRegistryBase {
     using EnumerableSet for *;
     using Address for address;
 
+    address public owner;
+
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Not authorized");
+        _;
+    }
+
     function _addFacet(address facet, bytes4[] memory selectors) internal {
         if (facet == address(0)) revert FacetRegistry_FacetAddressZero();
         if (selectors.length == 0) revert FacetRegistry_FacetMustHaveSelectors();

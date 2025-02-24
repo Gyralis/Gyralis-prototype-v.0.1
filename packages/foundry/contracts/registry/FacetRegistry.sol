@@ -7,13 +7,18 @@ import { FacetRegistryBase } from "./FacetRegistryBase.sol";
 contract FacetRegistry is IFacetRegistry, FacetRegistryBase {
     // todo: add owner protection
 
+    constructor() {
+        owner = msg.sender;
+        emit OwnerSet(owner);
+    }
+
     /// @inheritdoc IFacetRegistry
-    function addFacet(address facet, bytes4[] memory selectors) external {
+    function addFacet(address facet, bytes4[] memory selectors) external onlyOwner {
         _addFacet(facet, selectors);
     }
 
     /// @inheritdoc IFacetRegistry
-    function removeFacet(address facet) external {
+    function removeFacet(address facet) external onlyOwner {
         _removeFacet(facet);
     }
 
@@ -25,6 +30,7 @@ contract FacetRegistry is IFacetRegistry, FacetRegistryBase {
     )
         external
         override
+        onlyOwner
         returns (address facet)
     {
         facet = _deployFacet(salt, creationCode, selectors);

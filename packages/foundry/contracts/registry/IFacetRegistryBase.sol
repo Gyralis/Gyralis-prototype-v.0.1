@@ -29,4 +29,6 @@ interface IFacetRegistryBase {
      * @param facet Address of the unregistered facet.
      */
     event FacetUnregistered(address indexed facet);
+
+    event OwnerSet(address indexed owner);
 }
