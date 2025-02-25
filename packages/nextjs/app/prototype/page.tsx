@@ -11,9 +11,9 @@ export const metadata = getMetadata({
 
 const Prototype: NextPage = () => {
   return (
-    <div className="py-4 border2">
+    <div className="py-4">
           <header>
-            <div className="mx-auto max-w-7xl border2">
+            <div className="mx-auto max-w-7xl">
               <h1 className="text-3xl font-bold tracking-tight text-gray-900">Explore organizations</h1>
             </div>
           </header>
@@ -48,7 +48,7 @@ const  Example = () => {
           className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow shadow-md cursor-pointer hover:shadow-lg transition-all ease-in-out duration-300"
         >
           <div className="flex flex-1 flex-col p-8">
-            {/* <img alt="" src={"/1hive-logo.png"} className="mx-auto shrink-0 rounded-full border2" /> */}
+            {/* <img alt="" src={"/1hive-logo.png"} className="mx-auto shrink-0 rounded-full" /> */}
             <Image alt="" src={"/1hive-logo.svg"} className="mx-auto shrink-0 rounded-full" width={100} height={100} />
             <h2 className="mt-6 font-bold text-gray-900 text-center">{person.name}</h2>
             <dl className="mt-1 flex grow flex-col justify-between">
