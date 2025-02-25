@@ -86,8 +86,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div className="flex h-16 shrink-0 items-center">
                   <img
                     alt="Your Company"
-                    src="https://tailwindui.com/plus-assets/img/logos/mark.svg?color=indigo&shade=600"
-                    className="h-8 w-auto"
+                    src="/logo.jpg"
+                    className="h-14 w-auto"
                   />
                 </div>
                 <nav className="flex flex-1 flex-col">
@@ -120,7 +120,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                             ))} */}
                       </ul>
                     </li>
-                    <li>
+                    {/* <li>
                       <div className="text-xs/6 font-semibold text-gray-400">Your organization</div>
                       <ul role="list" className="-mx-2 mt-2 space-y-1">
                         {teams.map(team => (
@@ -149,18 +149,10 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                           </li>
                         ))}
                       </ul>
-                    </li>
-                    <li className="mt-auto">
-                      <a
-                        href="#"
-                        className="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-indigo-600"
-                      >
-                        <Cog6ToothIcon
-                          aria-hidden="true"
-                          className="size-6 shrink-0 text-gray-400 group-hover:text-indigo-600"
-                        />
-                        Settings
-                      </a>
+                    </li> */}
+                    <li className="mt-auto flex items-start">
+
+                      <SwitchTheme className="pointer-events-auto" />
                     </li>
                   </ul>
                 </nav>
@@ -176,14 +168,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex h-16 shrink-0 items-center">
               <img
                 alt="Your Company"
-                src="/logo.svg"
-                className="h-8 w-auto"
+                src="/logo.jpg"
+                className="h-14 w-auto"
               />
             </div>
-            <nav className="flex flex-1 flex-col border2">
+            <nav className="flex flex-1 flex-col ">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
                 <li>
-                  <ul role="list" className="-mx-2 space-y-3">
+                  <ul role="list" className="-mx-2 space-y-3 ">
                     <HeaderMenuLinks />
                     {/* {navigation.map((item) => (
                           <li key={item.name}>
@@ -209,8 +201,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                         ))} */}
                   </ul>
                 </li>
-                <li>
-                  <div className="text-xs/6 font-semibold text-gray-400">Following</div>
+                {/* <li>
+                  <div className="text-xs/6 font-semibold text-gray-400"></div>
                   <ul role="list" className="-mx-2 mt-2 space-y-1">
                     {teams.map(team => (
                       <li key={team.name}>
@@ -238,7 +230,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       </li>
                     ))}
                   </ul>
-                </li>
+                </li> */}
                 <li className="mt-auto flex items-start">
                   <SwitchTheme className="pointer-events-auto" />
                 </li>
@@ -248,7 +240,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
 
         <div className="lg:pl-72">
-          <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+          <div className="sticky top-0 z-40 shadow-sm">
+          <div className="flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-100 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
             <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
               <span className="sr-only">Open sidebar</span>
               <Bars3Icon aria-hidden="true" className="size-6" />
@@ -260,11 +253,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
               <form action="#" method="GET" className="grid flex-1 grid-cols-1">
                 <input
+                  disabled
                   name="search"
                   type="search"
                   placeholder="Search"
                   aria-label="Search"
-                  className="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 outline-none placeholder:text-gray-400 sm:text-sm/6"
+                  className="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 outline-none placeholder:text-gray-400 sm:text-sm/6 disabled:cursor-not-allowed"
                 />
                 <MagnifyingGlassIcon
                   aria-hidden="true"
@@ -286,9 +280,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
             </div>
           </div>
+            <div className="flex shrink-0 items-center border-t border-gray-100 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8 h-12">
+              hello
+            </div>
+          </div>
+     
 
-          <main className="py-10">
-            <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+          <main>
+            <div className="px-4 sm:px-6 lg:px-8 border2">{children}</div>
           </main>
         </div>
       </div>
