@@ -14,6 +14,7 @@ interface ILoopFactory {
     function createLoop(
         address organization,
         address token,
+        address admin,
         uint256 periodLength,
         uint256 percentPerPeriod
     ) external returns (address newLoop);
