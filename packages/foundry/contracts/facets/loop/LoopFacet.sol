@@ -6,8 +6,12 @@ import { ILoop } from "./ILoop.sol";
 import { AccessControlBase } from "../access-control/AccessControlBase.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
+import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
+import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 
 contract LoopFacet is ILoop, AccessControlBase {
+    using ECDSA for bytes32;
+
     uint256 public constant ONE_HUNDRED_PERCENT = 1e18;
     bytes32 public constant LOOP_ADMIN_ROLE = keccak256("LOOP_ADMIN_ROLE");
 
@@ -17,12 +21,14 @@ contract LoopFacet is ILoop, AccessControlBase {
      * @param _loopAdmin The organization that manages this loop
      * @param _periodLength Length of each distribution period
      * @param _percentPerPeriod Percent of total balance distributed each period
+     * @param _trustedBackendSigner Address that provides off-chain signatures for eligibility
      */
     function Loop_init(
         ERC20 _token,
         address _loopAdmin,
         uint256 _periodLength,
-        uint256 _percentPerPeriod
+        uint256 _percentPerPeriod,
+        address _trustedBackendSigner
     ) external override {
         if (_periodLength == 0) revert InvalidPeriodLength();
         if (_percentPerPeriod > ONE_HUNDRED_PERCENT) revert InvalidPeriodPercentage();
@@ -35,6 +41,8 @@ contract LoopFacet is ILoop, AccessControlBase {
         ds.percentPerPeriod = _percentPerPeriod;
         ds.firstPeriodStart = block.timestamp;
 
+        ds.trustedBackendSigner = _trustedBackendSigner;
+
         // Assign LOOP_ADMIN_ROLE to the loop admin
         _setUserRole(_loopAdmin, DEFAULT_ADMIN_ROLE, true);
 
@@ -42,6 +50,16 @@ contract LoopFacet is ILoop, AccessControlBase {
     }
 
     /**
+     * @notice Updates the trusted backend signer. Only the Loop Admin can update this.
+     */
+    function setTrustedBackendSigner(address _newSigner) external onlyAuthorized {
+        require(_newSigner != address(0), "Invalid signer address");
+        LoopStorage.Layout storage ds = LoopStorage.layout();
+        ds.trustedBackendSigner = _newSigner;
+        emit TrustedBackendSignerUpdated(_newSigner);
+    }
+
+     /**
      * @notice Set percent per period (Only `LOOP_ADMIN_ROLE` can call this)
      * @param _percentPerPeriod Percent of total balance distributed each period
      */
@@ -53,14 +71,18 @@ contract LoopFacet is ILoop, AccessControlBase {
     }
 
     /**
-     * @notice Register for the next period and claim if registered for the current period.
+     * @notice Register for the next period and claim if eligible. Requires an off-chain signature.
+     * @param signature Off-chain signature from trusted backend verifying eligibility
      */
-    function claimAndRegister() external override {
+    function claimAndRegister(bytes calldata signature) external override {
         LoopStorage.Layout storage ds = LoopStorage.layout();
         LoopStorage.Claimer storage claimer = ds.claimers[msg.sender];
 
         uint256 currentPeriod = getCurrentPeriod();
         if (claimer.registeredForPeriod > currentPeriod) revert AlreadyRegistered();
+
+        // Verify off-chain eligibility using ECDSA signature
+        require(_verifyEligibility(msg.sender, currentPeriod + 1, signature), "Invalid eligibility signature");
 
         if (_canClaim(claimer, currentPeriod)) {
             _claim(claimer, currentPeriod);
@@ -114,7 +136,7 @@ contract LoopFacet is ILoop, AccessControlBase {
         return _getPeriodIndividualPayout(period);
     }
 
-    /**
+       /**
      * @notice Get the loop details.
      * @return token The token address associated with the loop
      * @return periodLength Length of each distribution period
@@ -138,7 +160,6 @@ contract LoopFacet is ILoop, AccessControlBase {
 
         return (period.totalRegisteredUsers, period.maxPayout);
     }
-
 
     function _canClaim(LoopStorage.Claimer storage claimer, uint256 currentPeriod) internal view returns (bool) {
         bool userRegisteredCurrentPeriod = claimer.registeredForPeriod == currentPeriod;
@@ -180,4 +201,19 @@ contract LoopFacet is ILoop, AccessControlBase {
 
         return periodMaxPayout / period.totalRegisteredUsers;
     }
+
+    /**
+     * @notice Verifies that a signature provided by the trusted backend is valid.
+     * @param user The user trying to register.
+     * @param nextPeriod The next period the user wants to register for.
+     * @param signature The off-chain signature from the trusted backend.
+     * @return `true` if the signature is valid, otherwise `false`.
+     */
+   function _verifyEligibility(address user, uint256 nextPeriod, bytes calldata signature) internal view returns (bool) {
+        LoopStorage.Layout storage ds = LoopStorage.layout();
+        bytes32 messageHash = keccak256(abi.encodePacked(user, nextPeriod, address(this)));
+        bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
+        return ECDSA.recover(ethSignedMessageHash, signature) == ds.trustedBackendSigner;
+    }   
+
 }

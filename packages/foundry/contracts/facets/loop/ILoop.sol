@@ -17,6 +17,7 @@ interface ILoop {
     event Claim(address indexed claimer, uint256 periodNumber, uint256 payout);
     event Register(address indexed sender, uint256 periodNumber);
     event Withdraw(address indexed admin, address indexed to, uint256 amount);
+    event TrustedBackendSignerUpdated(address indexed newSigner);
 
     /**
      * @notice Initializes the LoopFacet with permissions.
@@ -29,7 +30,8 @@ interface ILoop {
         ERC20 _token,
         address _loopAdmin,
         uint256 _periodLength,
-        uint256 _percentPerPeriod
+        uint256 _percentPerPeriod,
+        address _trustedBackendSigner
     ) external;
 
     /**
@@ -41,7 +43,7 @@ interface ILoop {
     /**
      * @notice Register for the next period and claim if registered for the current period.
      */
-    function claimAndRegister() external;
+    function claimAndRegister(bytes calldata signature) external;
 
     /**
      * @notice Claim from the faucet without registering for the next period.
@@ -66,4 +68,6 @@ interface ILoop {
      * @return uint256 The payout amount for the given period
      */
     function getPeriodIndividualPayout(uint256 _periodNumber) external view returns (uint256);
+
+    function setTrustedBackendSigner(address _newSigner) external;
 }
