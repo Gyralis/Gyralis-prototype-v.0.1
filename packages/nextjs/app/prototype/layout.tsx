@@ -44,23 +44,12 @@ const userNavigation = [
   { name: "Sign out", href: "#" },
 ];
 
-function classNames(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <>
-      {/*
-            This example requires updating your template:
-    
-            ```
-            <html class="h-full bg-white">
-            <body class="h-full">
-            ```
-          */}
       <div>
         <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
           <DialogBackdrop
@@ -84,11 +73,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               {/* Sidebar component, swap this element with another sidebar if you like */}
               <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                 <div className="flex h-16 shrink-0 items-center">
-                  <img
-                    alt="Your Company"
-                    src="/logo.jpg"
-                    className="h-14 w-auto"
-                  />
+                  <img alt="Your Company" src="/logo.jpg" className="h-14 w-auto" />
                 </div>
                 <nav className="flex flex-1 flex-col">
                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -151,7 +136,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                       </ul>
                     </li> */}
                     <li className="mt-auto flex items-start">
-
                       <SwitchTheme className="pointer-events-auto" />
                     </li>
                   </ul>
@@ -166,11 +150,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           {/* Sidebar component, swap this element with another sidebar if you like */}
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
             <div className="flex h-16 shrink-0 items-center">
-              <img
-                alt="Your Company"
-                src="/logo.jpg"
-                className="h-14 w-auto"
-              />
+              <img alt="Your Company" src="/logo.jpg" className="h-14 w-auto" />
             </div>
             <nav className="flex flex-1 flex-col ">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -241,50 +221,53 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
         <div className="lg:pl-72">
           <div className="sticky top-0 z-40">
-          <div className="flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
-            <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-700 lg:hidden">
-              <span className="sr-only">Open sidebar</span>
-              <Bars3Icon aria-hidden="true" className="size-6" />
-            </button>
+            <div className="flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
+              <button
+                type="button"
+                onClick={() => setSidebarOpen(true)}
+                className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+              >
+                <span className="sr-only">Open sidebar</span>
+                <Bars3Icon aria-hidden="true" className="size-6" />
+              </button>
 
-            {/* Separator */}
-            <div aria-hidden="true" className="h-6 w-px bg-gray-200 lg:hidden" />
+              {/* Separator */}
+              <div aria-hidden="true" className="h-6 w-px bg-gray-200 lg:hidden" />
 
-            <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
-              <form action="#" method="GET" className="grid flex-1 grid-cols-1">
-                <input
-                  disabled
-                  name="search"
-                  type="search"
-                  placeholder="Search"
-                  aria-label="Search"
-                  className="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 outline-none placeholder:text-gray-400 sm:text-sm/6 disabled:cursor-not-allowed"
-                />
-                <MagnifyingGlassIcon
-                  aria-hidden="true"
-                  className="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400"
-                />
-              </form>
-              <div className="flex items-center gap-x-4 lg:gap-x-6">
-                {/* <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
+              <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
+                <form action="#" method="GET" className="grid flex-1 grid-cols-1">
+                  <input
+                    disabled
+                    name="search"
+                    type="search"
+                    placeholder="Search"
+                    aria-label="Search"
+                    className="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 outline-none placeholder:text-gray-400 sm:text-sm/6 disabled:cursor-not-allowed"
+                  />
+                  <MagnifyingGlassIcon
+                    aria-hidden="true"
+                    className="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400"
+                  />
+                </form>
+                <div className="flex items-center gap-x-4 lg:gap-x-6">
+                  {/* <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
                       <span className="sr-only">View notifications</span>
                       <BellIcon aria-hidden="true" className="size-6" />
                     </button> */}
 
-                {/* Separator */}
-                <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
+                  {/* Separator */}
+                  <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
 
-                {/* Profile dropdown */}
-                <RainbowKitCustomConnectButton />
-                <FaucetButton />
+                  {/* Profile dropdown */}
+                  <RainbowKitCustomConnectButton />
+                  <FaucetButton />
+                </div>
               </div>
             </div>
-          </div>
             <div className="flex shrink-0 items-center border-b border-gray-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8 h-12">
               {"< Go Back"}
             </div>
           </div>
-     
 
           <main>
             <div className="px-4 sm:px-6 lg:px-8">{children}</div>
