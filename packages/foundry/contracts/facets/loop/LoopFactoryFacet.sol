@@ -27,6 +27,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
     function createLoop(
         address organization,
         address token,
+        address admin,
         uint256 periodLength,
         uint256 percentPerPeriod
     ) external returns (address newLoop) {
@@ -58,7 +59,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
             baseFacets: _prepareFacetCuts(ds.facetRegistry, diamondCutFacet, diamondLoupeFacet, loopFacet),
             init: MULTI_INIT_ADDRESS,
             initData: abi.encode(
-                _prepareDiamondInitData(diamondCutFacet, diamondLoupeFacet, loopFacet, organization, token, periodLength, percentPerPeriod)
+                _prepareDiamondInitData(diamondCutFacet, diamondLoupeFacet, loopFacet, admin, token, periodLength, percentPerPeriod)
             )
         });
 
@@ -104,7 +105,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         address diamondCutFacet,
         address diamondLoupeFacet,
         address loopFacet,
-        address organization,
+        address admin,
         address token,
         uint256 periodLength,
         uint256 percentPerPeriod
@@ -126,7 +127,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         // Initialize LoopFacet
         diamondInitData[2] = IDiamond.MultiInit({
             init: loopFacet,
-            initData: abi.encodeWithSelector(ILoop(loopFacet).Loop_init.selector, organization, token, periodLength, percentPerPeriod)
+            initData: abi.encodeWithSelector(ILoop(loopFacet).Loop_init.selector, token,admin, periodLength, percentPerPeriod)
         });
     }
 

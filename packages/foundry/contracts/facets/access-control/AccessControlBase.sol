@@ -8,7 +8,6 @@ import "forge-std/console2.sol";
 
 abstract contract AccessControlBase is IAccessControlBase {
     modifier onlyAuthorized() {
-        console2.log("HELLO ", msg.sender);
         if (!_canCall(msg.sender, msg.sig)) revert AccessControl_CallerIsNotAuthorized();
         _;
     }
