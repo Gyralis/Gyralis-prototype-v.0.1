@@ -6,13 +6,9 @@ import {
   Dialog,
   DialogBackdrop,
   DialogPanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
   TransitionChild,
 } from "@headlessui/react";
-import { ChevronDownIcon, MagnifyingGlassIcon } from "@heroicons/react/20/solid";
+import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import {
   Bars3Icon,
   BellIcon,
@@ -27,6 +23,8 @@ import {
   UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
+import { GoBackButton } from "~~/components/Breadcumbs";
+import { Button } from "~~/components/Button";
 import { HeaderMenuLinks } from "~~/components/Header";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
@@ -34,16 +32,6 @@ import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaff
 interface LayoutProps {
   children: React.ReactNode;
 }
-const teams = [
-  { id: 1, name: "Heroicons", href: "#", initial: "H", current: false },
-  { id: 2, name: "Tailwind Labs", href: "#", initial: "T", current: false },
-  { id: 3, name: "Workcation", href: "#", initial: "W", current: false },
-];
-const userNavigation = [
-  { name: "Your profile", href: "#" },
-  { name: "Sign out", href: "#" },
-];
-
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -157,60 +145,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <li>
                   <ul role="list" className="-mx-2 space-y-3 ">
                     <HeaderMenuLinks />
-                    {/* {navigation.map((item) => (
-                          <li key={item.name}>
-                            <a
-                              href={item.href}
-                              className={classNames(
-                                item.current
-                                  ? 'bg-gray-50 text-indigo-600'
-                                  : 'text-gray-700 hover:bg-gray-50 hover:text-indigo-600',
-                                'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold',
-                              )}
-                            >
-                              <item.icon
-                                aria-hidden="true"
-                                className={classNames(
-                                  item.current ? 'text-indigo-600' : 'text-gray-400 group-hover:text-indigo-600',
-                                  'size-6 shrink-0',
-                                )}
-                              />
-                              {item.name}
-                            </a>
-                          </li>
-                        ))} */}
                   </ul>
                 </li>
-                {/* <li>
-                  <div className="text-xs/6 font-semibold text-gray-400"></div>
-                  <ul role="list" className="-mx-2 mt-2 space-y-1">
-                    {teams.map(team => (
-                      <li key={team.name}>
-                        <a
-                          href={team.href}
-                          className={classNames(
-                            team.current
-                              ? "bg-gray-50 text-indigo-600"
-                              : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
-                            "group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold",
-                          )}
-                        >
-                          <span
-                            className={classNames(
-                              team.current
-                                ? "border-indigo-600 text-indigo-600"
-                                : "border-gray-200 text-gray-400 group-hover:border-indigo-600 group-hover:text-indigo-600",
-                              "flex size-6 shrink-0 items-center justify-center rounded-lg border bg-white text-[0.625rem] font-medium",
-                            )}
-                          >
-                            {team.initial}
-                          </span>
-                          <span className="truncate">{team.name}</span>
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li> */}
                 <li className="mt-auto flex items-start">
                   <SwitchTheme className="pointer-events-auto" />
                 </li>
@@ -264,8 +200,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 </div>
               </div>
             </div>
-            <div className="flex shrink-0 items-center border-b border-gray-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8 h-12">
-              {"< Go Back"}
+            <div className="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8 py-1">
+              <GoBackButton />
+              <Button
+                className="ml-auto"
+                btnStyle="filled"
+                color="primary"
+                disabled
+                tooltip="coming soon"
+                tooltipSide="tooltip-left"
+              >
+                Create new
+              </Button>
             </div>
           </div>
 
