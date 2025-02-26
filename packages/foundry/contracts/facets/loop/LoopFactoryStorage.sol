@@ -8,6 +8,7 @@ library LoopFactoryStorage {
         address diamondFactory;
         address facetRegistry;
         uint256 loopCounter;
+        address trustedBackendSigner;
         mapping(uint256 => address) loops;
         mapping(address => address[]) organizationLoops;
     }
