@@ -14,7 +14,7 @@ abstract contract FacetRegistryBase is IFacetRegistryBase {
     address public owner;
 
     modifier onlyOwner() {
-        require(msg.sender == owner, "Not authorized");
+    require(msg.sender == owner, "Not authorized REGISTER!!!!");
         _;
     }
 

@@ -11,7 +11,7 @@ contract DiamondFactoryBase is IDiamondFactoryBase {
     address public owner;
 
     modifier onlyAuthorized() {
-        require(msg.sender == owner || msg.sender == systemDiamond, "Not authorized");
+        require(msg.sender == owner || msg.sender == systemDiamond, "DiamondFactory: Not authorized");
         _;
     }
 

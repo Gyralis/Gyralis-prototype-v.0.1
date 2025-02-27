@@ -98,7 +98,7 @@ contract Deploy is BaseScript {
             diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
             diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
             diamondInitData[3] = facetHelpers[3].makeInitData(facetAddresses[3], abi.encode(diamondFactory, registry)); // OrganizationFactory
-            diamondInitData[4] = facetHelpers[5].makeInitData(facetAddresses[5], abi.encode(diamondFactory, registry)); // LoopFactory
+            diamondInitData[4] = facetHelpers[5].makeInitData(facetAddresses[5], abi.encode(diamondFactory, registry, trustedBackendSigner)); // LoopFactory
 
             f.diamond_cut = facetAddresses[0];
             f.diamond_loupe = facetAddresses[1];
@@ -138,6 +138,8 @@ contract Deploy is BaseScript {
         console.log("Creating the Diamond...");
         d.system_diamond = diamondFactory.createDiamond(initParams);
         console.log("Diamond deployed at:", d.system_diamond);
+
+        diamondFactory.setSystemDiamond(d.system_diamond);
 
          //Call createOrganization through the Diamond**
         console.log("Creating Organization...");

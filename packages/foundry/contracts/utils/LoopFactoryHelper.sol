@@ -17,9 +17,10 @@ contract LoopFactoryHelper is FacetHelper {
     }
 
     function selectors() public view override returns (bytes4[] memory selectors_) {
-         selectors_ = new bytes4[](2);
+         selectors_ = new bytes4[](3);
          selectors_[0] = loopFactory.createLoop.selector;
          selectors_[1] = loopFactory.getLoopsByOrganization.selector;
+         selectors_[2] = loopFactory.setTrustedBackendSigner.selector;
     }
 
     function initializer() public view override returns (bytes4) {
@@ -38,12 +39,12 @@ contract LoopFactoryHelper is FacetHelper {
 
     function makeInitData( address _facet, bytes memory args) public view override returns (MultiInit memory) {
     // Decode args as a tuple of two addresses
-        (address diamondFactory, address facetRegistry) = abi.decode(args, (address, address));
+        (address diamondFactory, address facetRegistry, address trustedBackendSigner) = abi.decode(args, (address, address, address));
 
         return MultiInit({
             init: _facet,
             // Encode the selector with the two addresses
-            initData: abi.encodeWithSelector(initializer(), diamondFactory, facetRegistry)
+            initData: abi.encodeWithSelector(initializer(), diamondFactory, facetRegistry, trustedBackendSigner)
         });
     }
 }
