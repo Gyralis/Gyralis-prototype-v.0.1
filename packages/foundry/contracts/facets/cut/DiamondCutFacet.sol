@@ -6,8 +6,9 @@ import { Facet } from "../Facet.sol";
 import { DiamondCutBase } from "./DiamondCutBase.sol";
 
 contract DiamondCutFacet is IDiamondCut, DiamondCutBase, Facet {
-    function DiamondCut_init() external onlyInitializing {
+    function DiamondCut_init(address _systemAdmin) external onlyInitializing {
         _addInterface(type(IDiamondCut).interfaceId);
+        _setSystemAdmin(_systemAdmin);
     }
 
     /// @inheritdoc IDiamondCut
@@ -17,9 +18,13 @@ contract DiamondCutFacet is IDiamondCut, DiamondCutBase, Facet {
         bytes memory initData
     )
         external
-        onlyDiamondOwner
+        onlySystemAdmin
         reinitializer(_getInitializedVersion() + 1)
     {
         _diamondCut(facetCuts, init, initData);
+    }
+
+    function setSystemAdmin(address _admin) external onlyDiamondOwner {
+        _setSystemAdmin(_admin);
     }
 }

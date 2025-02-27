@@ -37,6 +37,8 @@ interface IDiamondCutBase {
     /// @notice Thrown when trying to send init data to an address that isn't a contract.
     error DiamondCut_InitIsNotContract(address init);
 
+    error CallerIsNotSystemAdmin();
+
     /**
      * @dev Emitted when a facet is added, replaced or removed.
      * @param facetCuts The Facet actions that were performed.
@@ -44,4 +46,6 @@ interface IDiamondCutBase {
      * @param initData The data that was passed to the initialization function.
      */
     event DiamondCut(IDiamond.FacetCut[] facetCuts, address init, bytes initData);
+
+    event SystemAdminUpdated(address admin);
 }

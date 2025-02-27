@@ -10,7 +10,7 @@ import { IDiamondCutBase } from "./IDiamondCutBase.sol";
  */
 interface IDiamondCut is IDiamondCutBase {
 
-    function DiamondCut_init() external;
+    function DiamondCut_init(address _systemAdmin) external;
     /**
      * @notice Add/replace/remove any number of functions and optionally execute
      *         a function with delegatecall.

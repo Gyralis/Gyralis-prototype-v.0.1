@@ -10,6 +10,7 @@ library DiamondCutStorage {
         EnumerableSet.AddressSet facets;
         mapping(bytes4 selector => address facet) selectorToFacet;
         mapping(address facet => EnumerableSet.Bytes32Set selectors) facetSelectors;
+        address systemAdmin;
     }
 
     function layout() internal pure returns (Layout storage l) {
