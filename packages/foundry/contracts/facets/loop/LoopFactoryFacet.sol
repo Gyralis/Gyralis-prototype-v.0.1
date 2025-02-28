@@ -7,6 +7,7 @@ import { ILoopFactory } from "./ILoopFactory.sol";
 import { IDiamondCut } from "../cut/IDiamondCut.sol";
 import { IDiamondLoupe } from "../loupe/IDiamondLoupe.sol";
 import { LoopFactoryStorage } from "./LoopFactoryStorage.sol";
+import {DiamondCutStorage} from "../cut/DiamondCutStorage.sol";
 import { IDiamond } from "../../IDiamond.sol";
 import { IFacetRegistry } from "../../registry/IFacetRegistry.sol";
 import { IDiamondFactory } from "../../factory/IDiamondFactory.sol";
@@ -114,13 +115,13 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         uint256 periodLength,
         uint256 percentPerPeriod,
         address _trustedBackendSigner
-    ) internal pure returns (IDiamond.MultiInit[] memory diamondInitData) {
+    ) internal view returns (IDiamond.MultiInit[] memory diamondInitData) {
         diamondInitData = new IDiamond.MultiInit[](3) ;
 
         // Initialize DiamondCutFacet
         diamondInitData[0] = IDiamond.MultiInit({
             init: diamondCutFacet,
-            initData: abi.encodeWithSelector(IDiamondCut(diamondCutFacet).DiamondCut_init.selector)
+            initData: abi.encodeWithSelector(IDiamondCut(diamondCutFacet).DiamondCut_init.selector, DiamondCutStorage.layout().systemAdmin)
         });
 
         // Initialize DiamondLoupeFacet

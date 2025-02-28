@@ -47,6 +47,7 @@ contract Deploy is BaseScript {
     function run() public wrapDeployment broadcaster {
         //deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
         deployer =  0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+        systemAdmin =  0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // address that can call the diamondCut on the diamonds
 
         // Create the Facet Registry
         FacetRegistry registry = new FacetRegistry();
@@ -94,7 +95,7 @@ contract Deploy is BaseScript {
             IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](5);
         {
             // Prepare the Init Data for the Facets
-            diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], ""); // DiamondCut
+            diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], abi.encode(systemAdmin)); // DiamondCut
             diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
             diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
             diamondInitData[3] = facetHelpers[3].makeInitData(facetAddresses[3], abi.encode(diamondFactory, registry)); // OrganizationFactory

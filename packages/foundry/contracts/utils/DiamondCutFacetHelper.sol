@@ -33,4 +33,9 @@ contract DiamondCutFacetHelper is FacetHelper {
     function creationCode() public pure override returns (bytes memory) {
         return type(DiamondCutFacet).creationCode;
     }
+
+    function makeInitData(address _facet, bytes memory args) public view override returns (MultiInit memory) {
+        return
+            MultiInit({ init: _facet, initData: abi.encodeWithSelector(initializer(), abi.decode(args, (address))) });
+    }
 }
