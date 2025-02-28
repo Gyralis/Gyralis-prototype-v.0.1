@@ -6,6 +6,15 @@ import { Diamond } from "src/Diamond.sol";
 import { IDiamondLoupe } from "src/facets/loupe/IDiamondLoupe.sol";
 
 contract DiamondFactoryBase is IDiamondFactoryBase {
+
+    address public systemDiamond;
+    address public owner;
+
+    modifier onlyAuthorized() {
+        require(msg.sender == owner || msg.sender == systemDiamond, "DiamondFactory: Not authorized");
+        _;
+    }
+
     function _createDiamond(Diamond.InitParams memory initParams) internal virtual returns (address diamond) {
         // slither-disable-start reentrancy-events
         diamond = address(new Diamond(initParams));

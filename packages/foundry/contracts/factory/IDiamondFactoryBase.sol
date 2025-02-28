@@ -7,4 +7,7 @@ interface IDiamondFactoryBase {
 
     /// @notice Emitted when a diamond is created.
     event DiamondCreated(address indexed diamond, address indexed deployer);
+    
+    event SystemDiamondSet(address indexed systemDiamond);
+    event OwnerSet(address indexed owner);
 }

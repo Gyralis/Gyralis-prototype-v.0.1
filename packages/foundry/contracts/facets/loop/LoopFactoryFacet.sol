@@ -1,12 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {AccessControlBase} from "../access-control/AccessControlBase.sol";
+import { AccessControlBase } from "../access-control/AccessControlBase.sol";
 import { Facet } from "src/facets/Facet.sol";
 import { ILoopFactory } from "./ILoopFactory.sol";
-import {IDiamondCut} from "../cut/IDiamondCut.sol";
-import {IDiamondLoupe} from "../loupe/IDiamondLoupe.sol";
+import { IDiamondCut } from "../cut/IDiamondCut.sol";
+import { IDiamondLoupe } from "../loupe/IDiamondLoupe.sol";
 import { LoopFactoryStorage } from "./LoopFactoryStorage.sol";
+import {DiamondCutStorage} from "../cut/DiamondCutStorage.sol";
 import { IDiamond } from "../../IDiamond.sol";
 import { IFacetRegistry } from "../../registry/IFacetRegistry.sol";
 import { IDiamondFactory } from "../../factory/IDiamondFactory.sol";
@@ -17,30 +18,27 @@ import "forge-std/console2.sol";
 
 contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
 
-    function LoopFactory_init(address diamondFactory, address facetRegistry) external onlyInitializing {
+    function LoopFactory_init(address diamondFactory, address facetRegistry, address _trustedBackendSigner) external onlyInitializing {
         _setUserRole(msg.sender, DEFAULT_ADMIN_ROLE, true);
         LoopFactoryStorage.Layout storage ds = LoopFactoryStorage.layout();
         ds.diamondFactory = diamondFactory;
         ds.facetRegistry = facetRegistry;
+        ds.trustedBackendSigner = _trustedBackendSigner;
     }
 
     function createLoop(
         address organization,
         address token,
+        address admin,
         uint256 periodLength,
         uint256 percentPerPeriod
     ) external returns (address newLoop) {
         // Ensure caller is a registered Organization
         OrganizationFactoryStorage.Layout storage orgDs = OrganizationFactoryStorage.layout();
-
-       require(
-        orgDs.organizationByAddress[msg.sender] != 0,
-        "LoopFactory: Caller is not a registered Organization"
-    );   
+        require(orgDs.organizationByAddress[msg.sender] != 0, "LoopFactory: Caller is not a registered Organization");
 
         // Load Loop Factory Storage
         LoopFactoryStorage.Layout storage ds = LoopFactoryStorage.layout();
-
         require(ds.diamondFactory != address(0), "LoopFactory: Invalid DiamondFactory address");
         require(ds.facetRegistry != address(0), "LoopFactory: Invalid FacetRegistry address");
 
@@ -58,7 +56,7 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
             baseFacets: _prepareFacetCuts(ds.facetRegistry, diamondCutFacet, diamondLoupeFacet, loopFacet),
             init: MULTI_INIT_ADDRESS,
             initData: abi.encode(
-                _prepareDiamondInitData(diamondCutFacet, diamondLoupeFacet, loopFacet, organization, token, periodLength, percentPerPeriod)
+                _prepareDiamondInitData(diamondCutFacet, diamondLoupeFacet, loopFacet, admin, token, periodLength, percentPerPeriod, ds.trustedBackendSigner)
             )
         });
 
@@ -73,7 +71,14 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         emit LoopCreated(newLoopId, newLoop, organization, token, periodLength, percentPerPeriod);
     }
 
-    function _prepareFacetCuts(
+     function setTrustedBackendSigner(address _newSigner) external onlyAuthorized {
+        require(_newSigner != address(0), "Invalid signer address");
+        LoopFactoryStorage.Layout storage ds = LoopFactoryStorage.layout();
+        ds.trustedBackendSigner = _newSigner;
+        emit TrustedBackendSignerUpdated(_newSigner);
+    }
+
+     function _prepareFacetCuts(
         address facetRegistry,
         address diamondCutFacet,
         address diamondLoupeFacet,
@@ -100,21 +105,23 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
         });
     }
 
+
     function _prepareDiamondInitData(
         address diamondCutFacet,
         address diamondLoupeFacet,
         address loopFacet,
-        address organization,
+        address admin,
         address token,
         uint256 periodLength,
-        uint256 percentPerPeriod
-    ) internal pure returns (IDiamond.MultiInit[] memory diamondInitData) {
-        diamondInitData = new IDiamond.MultiInit[] (3) ;
+        uint256 percentPerPeriod,
+        address _trustedBackendSigner
+    ) internal view returns (IDiamond.MultiInit[] memory diamondInitData) {
+        diamondInitData = new IDiamond.MultiInit[](3) ;
 
-         //Initialize DiamondCutFacet
+        // Initialize DiamondCutFacet
         diamondInitData[0] = IDiamond.MultiInit({
             init: diamondCutFacet,
-            initData: abi.encodeWithSelector(IDiamondCut(diamondCutFacet).DiamondCut_init.selector)
+            initData: abi.encodeWithSelector(IDiamondCut(diamondCutFacet).DiamondCut_init.selector, DiamondCutStorage.layout().systemAdmin)
         });
 
         // Initialize DiamondLoupeFacet
@@ -123,10 +130,10 @@ contract LoopFactoryFacet is Facet, ILoopFactory, AccessControlBase {
             initData: abi.encodeWithSelector(IDiamondLoupe(diamondLoupeFacet).DiamondLoupe_init.selector)
         });
 
-        // Initialize LoopFacet
+        // Initialize LoopFacet (pass the trusted backend signer)
         diamondInitData[2] = IDiamond.MultiInit({
             init: loopFacet,
-            initData: abi.encodeWithSelector(ILoop(loopFacet).Loop_init.selector, organization, token, periodLength, percentPerPeriod)
+            initData: abi.encodeWithSelector(ILoop(loopFacet).Loop_init.selector, token, admin, periodLength, percentPerPeriod, _trustedBackendSigner)
         });
     }
 

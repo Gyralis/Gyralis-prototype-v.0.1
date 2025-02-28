@@ -6,6 +6,7 @@ import {OrganizationFacet} from "./OrganizationFacet.sol";
 import { Facet } from "src/facets/Facet.sol";
 import {IOrganizationFactory} from "./IOrganizationFactory.sol";
 import { OrganizationFactoryStorage } from "./OrganizationFactoryStorage.sol";
+import {DiamondCutStorage} from "../cut/DiamondCutStorage.sol";
 import {IDiamondCut} from "../cut/IDiamondCut.sol";
 import {IDiamondLoupe} from "../loupe/IDiamondLoupe.sol";
 import {IOrganization} from "./IOrganization.sol";
@@ -118,14 +119,14 @@ contract OrganizationFactoryFacet is AccessControlBase, Facet, IOrganizationFact
         string memory name,
         address admin,
         string memory description
-    ) internal pure returns (IDiamond.MultiInit[] memory diamondInitData) {
+    ) internal view returns (IDiamond.MultiInit[] memory diamondInitData) {
 
         diamondInitData = new IDiamond.MultiInit[](3) ;
 
         //Initialize DiamondCutFacet
         diamondInitData[0] = IDiamond.MultiInit({
             init: diamondCutFacet,
-            initData: abi.encodeWithSelector(IDiamondCut(diamondCutFacet).DiamondCut_init.selector)
+            initData: abi.encodeWithSelector(IDiamondCut(diamondCutFacet).DiamondCut_init.selector, DiamondCutStorage.layout().systemAdmin)
         });
 
         // Initialize DiamondLoupeFacet

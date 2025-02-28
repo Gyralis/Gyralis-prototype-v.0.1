@@ -12,6 +12,7 @@ library LoopStorage {
         uint256 periodLength;
         uint256 percentPerPeriod;
         uint256 firstPeriodStart;
+        address trustedBackendSigner;
         mapping(address => Claimer) claimers;
         mapping(uint256 => Period) periods;
     }

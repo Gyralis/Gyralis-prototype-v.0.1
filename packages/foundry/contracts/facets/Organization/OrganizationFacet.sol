@@ -39,11 +39,14 @@ contract OrganizationFacet is IOrganization, AccessControlBase, Facet {
         require(systemDiamond != address(0), "Invalid SystemDiamond address");
         require(token != address(0), "Invalid token address");
 
+        OrganizationStorage.Layout storage os = OrganizationStorage.layout();
+
         (bool loopSuccess, bytes memory loopResult) = systemDiamond.call(
             abi.encodeWithSignature(
-                "createLoop(address,address,uint256,uint256)",
+                "createLoop(address,address,address,uint256,uint256)",
                 address(this),
                 token,
+                os.admin,
                 periodLength,
                 percentPerPeriod 
             ));

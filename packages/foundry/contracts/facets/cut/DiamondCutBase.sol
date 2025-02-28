@@ -11,6 +11,11 @@ import { MULTI_INIT_ADDRESS } from "src/Constants.sol";
 abstract contract DiamondCutBase is IDiamondCutBase {
     using EnumerableSet for *;
 
+    modifier onlySystemAdmin() {
+        if (msg.sender !=  DiamondCutStorage.layout().systemAdmin) revert CallerIsNotSystemAdmin();
+        _;
+    }
+
     function _diamondCut(IDiamond.FacetCut[] memory facetCuts, address init, bytes memory initData) internal {
         for (uint256 i = 0; i < facetCuts.length; i++) {
             IDiamond.FacetCut memory facetCut = facetCuts[i];
@@ -155,5 +160,10 @@ abstract contract DiamondCutBase is IDiamondCutBase {
             // slither-disable-next-line unused-return
             Address.functionDelegateCall(init, initData[i].initData);
         }
+    }
+    
+    function _setSystemAdmin(address _newAdmin) internal {
+        DiamondCutStorage.layout().systemAdmin = _newAdmin;
+        emit SystemAdminUpdated(_newAdmin);
     }
 }
