@@ -497,6 +497,52 @@ const deployedContracts = {
         },
         {
           type: "function",
+          name: "getCurrentPeriodData",
+          inputs: [],
+          outputs: [
+            {
+              name: "totalRegisteredUsers",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "maxPayout",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "getLoopDetails",
+          inputs: [],
+          outputs: [
+            {
+              name: "token",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "periodLength",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "percentPerPeriod",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "firstPeriodStart",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
           name: "getPeriodIndividualPayout",
           inputs: [
             {
