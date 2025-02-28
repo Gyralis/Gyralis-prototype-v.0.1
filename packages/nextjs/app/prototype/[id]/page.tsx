@@ -29,10 +29,10 @@ const OrganizationHeader = ({ title }: { title: string }) => {
 
       {/* Organization title, description and social media */}
       <div className="sm:flex sm:flex-col sm:min-w-0 sm:flex-1 sm:items-start sm:justify-start px-4">
-        <div className="flex justify-between items-baseline w-full">
+        <div className="flex gap-6 items-baseline w-full">
           <h1 className="truncate text-2xl md:text-4xl font-bold text-gray-900">{title}</h1>
           <div className="flex gap-2 w-fit">
-            <span className="relative z-10 flex items-center justify-center w-6 h-auto text-sm duration-1000 border rounded-full text-zinc-200 group-hover:text-white group-hover:border-zinc-200 drop-shadow-orange">
+            <span className="relative z-10 flex items-center justify-center w-5 h-auto text-sm duration-1000 border rounded-full text-zinc-200 group-hover:text-white group-hover:border-zinc-200 drop-shadow-orange">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 shape-rendering="geometricPrecision"
@@ -49,7 +49,7 @@ const OrganizationHeader = ({ title }: { title: string }) => {
               </svg>
             </span>
 
-            <span className="relative z-10 flex items-center justify-center w-6 h-auto text-sm duration-1000 border rounded-full text-zinc-200 group-hover:text-white group-hover:border-zinc-200 drop-shadow-orange">
+            <span className="relative z-10 flex items-center justify-center w-5 h-auto text-sm duration-1000 border rounded-full text-zinc-200 group-hover:text-white group-hover:border-zinc-200 drop-shadow-orange">
               <svg
                 viewBox="0 -28.5 256 256"
                 version="1.1"
@@ -80,7 +80,7 @@ const OrganizationHeader = ({ title }: { title: string }) => {
         <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo repudiandae aliquam nesciunt dolore voluptatibus et praesentium amet tempore totam.</p>
       </div> */}
       </div>
-      {/* <LoopComponent /> */}
+      <LoopComponent />
     </div>
   );
 };
