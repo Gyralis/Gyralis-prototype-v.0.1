@@ -10,7 +10,8 @@ interface ILoop {
     error CannotClaim();
     error FaucetBalanceIsZero();
     error NotAuthorized();
-
+    error INVALID_ADDRESS();
+    error INVALID_ADMIN_ADDRESS();
     // Events
     event Initialize(address indexed token, uint256 periodLength, uint256 percentPerPeriod);
     event SetPercentPerPeriod(uint256 percentPerPeriod);
@@ -27,7 +28,7 @@ interface ILoop {
      * @param _percentPerPeriod Percent of total balance distributed each period
      */
     function Loop_init(
-        ERC20 _token,
+        address _token,
         address _loopAdmin,
         uint256 _periodLength,
         uint256 _percentPerPeriod,

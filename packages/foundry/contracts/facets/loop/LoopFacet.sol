@@ -5,15 +5,22 @@ import "./LoopStorage.sol";
 import { ILoop } from "./ILoop.sol";
 import { AccessControlBase } from "../access-control/AccessControlBase.sol";
 import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+// nota: aca deberia traerse el LOOP_ADMIN_ROLE en vez de DEFAULT_ADMIN_ROLE
+//import { LOOP_ADMIN_ROLE} from "src/Constants.sol";
 import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import {Initializable} from '@oz-upgrades/proxy/utils/Initializable.sol';
 
-contract LoopFacet is ILoop, AccessControlBase {
+contract LoopFacet is ILoop,Initializable, AccessControlBase {
+  
     using ECDSA for bytes32;
-
-    uint256 public constant ONE_HUNDRED_PERCENT = 1e18;
-    bytes32 public constant LOOP_ADMIN_ROLE = keccak256("LOOP_ADMIN_ROLE");
+    address constant VOID = address(0);
+    ///@custom:note xq 100% es 1e18???
+    uint8 public constant ONE_HUNDRED_PERCENT = 100;
+    uint256 public constant UNIT = 1e18;
+    // Aca Este no va, esta mal plateado
+    //bytes32 public constant LOOP_ADMIN_ROLE = keccak256("LOOP_ADMIN_ROLE");
 
     /**
      * @notice Initializes the LoopFacet with permissions.
@@ -24,18 +31,28 @@ contract LoopFacet is ILoop, AccessControlBase {
      * @param _trustedBackendSigner Address that provides off-chain signatures for eligibility
      */
     function Loop_init(
-        ERC20 _token,
+        address  _token,
         address _loopAdmin,
         uint256 _periodLength,
         uint256 _percentPerPeriod,
         address _trustedBackendSigner
-    ) external override {
+    ) external virtual initializer {
+        // Address (0)
+        // Code len == 0
+        // !supportsInterface
+        (bool success, bytes memory data) = _token.staticcall(
+             abi.encodeWithSignature("decimals()")
+         );
+         if (!success || data.length != 32) revert INVALID_ADDRESS();
+         if (_loopAdmin == address(0)) revert INVALID_ADMIN_ADDRESS();
+         //IERC20 i_token = IERC20(_token);
+        //if(IERC20(_address).supportsInterface
+
         if (_periodLength == 0) revert InvalidPeriodLength();
-        if (_percentPerPeriod > ONE_HUNDRED_PERCENT) revert InvalidPeriodPercentage();
-        if (_loopAdmin == address(0)) revert NotAuthorized();
+        if (_percentPerPeriod == 0 || _percentPerPeriod > ONE_HUNDRED_PERCENT) revert InvalidPeriodPercentage();
 
         LoopStorage.Layout storage ds = LoopStorage.layout();
-        ds.token = _token;
+        ds.token = IERC20(_token);
         ds.loopAdmin = _loopAdmin;
         ds.periodLength = _periodLength;
         ds.percentPerPeriod = _percentPerPeriod;
@@ -123,6 +140,7 @@ contract LoopFacet is ILoop, AccessControlBase {
      * @notice Get the current period number.
      */
     function getCurrentPeriod() public view override returns (uint256) {
+        // NOTA : esto nunca va a ser un nro redondo... hay que ajustarlo esto
         return (block.timestamp - LoopStorage.layout().firstPeriodStart) / LoopStorage.layout().periodLength;
     }
 
@@ -160,7 +178,7 @@ contract LoopFacet is ILoop, AccessControlBase {
 
         return (period.totalRegisteredUsers, period.maxPayout);
     }
-
+    
     function _canClaim(LoopStorage.Claimer storage claimer, uint256 currentPeriod) internal view returns (bool) {
         bool userRegisteredCurrentPeriod = claimer.registeredForPeriod == currentPeriod;
         bool userYetToClaimCurrentPeriod = claimer.latestClaimPeriod < currentPeriod;
@@ -186,7 +204,7 @@ contract LoopFacet is ILoop, AccessControlBase {
         _claimer.latestClaimPeriod = _currentPeriod;
         emit Claim(msg.sender, _currentPeriod, claimerPayout);
     }
-
+    // NOTA : esto se pude romper si _faucetBalance* percentPerPeriod < 1e18
     function _getPeriodMaxPayout(uint256 _faucetBalance) internal view returns (uint256) {
         LoopStorage.Layout storage ds = LoopStorage.layout();
         return (_faucetBalance * ds.percentPerPeriod) / ONE_HUNDRED_PERCENT;
@@ -194,7 +212,6 @@ contract LoopFacet is ILoop, AccessControlBase {
 
     function _getPeriodIndividualPayout(LoopStorage.Period storage period) internal view returns (uint256) {
         if (period.totalRegisteredUsers == 0) return 0;
-
         uint256 periodMaxPayout = period.maxPayout == 0
             ? _getPeriodMaxPayout(LoopStorage.layout().token.balanceOf(address(this)))
             : period.maxPayout;
