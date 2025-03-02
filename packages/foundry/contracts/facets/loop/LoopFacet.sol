@@ -81,8 +81,7 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
      * @param _percentPerPeriod Percent of total balance distributed each period
      */
     function setPercentPerPeriod(uint256 _percentPerPeriod) external override onlyAuthorized {
-        if (_percentPerPeriod > ONE_HUNDRED_PERCENT) revert InvalidPeriodPercentage();
-
+        if (_percentPerPeriod == 0 || _percentPerPeriod > ONE_HUNDRED_PERCENT) revert InvalidPeriodPercentage();
         LoopStorage.layout().percentPerPeriod = _percentPerPeriod;
         emit SetPercentPerPeriod(_percentPerPeriod);
     }
@@ -97,7 +96,8 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
 
         uint256 currentPeriod = getCurrentPeriod();
         if (claimer.registeredForPeriod > currentPeriod) revert AlreadyRegistered();
-
+        // NOTA : aca podemos agregar la capacidad de mirar otro periodo y que claimee si esta registrado
+        //        o si tiene el periodo en la firma
         // Verify off-chain eligibility using ECDSA signature
         require(_verifyEligibility(msg.sender, currentPeriod + 1, signature), "Invalid eligibility signature");
 

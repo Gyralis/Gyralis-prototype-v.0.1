@@ -24,6 +24,8 @@ contract LoopFacetBaseTest is Test {
     bad_addresses.push(address(new BadToken()));
   } 
  
+}
+contract LoopFacet_Initializer is LoopFacetBaseTest {
   // Address (0)
   // Code len == 0
   // !supportsInterface
@@ -58,5 +60,61 @@ contract LoopFacetBaseTest is Test {
     loop.Loop_init(address(token),admin,11,11,be_signer.addr);
     vm.expectRevert();
     loop.Loop_init(address(token),admin,11,11,be_signer.addr);
+  }
+}
+
+contract LoopFacet_AuthedFunctionsTest is LoopFacetBaseTest {
+
+  function test_set_trusted_backend_signer_reverts_unauthorized() external {
+    address _badSender = makeAddr('bad_sender');
+    address _admin = makeAddr('ADDR');
+    vm.prank(_badSender);
+    vm.expectRevert();
+    loop.setTrustedBackendSigner(_admin);
+  }
+  function test_set_trusted_backend_signer_reverts_bad_address() external {
+    address _badSender = makeAddr('bad_sender');
+    address _admin = address(0);
+    vm.prank(admin);
+    vm.expectRevert();
+    loop.setTrustedBackendSigner(_admin);
+  }
+  function test_set_trusted_backend_signer_ok() external {
+    address _badSender = makeAddr('bad_sender');
+    address _admin = makeAddr('ADDR');
+    vm.prank(admin);
+    vm.expectEmit(address(loop));
+    emit ILoop.TrustedBackendSignerUpdated(_admin);
+    loop.setTrustedBackendSigner(_admin);
+  }
+} 
+
+contract LoopFacet_SetPercentTest is LoopFacetBaseTest {
+  function setUp() public virtual override {
+    super.setUp();
+    vm.expectEmit(address(loop));
+    emit ILoop.Initialize(address(token),11,11);
+    loop.Loop_init(address(token),admin,11,11,be_signer.addr);
+  }
+  function test_set_percent_reverts_unauthorized()external {
+    address _badSender = makeAddr('bad_sender');
+    vm.prank(_badSender);
+    vm.expectRevert();
+    loop.setPercentPerPeriod(50);
+  }
+  function test_set_percent_reverts_bad_percentage ()external {
+    vm.prank(admin);
+    vm.expectRevert();
+    loop.setPercentPerPeriod(101);
+  }
+  function test_set_percent_ok() external {
+    address _admin = makeAddr('ADDR');
+    uint8 _p = 55;
+    vm.prank(admin);
+    vm.expectEmit(address(loop));
+    emit ILoop.SetPercentPerPeriod(_p);
+    loop.setPercentPerPeriod(_p);
+    (,,uint p_stored,)=loop.getLoopDetails();
+    assertEq(uint8(p_stored),_p,'stored!=sent');
   }
 }
