@@ -12,6 +12,7 @@ interface ILoop {
     error NotAuthorized();
     error INVALID_ADDRESS();
     error INVALID_ADMIN_ADDRESS();
+    error INVALID_SIGNER_ADDRESS();
     // Events
     event Initialize(address indexed token, uint256 periodLength, uint256 percentPerPeriod);
     event SetPercentPerPeriod(uint256 percentPerPeriod);

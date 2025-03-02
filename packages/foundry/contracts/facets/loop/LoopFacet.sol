@@ -70,7 +70,7 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
      * @notice Updates the trusted backend signer. Only the Loop Admin can update this.
      */
     function setTrustedBackendSigner(address _newSigner) external onlyAuthorized {
-        require(_newSigner != address(0), "Invalid signer address");
+        if(_newSigner == VOID || _newSigner == address(this)) revert INVALID_SIGNER_ADDRESS();
         LoopStorage.Layout storage ds = LoopStorage.layout();
         ds.trustedBackendSigner = _newSigner;
         emit TrustedBackendSignerUpdated(_newSigner);
@@ -140,7 +140,6 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
      * @notice Get the current period number.
      */
     function getCurrentPeriod() public view override returns (uint256) {
-        // NOTA : esto nunca va a ser un nro redondo... hay que ajustarlo esto
         return (block.timestamp - LoopStorage.layout().firstPeriodStart) / LoopStorage.layout().periodLength;
     }
 
@@ -207,7 +206,8 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
     // NOTA : esto se pude romper si _faucetBalance* percentPerPeriod < 1e18
     function _getPeriodMaxPayout(uint256 _faucetBalance) internal view returns (uint256) {
         LoopStorage.Layout storage ds = LoopStorage.layout();
-        return (_faucetBalance * ds.percentPerPeriod) / ONE_HUNDRED_PERCENT;
+        uint _unit = UNIT;
+        return (_faucetBalance * (_unit*ds.percentPerPeriod)) /(_unit* ONE_HUNDRED_PERCENT);
     }
 
     function _getPeriodIndividualPayout(LoopStorage.Period storage period) internal view returns (uint256) {
