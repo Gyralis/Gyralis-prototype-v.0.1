@@ -5,14 +5,14 @@ import { useAccount } from "wagmi";
 import { ShieldCheckIcon, ShieldExclamationIcon } from "@heroicons/react/24/solid";
 import { LoopContractUI } from "~~/app/prototype/_components/LoopContractUI";
 import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
-import { secondsToTime } from "~~/utils";
+import { formatTime, secondsToTime } from "~~/utils";
 
 type LoopDetails = {
   token: Address | undefined;
-  periodLength: number;
-  percentPerPeriod: bigint | undefined;
+  periodLength: number | bigint;
+  percentPerPeriod: number | undefined;
   firstPeriodStart: bigint | undefined;
-  currentPeriod: number;
+  currentPeriod: number | bigint;
   currentPeriodRegistrations: number;
 };
 
@@ -41,11 +41,22 @@ export const LoopComponent = () => {
   const loopDetails: LoopDetails = {
     token: readContractData[0],
     periodLength: Number(readContractData[1]),
-    percentPerPeriod: readContractData[2],
+    percentPerPeriod: Number(readContractData[2]),
     firstPeriodStart: readContractData[3],
     currentPeriod: Number(currentPeriod),
     currentPeriodRegistrations: Number(currentPeriodData[0]),
   };
+
+
+
+  const nextPeriodStart = readContractData[3] + readContractData[1] * (currentPeriod + 1n);
+  // Calculate time left to claim
+  const currentTimeInSeconds = BigInt(Date.now()) / 1000n
+
+  console.log(currentTimeInSeconds);
+  const claimBefore = nextPeriodStart - currentTimeInSeconds - 1n
+
+  console.log(claimBefore);
 
   console.log({ loopDetails: loopDetails });
 
@@ -58,23 +69,33 @@ export const LoopComponent = () => {
             <section>
               <div className="card-white flex flex-col items-center justify-between gap-24">
                 <div className="w-full">
-                  <div className="flex items-start justify-between w-full">
+                  <div className="flex flex-col items-start  w-full border2">
                     <div className="flex flex-col gap-1">
                       <h5>
                         Loop period length: <span>{secondsToTime(loopDetails.periodLength)}</span>
                       </h5>
                     </div>
+                    <div className="flex flex-col gap-1">
+                      <h5>
+                        Loop distribution: <span>{loopDetails.percentPerPeriod}</span>
+                      </h5>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <h5>
+                        Currento Period: <span>{loopDetails.currentPeriod}</span>
+                      </h5>
+                    </div>
                     <div className="flex flex-col gap-1 items-end">
                       <h5>
-                        Current period registrations: <span>10</span>
+                        Current period registrations: <span>{loopDetails.currentPeriodRegistrations}</span>
                       </h5>
                       <h5>
-                        Estimated claim amount for next period: <span>0.5 HNY</span>
+                        Estimated claim amount for next period: <span>0</span>
                       </h5>
                     </div>
                   </div>
                 </div>
-                <div className="">Countdown _component</div>
+                <div className="">  Next period in {formatTime(Number(claimBefore))}</div>
                 <div className="">
                   {/* <button
                     className="btn btn-primary"
