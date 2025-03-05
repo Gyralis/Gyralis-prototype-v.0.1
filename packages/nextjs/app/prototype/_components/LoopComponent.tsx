@@ -1,6 +1,6 @@
 "use client";
 
-import { Address } from "viem";
+import { Address, formatUnits } from "viem";
 import { useAccount } from "wagmi";
 import { ShieldCheckIcon, ShieldExclamationIcon } from "@heroicons/react/24/solid";
 import { LoopContractUI } from "~~/app/prototype/_components/LoopContractUI";
@@ -17,12 +17,12 @@ type LoopDetails = {
 };
 
 export const LoopComponent = () => {
-  const { address } = useAccount();
-  const { writeContractAsync: writeYourContractAsync } = useScaffoldWriteContract("loop");
+  const { address: connectedAccount } = useAccount();
+  const { writeContractAsync: writeLoopContractAsync } = useScaffoldWriteContract("loop");
   const { data: readContractData, isLoading } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getLoopDetails",
-    watch: false,
+    watch: true,
   });
   const { data: currentPeriod, isPending } = useScaffoldReadContract({
     contractName: "loop",
@@ -41,7 +41,7 @@ export const LoopComponent = () => {
   const loopDetails: LoopDetails = {
     token: readContractData[0],
     periodLength: Number(readContractData[1]),
-    percentPerPeriod: Number(readContractData[2]),
+    percentPerPeriod: +formatUnits(readContractData[2], 18) * 100,
     firstPeriodStart: readContractData[3],
     currentPeriod: Number(currentPeriod),
     currentPeriodRegistrations: Number(currentPeriodData[0]),
@@ -77,7 +77,7 @@ export const LoopComponent = () => {
                     </div>
                     <div className="flex flex-col gap-1">
                       <h5>
-                        Loop distribution: <span>{loopDetails.percentPerPeriod}</span>
+                        Loop distribution: <span>{loopDetails.percentPerPeriod} %</span>
                       </h5>
                     </div>
                     <div className="flex flex-col gap-1">
@@ -85,7 +85,7 @@ export const LoopComponent = () => {
                         Currento Period: <span>{loopDetails.currentPeriod}</span>
                       </h5>
                     </div>
-                    <div className="flex flex-col gap-1 items-end">
+                    <div className="flex flex-col gap-1 items-start">
                       <h5>
                         Current period registrations: <span>{loopDetails.currentPeriodRegistrations}</span>
                       </h5>
@@ -103,7 +103,7 @@ export const LoopComponent = () => {
                       const hashedSignature = await simulateSignature({ message: address ?? "" });
                       if (!hashedSignature) return;
                       try {
-                        await writeYourContractAsync({
+                        await writeLoopContractAsync({
                           functionName: "claimAndRegister",
                           args: [hashedSignature],
                         });

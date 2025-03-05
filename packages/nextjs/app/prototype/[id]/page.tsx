@@ -6,10 +6,10 @@ const Page: NextPage<{ params: { id: string } }> = async ({ params }) => {
   const { id } = params;
 
   return (
-    <div className="">
+    <>
       <OrganizationHeader title={id} />
       {/* <LoopComponent /> */}
-    </div>
+    </>
   );
 };
 
@@ -17,14 +17,14 @@ export default Page;
 
 const OrganizationHeader = ({ title }: { title: string }) => {
   return (
-    <div className="">
+    <>
       <div className="bg-yellow-100 h-24 lg:h-28" />
       <Image
         alt=""
         src={"/1hive-logo.svg"}
         width={75}
         height={75}
-        className="size-16 transition-all ease-in-out duration-300 bg-white hover:scale-105 hover:rotate-12 rounded-xl ring-4 ring-white sm:size-20 p-2 -mt-10 ml-4"
+        className="size-16 transition-all ease-in-out duration-300 bg-white hover:scale-105 hover:rotate-12 rounded-xl ring-4 ring-white sm:size-24 p-2 -mt-10 ml-4"
       />
 
       {/* Organization title, description and social media */}
@@ -81,6 +81,6 @@ const OrganizationHeader = ({ title }: { title: string }) => {
       </div> */}
       </div>
       <LoopComponent />
-    </div>
+    </>
   );
 };
