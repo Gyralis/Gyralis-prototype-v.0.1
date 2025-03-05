@@ -1,64 +1,38 @@
 "use client";
 
-import { Address, formatUnits } from "viem";
+import { useEffect, useMemo, useState } from "react";
 import { useAccount } from "wagmi";
 import { ShieldCheckIcon, ShieldExclamationIcon } from "@heroicons/react/24/solid";
 import { LoopContractUI } from "~~/app/prototype/_components/LoopContractUI";
-import { useScaffoldReadContract, useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useLoopData } from "~~/hooks/useLoopData";
 import { formatTime, secondsToTime } from "~~/utils";
 
-type LoopDetails = {
-  token: Address | undefined;
-  periodLength: number | bigint;
-  percentPerPeriod: number | undefined;
-  firstPeriodStart: bigint | undefined;
-  currentPeriod: number | bigint;
-  currentPeriodRegistrations: number;
-};
-
 export const LoopComponent = () => {
+  const [clientTime, setClientTime] = useState<bigint | null>(null);
+
   const { address: connectedAccount } = useAccount();
   const { writeContractAsync: writeLoopContractAsync } = useScaffoldWriteContract("loop");
-  const { data: readContractData, isLoading } = useScaffoldReadContract({
-    contractName: "loop",
-    functionName: "getLoopDetails",
-    watch: true,
-  });
-  const { data: currentPeriod, isPending } = useScaffoldReadContract({
-    contractName: "loop",
-    functionName: "getCurrentPeriod",
-    watch: false,
-  });
 
-  const { data: currentPeriodData } = useScaffoldReadContract({
-    contractName: "loop",
-    functionName: "getCurrentPeriodData",
-    watch: false,
-  });
+  const { loopDetails, isLoading } = useLoopData();
 
-  if (!readContractData || !currentPeriod || !currentPeriodData) return <div>...loading</div>;
+  const nextPeriodStart = useMemo(() => {
+    return loopDetails && loopDetails.currentPeriod !== undefined
+      ? loopDetails.firstPeriodStart + BigInt(loopDetails.periodLength) * (BigInt(loopDetails.currentPeriod) + 1n)
+      : 0n;
+  }, [loopDetails]);
 
-  const loopDetails: LoopDetails = {
-    token: readContractData[0],
-    periodLength: Number(readContractData[1]),
-    percentPerPeriod: +formatUnits(readContractData[2], 18) * 100,
-    firstPeriodStart: readContractData[3],
-    currentPeriod: Number(currentPeriod),
-    currentPeriodRegistrations: Number(currentPeriodData[0]),
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setClientTime(BigInt(Date.now()) / 1000n);
+    }, 1000);
 
+    return () => clearInterval(interval);
+  }, []);
 
+  const claimBefore = clientTime !== null ? nextPeriodStart - clientTime - 1n : null;
 
-  const nextPeriodStart = readContractData[3] + readContractData[1] * (currentPeriod + 1n);
-  // Calculate time left to claim
-  const currentTimeInSeconds = BigInt(Date.now()) / 1000n
-
-  console.log(currentTimeInSeconds);
-  const claimBefore = nextPeriodStart - currentTimeInSeconds - 1n
-
-  console.log(claimBefore);
-
-  console.log({ loopDetails: loopDetails });
+  console.log("Im rendering");
 
   return (
     <main className="px-4 mt-6">
@@ -72,22 +46,27 @@ export const LoopComponent = () => {
                   <div className="flex flex-col items-start  w-full border2">
                     <div className="flex flex-col gap-1">
                       <h5>
-                        Loop period length: <span>{secondsToTime(loopDetails.periodLength)}</span>
+                        Loop period length:{" "}
+                        <span>
+                          {loopDetails?.periodLength !== undefined
+                            ? secondsToTime(Number(loopDetails.periodLength))
+                            : "N/A"}
+                        </span>
                       </h5>
                     </div>
                     <div className="flex flex-col gap-1">
                       <h5>
-                        Loop distribution: <span>{loopDetails.percentPerPeriod} %</span>
+                        Loop distribution: <span>{loopDetails?.percentPerPeriod} %</span>
                       </h5>
                     </div>
                     <div className="flex flex-col gap-1">
                       <h5>
-                        Currento Period: <span>{loopDetails.currentPeriod}</span>
+                        Currento Period: <span>{loopDetails?.currentPeriod}</span>
                       </h5>
                     </div>
                     <div className="flex flex-col gap-1 items-start">
                       <h5>
-                        Current period registrations: <span>{loopDetails.currentPeriodRegistrations}</span>
+                        Current period registrations: <span>{loopDetails?.currentPeriodRegistrations}</span>
                       </h5>
                       <h5>
                         Estimated claim amount for next period: <span>0</span>
@@ -95,7 +74,10 @@ export const LoopComponent = () => {
                     </div>
                   </div>
                 </div>
-                <div className="">  Next period in {formatTime(Number(claimBefore))}</div>
+                <div className="">
+                  {clientTime !== null ? `Next period in ${formatTime(Number(claimBefore))}` : "...loading"}
+                </div>
+
                 <div className="">
                   {/* <button
                     className="btn btn-primary"
