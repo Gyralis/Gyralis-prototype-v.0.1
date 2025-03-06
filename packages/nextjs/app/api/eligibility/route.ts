@@ -1,14 +1,15 @@
-// api/eligibility
+// api/eligibility/
 import { NextResponse } from "next/server";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { Chain, createWalletClient, http, keccak256, toBytes } from "viem";
+import { Chain, createWalletClient, encodePacked, getContract, http, keccak256, parseAbi, toHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import * as chains from "viem/chains";
 
 // Backend private key to sign eligibility messages
-const TRUSTED_BACKEND_SIGNER_PK = process.env.TRUSTED_BACKEND_SIGNER_PK ?? "";
+const TRUSTED_BACKEND_SIGNER_PK = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"; //process.env.TRUSTED_BACKEND_SIGNER_PK ?? "";
 const GITCOIN_PASSPORT_API_KEY = process.env.GITCOIN_PASSPORT_API_KEY ?? "";
-const SCORER_ID = process.env.SCORER_ID ?? "";
+console.log("***** GITCOIN_PASSPORT_API_KEY *****", GITCOIN_PASSPORT_API_KEY);
+const SCORER_ID = 7435; //process.env.SCORER_ID ?? "";
 const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.12";
 
 /**
@@ -27,7 +28,6 @@ export function getViemChain(chainId: string | number): Chain {
 }
 
 const getApolloClient = (chainId: number) => {
-  // We are going to use the gnosis subgraph despite of the chain where the contracts are deployed for now but let the logic prepared
   if (!SUBGRAPH_URL) {
     throw new Error(`No subgraph URL configured for chainId ${chainId}`);
   }
@@ -52,6 +52,7 @@ async function fetchPassportScore(userAddress: string): Promise<number> {
   }
 
   const endpoint = `https://api.scorer.gitcoin.co/registry/score/${SCORER_ID}/${userAddress}`;
+  console.log("***** endpoint *****", endpoint);
   console.info("Making request to Gitcoin Passport API:", endpoint);
 
   try {
@@ -76,6 +77,35 @@ async function fetchPassportScore(userAddress: string): Promise<number> {
   } catch (error) {
     console.error("Error fetching passport score:", error);
     throw new Error("Internal server error while fetching passport score");
+  }
+}
+
+/**
+ * Fetches the current period from the Loop contract.
+ * @param chainId The blockchain network ID
+ * @param loopAddress The address of the Loop contract
+ * @returns The current period number (incremented by 1 for nextPeriod)
+ */
+async function fetchNextPeriod(chainId: number, loopAddress: string): Promise<bigint> {
+  try {
+    const viemChain = getViemChain(chains.localhost.id);
+    const walletClient = createWalletClient({
+      account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
+      chain: viemChain,
+      transport: http(),
+    });
+
+    const loopContract = getContract({
+      address: loopAddress as `0x${string}`,
+      abi: parseAbi(["function getCurrentPeriod() public view returns (uint256)"]),
+      client: walletClient,
+    });
+
+    const currentPeriod: bigint = await loopContract.read.getCurrentPeriod();
+    return currentPeriod + BigInt(1);
+  } catch (error) {
+    console.error("Error fetching current period:", error);
+    throw new Error("Failed to fetch current period");
   }
 }
 
@@ -127,18 +157,32 @@ export async function POST(req: Request) {
       );
     }
 
-    // If both checks pass, sign the eligibility message
+    // Fetch next period number from Loop contract
+    let nextPeriod: bigint;
+    try {
+      nextPeriod = await fetchNextPeriod(chainId, loopAddress);
+    } catch (error) {
+      return NextResponse.json(
+        { success: false, error: "Failed to fetch current period from Loop contract" },
+        { status: 500 },
+      );
+    }
+
+    // Correct eligibility message hashing
+    const eligibilityMessageHash = keccak256(
+      encodePacked(["address", "uint256", "address"], [userAddress, nextPeriod, loopAddress]),
+    );
+
+    // Sign the message with the trusted backend signer
     const walletClient = createWalletClient({
       account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
       chain: getViemChain(chainId),
       transport: http(),
     });
 
-    const eligibilityMessageHash = keccak256(toBytes(`${userAddress}-${loopAddress}-${Date.now()}`));
-
     const backendSignature = await walletClient.signMessage({
       account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
-      message: eligibilityMessageHash,
+      message: toHex(eligibilityMessageHash), // Convert to hex format
     });
 
     return NextResponse.json({
