@@ -34,12 +34,16 @@ contract Deploy is BaseScript {
     }
     FacetAddresses f;
     DeployedContracts d;
+    uint deployer_pk;
+    address trusted_signer;
+
     modifier wrapDeployment(){
         console.log("Starting Deployment...");
         _;
         wrap_deployment();
     }
     modifier broadcaster() override {
+        deployer_pk = vm.envUint('DEPLOYER_PK');
         vm.startBroadcast(_testerPk);
         _;
         vm.stopBroadcast();
@@ -50,8 +54,8 @@ contract Deploy is BaseScript {
 
 
     function _run()internal {
-        //deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
-        deployer =  0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
+        trusted_signer = vm.envAddress("TRUSTED_SIGNER");
+        deployer =  vm.addr(deployer_pk);
         systemAdmin =  0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // address that can call the diamondCut on the diamonds
 
         // Create the Facet Registry
@@ -104,7 +108,7 @@ contract Deploy is BaseScript {
             diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
             diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
             diamondInitData[3] = facetHelpers[3].makeInitData(facetAddresses[3], abi.encode(diamondFactory, registry)); // OrganizationFactory
-            diamondInitData[4] = facetHelpers[5].makeInitData(facetAddresses[5], abi.encode(diamondFactory, registry, trustedBackendSigner)); // LoopFactory
+            diamondInitData[4] = facetHelpers[5].makeInitData(facetAddresses[5], abi.encode(diamondFactory, registry, trusted_signer)); // LoopFactory
 
             f.diamond_cut = facetAddresses[0];
             f.diamond_loupe = facetAddresses[1];
