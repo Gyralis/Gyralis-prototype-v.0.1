@@ -12,7 +12,13 @@ const deployedContracts = {
         {
           type: "function",
           name: "DiamondCut_init",
-          inputs: [],
+          inputs: [
+            {
+              name: "_systemAdmin",
+              type: "address",
+              internalType: "address",
+            },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
@@ -51,6 +57,19 @@ const deployedContracts = {
               name: "initData",
               type: "bytes",
               internalType: "bytes",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "setSystemAdmin",
+          inputs: [
+            {
+              name: "_admin",
+              type: "address",
+              internalType: "address",
             },
           ],
           outputs: [],
@@ -112,6 +131,19 @@ const deployedContracts = {
           anonymous: false,
         },
         {
+          type: "event",
+          name: "SystemAdminUpdated",
+          inputs: [
+            {
+              name: "admin",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
           type: "error",
           name: "AddressEmptyCode",
           inputs: [
@@ -130,6 +162,11 @@ const deployedContracts = {
         {
           type: "error",
           name: "CallerIsNotOwner",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "CallerIsNotSystemAdmin",
           inputs: [],
         },
         {
@@ -451,6 +488,11 @@ const deployedContracts = {
               type: "uint256",
               internalType: "uint256",
             },
+            {
+              name: "_trustedBackendSigner",
+              type: "address",
+              internalType: "address",
+            },
           ],
           outputs: [],
           stateMutability: "nonpayable",
@@ -478,7 +520,13 @@ const deployedContracts = {
         {
           type: "function",
           name: "claimAndRegister",
-          inputs: [],
+          inputs: [
+            {
+              name: "signature",
+              type: "bytes",
+              internalType: "bytes",
+            },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
@@ -568,6 +616,19 @@ const deployedContracts = {
               name: "_percentPerPeriod",
               type: "uint256",
               internalType: "uint256",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "setTrustedBackendSigner",
+          inputs: [
+            {
+              name: "_newSigner",
+              type: "address",
+              internalType: "address",
             },
           ],
           outputs: [],
@@ -695,6 +756,19 @@ const deployedContracts = {
         },
         {
           type: "event",
+          name: "TrustedBackendSignerUpdated",
+          inputs: [
+            {
+              name: "newSigner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
           name: "UserRoleUpdated",
           inputs: [
             {
@@ -765,6 +839,33 @@ const deployedContracts = {
         },
         {
           type: "error",
+          name: "ECDSAInvalidSignature",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "ECDSAInvalidSignatureLength",
+          inputs: [
+            {
+              name: "length",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "ECDSAInvalidSignatureS",
+          inputs: [
+            {
+              name: "s",
+              type: "bytes32",
+              internalType: "bytes32",
+            },
+          ],
+        },
+        {
+          type: "error",
           name: "FaucetBalanceIsZero",
           inputs: [],
         },
@@ -791,7 +892,13 @@ const deployedContracts = {
         {
           type: "function",
           name: "DiamondCut_init",
-          inputs: [],
+          inputs: [
+            {
+              name: "_systemAdmin",
+              type: "address",
+              internalType: "address",
+            },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
@@ -830,6 +937,19 @@ const deployedContracts = {
               name: "initData",
               type: "bytes",
               internalType: "bytes",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "setSystemAdmin",
+          inputs: [
+            {
+              name: "_admin",
+              type: "address",
+              internalType: "address",
             },
           ],
           outputs: [],
@@ -891,6 +1011,19 @@ const deployedContracts = {
           anonymous: false,
         },
         {
+          type: "event",
+          name: "SystemAdminUpdated",
+          inputs: [
+            {
+              name: "admin",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
           type: "error",
           name: "AddressEmptyCode",
           inputs: [
@@ -909,6 +1042,11 @@ const deployedContracts = {
         {
           type: "error",
           name: "CallerIsNotOwner",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "CallerIsNotSystemAdmin",
           inputs: [],
         },
         {
@@ -1739,7 +1877,13 @@ const deployedContracts = {
         {
           type: "function",
           name: "DiamondCut_init",
-          inputs: [],
+          inputs: [
+            {
+              name: "_systemAdmin",
+              type: "address",
+              internalType: "address",
+            },
+          ],
           outputs: [],
           stateMutability: "nonpayable",
         },
@@ -1778,6 +1922,19 @@ const deployedContracts = {
               name: "initData",
               type: "bytes",
               internalType: "bytes",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "setSystemAdmin",
+          inputs: [
+            {
+              name: "_admin",
+              type: "address",
+              internalType: "address",
             },
           ],
           outputs: [],
@@ -1839,6 +1996,19 @@ const deployedContracts = {
           anonymous: false,
         },
         {
+          type: "event",
+          name: "SystemAdminUpdated",
+          inputs: [
+            {
+              name: "admin",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
           type: "error",
           name: "AddressEmptyCode",
           inputs: [
@@ -1857,6 +2027,11 @@ const deployedContracts = {
         {
           type: "error",
           name: "CallerIsNotOwner",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "CallerIsNotSystemAdmin",
           inputs: [],
         },
         {
@@ -2155,6 +2330,11 @@ const deployedContracts = {
               type: "address",
               internalType: "address",
             },
+            {
+              name: "_trustedBackendSigner",
+              type: "address",
+              internalType: "address",
+            },
           ],
           outputs: [],
           stateMutability: "nonpayable",
@@ -2170,6 +2350,11 @@ const deployedContracts = {
             },
             {
               name: "token",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "admin",
               type: "address",
               internalType: "address",
             },
@@ -2211,6 +2396,19 @@ const deployedContracts = {
             },
           ],
           stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "setTrustedBackendSigner",
+          inputs: [
+            {
+              name: "_newSigner",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
         },
         {
           type: "event",
@@ -2289,6 +2487,19 @@ const deployedContracts = {
               type: "uint256",
               indexed: false,
               internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "TrustedBackendSignerUpdated",
+          inputs: [
+            {
+              name: "newSigner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
             },
           ],
           anonymous: false,
@@ -2603,7 +2814,7 @@ const deployedContracts = {
       ],
     },
     test_token_address: {
-      address: "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e",
+      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
       abi: [
         {
           type: "constructor",
@@ -2935,6 +3146,11 @@ const deployedContracts = {
       address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
       abi: [
         {
+          type: "constructor",
+          inputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
           type: "function",
           name: "addFacet",
           inputs: [
@@ -3058,6 +3274,19 @@ const deployedContracts = {
         },
         {
           type: "function",
+          name: "owner",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
           name: "removeFacet",
           inputs: [
             {
@@ -3094,6 +3323,19 @@ const deployedContracts = {
           inputs: [
             {
               name: "facet",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "OwnerSet",
+          inputs: [
+            {
+              name: "owner",
               type: "address",
               indexed: true,
               internalType: "address",
@@ -3161,11 +3403,17 @@ const deployedContracts = {
         facetSelectors: "contracts/registry/IFacetRegistry.sol",
         getFacetBySelector: "contracts/registry/IFacetRegistry.sol",
         removeFacet: "contracts/registry/IFacetRegistry.sol",
+        owner: "contracts/registry/FacetRegistryBase.sol",
       },
     },
     DiamondFactory: {
       address: "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6",
       abi: [
+        {
+          type: "constructor",
+          inputs: [],
+          stateMutability: "nonpayable",
+        },
         {
           type: "function",
           name: "createDiamond",
@@ -3220,6 +3468,45 @@ const deployedContracts = {
           stateMutability: "nonpayable",
         },
         {
+          type: "function",
+          name: "owner",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "setSystemDiamond",
+          inputs: [
+            {
+              name: "_systemDiamond",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "systemDiamond",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
           type: "event",
           name: "DiamondCreated",
           inputs: [
@@ -3239,6 +3526,32 @@ const deployedContracts = {
           anonymous: false,
         },
         {
+          type: "event",
+          name: "OwnerSet",
+          inputs: [
+            {
+              name: "owner",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
+          name: "SystemDiamondSet",
+          inputs: [
+            {
+              name: "systemDiamond",
+              type: "address",
+              indexed: true,
+              internalType: "address",
+            },
+          ],
+          anonymous: false,
+        },
+        {
           type: "error",
           name: "DiamondFactory_LoupeNotSupported",
           inputs: [],
@@ -3246,10 +3559,12 @@ const deployedContracts = {
       ],
       inheritedFunctions: {
         createDiamond: "contracts/factory/IDiamondFactory.sol",
+        owner: "contracts/factory/DiamondFactoryBase.sol",
+        systemDiamond: "contracts/factory/DiamondFactoryBase.sol",
       },
     },
     TestToken: {
-      address: "0xb7f8bc63bbcad18155201308c8f3540b07f84f5e",
+      address: "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0",
       abi: [
         {
           type: "constructor",
