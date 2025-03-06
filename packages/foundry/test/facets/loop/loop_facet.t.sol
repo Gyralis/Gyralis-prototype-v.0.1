@@ -19,7 +19,7 @@ contract WLoopFacet is LoopFacet {
   function getPeriodMaxPayout() external view returns(uint) {
     return _getPeriodMaxPayout(LoopStorage.layout().token.balanceOf(address(this)));
   }
-  function getPeriodIndividualPayout() external view returns(uint) {
+  function getPeriodIndividualPayout() external /*view*/ returns(uint) {
     LoopStorage.Layout storage ds = LoopStorage.layout();
     uint256 currentPeriod = getCurrentPeriod();
     LoopStorage.Period storage period = ds.periods[currentPeriod];
@@ -47,6 +47,47 @@ contract LoopFacetBaseTest is Test {
     bad_addresses.push(address(new BadToken()));
   } 
  
+  function _randAddr(uint _am) internal returns(address[]memory) {
+    address[]memory _a = new address[](_am);
+    for(uint i = 0;i<_am;i++){
+      _a[i] = makeAddr(string.concat('USER#',Strings.toString(_am)));
+    }
+    return _a;
+  }
+  function _digestAndSign(address _claimer,uint _nextPeriod) internal view returns (bytes memory) {
+    bytes32 _digestedMsg = keccak256(abi.encodePacked(_claimer,_nextPeriod,address(loop)));
+    bytes32 eth_msg_hash = MessageHashUtils.toEthSignedMessageHash(_digestedMsg);
+    (uint8 v, bytes32 r, bytes32 s) = vm.sign(be_signer.key, eth_msg_hash);
+    return abi.encodePacked(r, s, v);
+  }
+
+  modifier allowClaimer(address _claimer) virtual {
+     uint _nextPeriod = loop.getCurrentPeriod() +1;
+     address [] memory  _extraUsers = _randAddr(_nextPeriod); 
+     bytes memory _signature;
+     for(uint i = 0;i<_nextPeriod;i++){
+       address _a = _extraUsers[i];
+       _signature = _digestAndSign(_a, _nextPeriod);
+       vm.prank(_a);
+       vm.expectEmit(address(loop));
+       emit ILoop.Register(_a,_nextPeriod); 
+       loop.claimAndRegister(_signature);
+     }
+     _signature = _digestAndSign(_claimer, _nextPeriod);
+     vm.prank(_claimer);
+     vm.expectEmit(address(loop));
+     emit ILoop.Register(_claimer,_nextPeriod); 
+     loop.claimAndRegister(_signature);
+     vm.warp(block.timestamp + 101);
+    _;
+  }
+  modifier validAdd(address _claimer) {
+    vm.assume(_claimer != address(loop));
+    vm.assume(address(this)!= _claimer);
+    vm.assume(_claimer != address(0));
+    vm.assume(_claimer != be_signer.addr);
+    _;
+  }
 }
 contract LoopFacet_Initializer is LoopFacetBaseTest {
   // Address (0)
@@ -203,47 +244,6 @@ contract LoopFacet_claimTest is LoopFacetBaseTest {
     vm.expectRevert(ILoop.CannotClaim.selector);
     loop.claim();
   }
-  function _randAddr(uint _am) internal returns(address[]memory) {
-    address[]memory _a = new address[](_am);
-    for(uint i = 0;i<_am;i++){
-      _a[i] = makeAddr(string.concat('USER#',Strings.toString(_am)));
-    }
-    return _a;
-  }
-  function _digestAndSign(address _claimer,uint _nextPeriod) internal view returns (bytes memory) {
-    bytes32 _digestedMsg = keccak256(abi.encodePacked(_claimer,_nextPeriod,address(loop)));
-    bytes32 eth_msg_hash = MessageHashUtils.toEthSignedMessageHash(_digestedMsg);
-    (uint8 v, bytes32 r, bytes32 s) = vm.sign(be_signer.key, eth_msg_hash);
-    return abi.encodePacked(r, s, v);
-  }
-
-  modifier allowClaimer(address _claimer) virtual {
-     uint _nextPeriod = loop.getCurrentPeriod() +1;
-     address [] memory  _extraUsers = _randAddr(_nextPeriod); 
-     bytes memory _signature;
-     for(uint i = 0;i<_nextPeriod;i++){
-       address _a = _extraUsers[i];
-       _signature = _digestAndSign(_a, _nextPeriod);
-       vm.prank(_a);
-       vm.expectEmit(address(loop));
-       emit ILoop.Register(_a,_nextPeriod); 
-       loop.claimAndRegister(_signature);
-     }
-     _signature = _digestAndSign(_claimer, _nextPeriod);
-     vm.prank(_claimer);
-     vm.expectEmit(address(loop));
-     emit ILoop.Register(_claimer,_nextPeriod); 
-     loop.claimAndRegister(_signature);
-     vm.warp(block.timestamp + 101);
-    _;
-  }
-  modifier validAdd(address _claimer) {
-    vm.assume(_claimer != address(loop));
-    vm.assume(address(this)!= _claimer);
-    vm.assume(_claimer != address(0));
-    vm.assume(_claimer != be_signer.addr);
-    _;
-  }
   function test_claims_not_even_a_unit(uint8 _am,address _claimer) external validAdd(_claimer) allowClaimer(_claimer){
     token.mint(address(loop),1);
     uint _period = loop.getCurrentPeriod() ;
@@ -278,3 +278,96 @@ contract LoopFacet_claimTest is LoopFacetBaseTest {
     assertEq(m,_expected*2);
   }
 }  
+
+contract LoopFacet_ClaimWSignature is LoopFacetBaseTest {
+    uint32 delta_period;
+    uint32 percentaje;
+    function _nextPeriod() internal {
+       vm.warp(block.timestamp + delta_period + 1);
+    }
+    function setUp() public virtual override {
+      delta_period= 100;
+      percentaje = delta_period /2;
+      uint32 _n = delta_period;
+      super.setUp();
+      vm.expectEmit(address(loop));
+      emit ILoop.Initialize(address(token),_n,percentaje);
+      loop.Loop_init(address(token),admin,_n,percentaje,be_signer.addr);
+    }
+    function test_claimAndRegister_invalidSignature() external {
+        address user = makeAddr("USER_WITH_BAD_SIG");
+        uint nextPeriod = loop.getCurrentPeriod() + 1;
+        bytes memory fakeSignature = _digestAndSign(makeAddr("FAKE_USER"), nextPeriod);
+
+        vm.prank(user);
+        vm.expectRevert(bytes("Invalid eligibility signature"));
+
+        loop.claimAndRegister(fakeSignature);
+    }
+    function test_claimAndRegister_cannotClaim() external {
+        address user = makeAddr("USER_NO_CLAIM");
+        uint nextPeriod = loop.getCurrentPeriod() + 1;
+        bytes memory signature = _digestAndSign(user, nextPeriod);
+
+        vm.prank(user);
+        loop.claimAndRegister(signature);
+
+        // Se adelanta el tiempo para simular el bloqueo de claim
+        vm.prank(user);
+        vm.expectRevert(ILoop.CannotClaim.selector);
+        loop.claim();
+    }
+
+    function test_claimAndRegister_withZeroBalance() external {
+        address user = makeAddr("USER_ZERO_BALANCE");
+        uint nextPeriod = loop.getCurrentPeriod() + 1;
+        bytes memory signature = _digestAndSign(user, nextPeriod);
+
+        vm.prank(user);
+        loop.claimAndRegister(signature);
+
+        uint period = loop.getCurrentPeriod();
+
+        _nextPeriod();
+        vm.prank(user);
+        vm.expectRevert(ILoop.FaucetBalanceIsZero.selector);
+        loop.claim();
+
+        (uint r, uint c) = loop.getClaimerData(user);
+        assertEq(0, c, "Claimed MUST be zero");
+        assertEq(r, 1, "User SHOULD be registered ok");
+    }
+
+    function test_claimAndRegister_withBalance() external {
+        address user = makeAddr("USER_BALANCE");
+        uint am = 1.09212e18;
+        token.mint(address(loop), am);
+        uint nextPeriod = loop.getCurrentPeriod() + 1;
+        bytes memory signature = _digestAndSign(user, nextPeriod);
+
+        vm.prank(user);
+        loop.claimAndRegister(signature);
+        
+        _nextPeriod();
+        uint period = loop.getCurrentPeriod();
+        (,,uint percentage,) = loop.getLoopDetails();
+        uint expectedClaim = (am /100)*percentage;
+        vm.prank(user);
+        vm.expectEmit(address(token));
+        emit IERC20.Transfer(address(loop), user, expectedClaim);
+        vm.expectEmit(address(loop));
+        emit ILoop.Claim(user, period, expectedClaim);
+
+        loop.claim();
+
+        (uint r, uint c) = loop.getClaimerData(user);
+        assertEq(r, c, "claim and register MUST be equal");
+        assertEq(r, 1, "User SHOULD be registered ok");
+
+        (uint total, uint minted) = loop.getCurrentPeriodData();
+        assertEq(total, 1, "Total registered incorrect");
+        assertEq(minted, expectedClaim, "Minted is equal to expected claim");
+    }
+}
+
+
