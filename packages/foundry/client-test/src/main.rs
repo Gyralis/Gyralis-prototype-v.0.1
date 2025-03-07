@@ -23,7 +23,9 @@ async fn main() -> eyre::Result<()> {
         }
     };
     println!(" Env listo para usarse: {:?}", env);
-
+    if let Some(org_contract) =env.org_contract {
+        let loop_receipt = Env::create_loop(&env, Some(org_contract), 120).await?
+    }
     //2) Interacciones
     //      - construir un loop
     //      - firmar con el trusted_signer para que bad_actor pueda reclamar varias veces

@@ -1,10 +1,10 @@
-use ethers::abi::{Abi, ParamType};
+use ethers::abi::{Abi, AbiDecode, ParamType};
 use ethers::contract::Contract;
 use ethers::core::k256::ecdsa::SigningKey;
 use ethers::middleware::SignerMiddleware;
 use ethers::providers::{Http, Provider};
 use ethers::signers::{LocalWallet, Signer};
-use ethers::types::{Address, H256, U256};
+use ethers::types::{Address, TransactionReceipt, H256, U256};
 use eyre::{Ok, Result};
 use serde_json::Value;
 use std::env;
@@ -21,14 +21,14 @@ pub struct ContractStr {
 
 #[derive(Debug, Clone)]
 pub struct Env {
-    rpc_url: String,
-    bad_actor_pk: String,
-    trusted_signer_pk: String,
-    deployemt_data: Value,
-    loop_contract: Option<Contract<Provider<Http>>>, // Instancia sin signer
-    org_contract: Option<Contract<Provider<Http>>>,  // Instancia sin signer
-    bad_signer: Option<Arc<SignerMiddleware<Provider<Http>, LocalWallet>>>,
-    trusted_signer: Option<Arc<SignerMiddleware<Provider<Http>, LocalWallet>>>,
+    pub rpc_url: String,
+    pub bad_actor_pk: String,
+    pub trusted_signer_pk: String,
+    pub deployemt_data: Value,
+    pub loop_contract: Option<Contract<Provider<Http>>>, // Instancia sin signer
+    pub org_contract: Option<Contract<Provider<Http>>>,  // Instancia sin signer
+    pub bad_signer: Option<Arc<SignerMiddleware<Provider<Http>, LocalWallet>>>,
+    pub trusted_signer: Option<Arc<SignerMiddleware<Provider<Http>, LocalWallet>>>,
 }
 
 impl Env {
@@ -80,7 +80,7 @@ impl Env {
 
         Ok(())
     }
-    pub async fn setup() -> Result<()> {
+    pub async fn setup() -> Result<Self> {
         // Cargar variables de entorno
         let rpc_url = env::var("RPC_URL")?;
         let bad_actor_pk = env::var("BAD_ACTOR_PK")?;
@@ -146,7 +146,7 @@ impl Env {
         println!("✅ Loop Contract ABI cargado correctamente.");
         println!("✅ Organization Contract ABI cargado correctamente.");
 
-        Ok(())
+        Ok(env_struct)
     }
 }
 
@@ -155,7 +155,7 @@ impl Env {
         env: &Env,
         contract: Option<Contract<Provider<Http>>>,
         time: U256,
-    ) -> Result<(H256, Address)> {
+    ) -> Result<H256> {
         let system_diamond: Address = env
             .deployemt_data
             .get("system_diamond")
@@ -178,51 +178,51 @@ impl Env {
                     .trusted_signer
                     .clone()
                     .ok_or_else(|| eyre::eyre!("❌ No hay signer disponible"))?;
-
+                let c_with_user = c.connect(signer);
                 // Conectar el contrato con el signer
                 // let org_contract_with_signer = c.clone().connect(signer);
 
                 // Enviar la transacción
 
                 // Enviar la transacción y obtener el objeto PendingTransaction
-                let pending_tx = c
+                let pending_tx = c_with_user
                     .method::<(Address, Address, U256, U256), Address>(
                         "createNewLoop",
                         (system_diamond, token, time, percent_per_period),
                     )?
                     .send()
-                    .await?;
-
-                let receipt = pending_tx
                     .await?
-                    .ok_or_else(|| eyre::eyre!("❌ La transacción no se confirmó"))?;
-                // Extraer el valor de retorno desde los logs (si `createNewLoop` lo devuelve)
-                let new_loop_address = receipt
-                    .clone()
-                    .logs
-                    .iter()
-                    .find_map(|log| {
-                        log.topics.get(0).and_then(|topic| {
-                            if *topic == c.abi().event("LoopCreated").unwrap().signature() {
-                                Some(
-                                    ethers::abi::decode(&[ParamType::Address], &log.data)
-                                        .ok()?
-                                        .remove(0),
-                                )
-                            } else {
-                                None
-                            }
-                        })
-                    })
-                    .ok_or_else(|| {
-                        eyre::eyre!("❌ No se pudo recuperar la dirección del nuevo Loop")
-                    })?;
+                    .tx_hash();
 
-                println!("✅ Loop creado en la dirección: {:?}", new_loop_address);
-
-                Ok((tx_hash, new_loop_address.into_address().unwrap()))
+                // let receipt = pending_tx
+                //     .await?
+                //     .ok_or_else(|| eyre::eyre!("❌ La transacción no se confirmó"))?;
+                // // Extraer el valor de retorno desde los logs (si `createNewLoop` lo devuelve)
+                // let new_loop_address = receipt
+                //     .clone()
+                //     .logs
+                //     .iter()
+                //     .find_map(|log| {
+                //         log.topics.get(0).and_then(|topic| {
+                //             if *topic == c.abi().event("LoopCreated").unwrap().signature() {
+                //                 Some(
+                //                     ethers::abi::decode(&[ParamType::Address], &log.data)
+                //                         .ok()?
+                //                         .remove(0),
+                //                 )
+                //             } else {
+                //                 None
+                //             }
+                //         })
+                //     })
+                //     .ok_or_else(|| {
+                //         eyre::eyre!("❌ No se pudo recuperar la dirección del nuevo Loop")
+                //     })?;
+                Ok(pending_tx)
+                // println!("✅ Loop creado en la dirección: {:?}", new_loop_address);
             }
-            None => Ok((H256::zero(), Address::default())),
+            // Ok((, new_loop_address.into_address().unwrap()))
+            None => Ok(H256::default()),
         }
     }
     pub async fn claim_and_register(env: &Env, signature: Vec<u8>) -> Result<H256> {
