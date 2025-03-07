@@ -7,18 +7,11 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     loop: {
-      address: "0x39c3A55F68Bf9f2992776991F25Aac6813a4F1d0",
+      address: "0xED179b78D5781f93eb169730D8ad1bE7313123F4",
       abi: [
         {
           type: "function",
           name: "DiamondCut_init",
-          inputs: [
-            {
-              name: "_systemAdmin",
-              type: "address",
-              internalType: "address",
-            },
-          ],
           inputs: [
             {
               name: "_systemAdmin",
@@ -64,19 +57,6 @@ const deployedContracts = {
               name: "initData",
               type: "bytes",
               internalType: "bytes",
-            },
-          ],
-          outputs: [],
-          stateMutability: "nonpayable",
-        },
-        {
-          type: "function",
-          name: "setSystemAdmin",
-          inputs: [
-            {
-              name: "_admin",
-              type: "address",
-              internalType: "address",
             },
           ],
           outputs: [],
@@ -146,19 +126,6 @@ const deployedContracts = {
               type: "uint64",
               indexed: false,
               internalType: "uint64",
-            },
-          ],
-          anonymous: false,
-        },
-        {
-          type: "event",
-          name: "SystemAdminUpdated",
-          inputs: [
-            {
-              name: "admin",
-              type: "address",
-              indexed: false,
-              internalType: "address",
             },
           ],
           anonymous: false,
@@ -920,7 +887,7 @@ const deployedContracts = {
       ],
     },
     organization: {
-      address: "0xA43C8fA0cb6567312091fb14ebf4d0f65De4a6E4",
+      address: "0x06B1D212B8da92b83AF328De5eef4E211Da02097",
       abi: [
         {
           type: "function",
@@ -1075,11 +1042,6 @@ const deployedContracts = {
         {
           type: "error",
           name: "CallerIsNotOwner",
-          inputs: [],
-        },
-        {
-          type: "error",
-          name: "CallerIsNotSystemAdmin",
           inputs: [],
         },
         {
@@ -1633,7 +1595,7 @@ const deployedContracts = {
       ],
     },
     system_diamond: {
-      address: "0xB5d064b44960FdedA1072f983C3E8f1e123cE154",
+      address: "0x94099942864EA81cCF197E9D71ac53310b1468D8",
       abi: [
         {
           type: "function",
@@ -2852,7 +2814,7 @@ const deployedContracts = {
       ],
     },
     test_token_address: {
-      address: "0xD8a5a9b31c3C0232E196d518E89Fd8bF83AcAd43",
+      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
       abi: [
         {
           type: "constructor",
@@ -3181,7 +3143,7 @@ const deployedContracts = {
       ],
     },
     FacetRegistry: {
-      address: "0xcbeaf3bde82155f56486fb5a1072cb8baaf547cc",
+      address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
       abi: [
         {
           type: "constructor",
@@ -3433,10 +3395,19 @@ const deployedContracts = {
           ],
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        addFacet: "contracts/registry/IFacetRegistry.sol",
+        computeFacetAddress: "contracts/registry/IFacetRegistry.sol",
+        deployFacet: "contracts/registry/IFacetRegistry.sol",
+        facetAddresses: "contracts/registry/IFacetRegistry.sol",
+        facetSelectors: "contracts/registry/IFacetRegistry.sol",
+        getFacetBySelector: "contracts/registry/IFacetRegistry.sol",
+        removeFacet: "contracts/registry/IFacetRegistry.sol",
+        owner: "contracts/registry/FacetRegistryBase.sol",
+      },
     },
     DiamondFactory: {
-      address: "0x04c89607413713ec9775e14b954286519d836fef",
+      address: "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6",
       abi: [
         {
           type: "constructor",
@@ -3586,10 +3557,14 @@ const deployedContracts = {
           inputs: [],
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        createDiamond: "contracts/factory/IDiamondFactory.sol",
+        owner: "contracts/factory/DiamondFactoryBase.sol",
+        systemDiamond: "contracts/factory/DiamondFactoryBase.sol",
+      },
     },
     TestToken: {
-      address: "0xd8a5a9b31c3c0232e196d518e89fd8bf83acad43",
+      address: "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0",
       abi: [
         {
           type: "constructor",

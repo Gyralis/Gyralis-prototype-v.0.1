@@ -15,7 +15,7 @@
     "vercel:yolo": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1 --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true",
     "query-passport-account": "curl -X GET http://localhost:3000/api/passport/0x584ddfb0bdd922ff1fbf3e85e7e781d5816b4f23",
     "test:eligibility": "node scripts/testEligibility.ts",
-    "submit-passport": "curl -X POST http://localhost:3000/api/submit-passport -H 'Content-Type: application/json' -d '{\"address\":\"0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266\"}'"
+    "submit-passport": "curl -X POST http://localhost:3000/api/submit-passport -H 'Content-Type: application/json' -d '{\"address\":\"0xa25211B64D041F690C0c818183E32f28ba9647Dd\"}'"
   },
   "dependencies": {
     "@apollo/client": "^3.8.0",
