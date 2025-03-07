@@ -1,9 +1,17 @@
-use ethers::abi::Abi;
-use ethers::types::Address;
-use eyre::Result;
+use ethers::abi::{Abi, ParamType};
+use ethers::contract::Contract;
+use ethers::core::k256::ecdsa::SigningKey;
+use ethers::middleware::SignerMiddleware;
+use ethers::providers::{Http, Provider};
+use ethers::signers::{LocalWallet, Signer};
+use ethers::types::{Address, H256, U256};
+use eyre::{Ok, Result};
 use serde_json::Value;
 use std::env;
 use std::fs;
+use std::future::pending;
+use std::result::Result::Ok as StdOk;
+use std::sync::Arc;
 
 #[derive(Debug, Clone)]
 pub struct ContractStr {
@@ -17,12 +25,62 @@ pub struct Env {
     bad_actor_pk: String,
     trusted_signer_pk: String,
     deployemt_data: Value,
-    loop_contract: ContractStr,
-    org_contract: ContractStr,
+    loop_contract: Option<Contract<Provider<Http>>>, // Instancia sin signer
+    org_contract: Option<Contract<Provider<Http>>>,  // Instancia sin signer
+    bad_signer: Option<Arc<SignerMiddleware<Provider<Http>, LocalWallet>>>,
+    trusted_signer: Option<Arc<SignerMiddleware<Provider<Http>, LocalWallet>>>,
 }
 
 impl Env {
-    pub async fn setup() -> Result<Self> {
+    pub const CHAIN_ID: u64 = 31337;
+    fn default() -> Self {
+        Self {
+            rpc_url: String::new(),
+            bad_actor_pk: String::new(),
+            trusted_signer_pk: String::new(),
+            deployemt_data: Value::default(),
+            loop_contract: None,
+            org_contract: None,
+            bad_signer: None,
+            trusted_signer: None,
+        }
+    }
+    fn setup_providers(&mut self, loop_data: &ContractStr, org_data: &ContractStr) -> Result<()> {
+        // Construcción de la estructura Env
+        let provider = Provider::<Http>::try_from(&self.rpc_url)?;
+
+        // 2️⃣ Crear wallets desde claves privadas
+        let wallet1 = self
+            .bad_actor_pk
+            .parse::<LocalWallet>()?
+            .with_chain_id(Self::CHAIN_ID);
+        let wallet2 = self
+            .trusted_signer_pk
+            .parse::<LocalWallet>()?
+            .with_chain_id(Self::CHAIN_ID);
+
+        let bad_signer = Arc::new(SignerMiddleware::new(provider.clone(), wallet1));
+        let trusted_signer = Arc::new(SignerMiddleware::new(provider.clone(), wallet2));
+
+        let loop_contract = Contract::new(
+            loop_data.address,
+            loop_data.abi.clone(),
+            Arc::new(provider.clone()),
+        );
+        let org_contract = Contract::new(
+            org_data.address,
+            org_data.abi.clone(),
+            Arc::new(provider.clone()),
+        );
+
+        self.bad_signer = Some(bad_signer);
+        self.trusted_signer = Some(trusted_signer);
+        self.loop_contract = Some(loop_contract);
+        self.org_contract = Some(org_contract);
+
+        Ok(())
+    }
+    pub async fn setup() -> Result<()> {
         // Cargar variables de entorno
         let rpc_url = env::var("RPC_URL")?;
         let bad_actor_pk = env::var("BAD_ACTOR_PK")?;
@@ -69,24 +127,131 @@ impl Env {
                 .ok_or_else(|| eyre::eyre!("ABI not found in organization JSON."))?
                 .clone(),
         )?;
+        let org_struct: ContractStr = ContractStr {
+            address: loop_address,
+            abi: loop_contract_abi,
+        };
+        let loop_struct: ContractStr = ContractStr {
+            address: org_address,
+            abi: org_contract_abi,
+        };
+
+        let mut env_struct = Env::default();
+        env_struct.rpc_url = rpc_url;
+        env_struct.bad_actor_pk = bad_actor_pk;
+        env_struct.trusted_signer_pk = trusted_signer_pk;
+        env_struct.deployemt_data = json;
+        env_struct.setup_providers(&org_struct, &loop_struct)?;
 
         println!("✅ Loop Contract ABI cargado correctamente.");
         println!("✅ Organization Contract ABI cargado correctamente.");
 
-        // Construcción de la estructura Env
-        Ok(Env {
-            rpc_url,
-            bad_actor_pk,
-            trusted_signer_pk,
-            deployemt_data: json,
-            loop_contract: ContractStr {
-                address: loop_address,
-                abi: loop_contract_abi,
-            },
-            org_contract: ContractStr {
-                address: org_address,
-                abi: org_contract_abi,
-            },
-        })
+        Ok(())
+    }
+}
+
+impl Env {
+    pub async fn create_loop(
+        env: &Env,
+        contract: Option<Contract<Provider<Http>>>,
+        time: U256,
+    ) -> Result<(H256, Address)> {
+        let system_diamond: Address = env
+            .deployemt_data
+            .get("system_diamond")
+            .and_then(Value::as_str)
+            .ok_or_else(|| eyre::eyre!("❌ system_diamond no encontrado o inválido"))?
+            .parse()?;
+
+        let token: Address = env
+            .deployemt_data
+            .get("test_token_address")
+            .and_then(Value::as_str)
+            .ok_or_else(|| eyre::eyre!("❌ test_token_address no encontrado o inválido"))?
+            .parse()?;
+
+        let percent_per_period: U256 = U256::from(5);
+
+        match contract {
+            Some(c) => {
+                let signer = env
+                    .trusted_signer
+                    .clone()
+                    .ok_or_else(|| eyre::eyre!("❌ No hay signer disponible"))?;
+
+                // Conectar el contrato con el signer
+                // let org_contract_with_signer = c.clone().connect(signer);
+
+                // Enviar la transacción
+
+                // Enviar la transacción y obtener el objeto PendingTransaction
+                let pending_tx = c
+                    .method::<(Address, Address, U256, U256), Address>(
+                        "createNewLoop",
+                        (system_diamond, token, time, percent_per_period),
+                    )?
+                    .send()
+                    .await?;
+
+                let receipt = pending_tx
+                    .await?
+                    .ok_or_else(|| eyre::eyre!("❌ La transacción no se confirmó"))?;
+                // Extraer el valor de retorno desde los logs (si `createNewLoop` lo devuelve)
+                let new_loop_address = receipt
+                    .clone()
+                    .logs
+                    .iter()
+                    .find_map(|log| {
+                        log.topics.get(0).and_then(|topic| {
+                            if *topic == c.abi().event("LoopCreated").unwrap().signature() {
+                                Some(
+                                    ethers::abi::decode(&[ParamType::Address], &log.data)
+                                        .ok()?
+                                        .remove(0),
+                                )
+                            } else {
+                                None
+                            }
+                        })
+                    })
+                    .ok_or_else(|| {
+                        eyre::eyre!("❌ No se pudo recuperar la dirección del nuevo Loop")
+                    })?;
+
+                println!("✅ Loop creado en la dirección: {:?}", new_loop_address);
+
+                Ok((tx_hash, new_loop_address.into_address().unwrap()))
+            }
+            None => Ok((H256::zero(), Address::default())),
+        }
+    }
+    pub async fn claim_and_register(env: &Env, signature: Vec<u8>) -> Result<H256> {
+        match &env.loop_contract {
+            Some(c) => {
+                let tx_hash = c
+                    .method::<Vec<u8>, H256>("claimAndRegister", signature)
+                    .unwrap()
+                    .send()
+                    .await?
+                    .tx_hash();
+
+                Ok(tx_hash)
+            }
+            None => Ok(H256::zero()),
+        }
+    }
+
+    pub async fn get_current_period(env: &Env) -> Result<U256> {
+        match &env.loop_contract {
+            Some(c) => {
+                let period: U256 = c
+                    .method::<(), U256>("getCurrentPeriod", ())
+                    .unwrap()
+                    .call()
+                    .await?;
+                Ok(period)
+            }
+            None => Ok(U256::default()),
+        }
     }
 }

@@ -1,13 +1,8 @@
 use dotenv::dotenv;
-use ethers::abi::Abi;
-use ethers::prelude::*;
-use ethers::signers::{LocalWallet, Signer};
-use serde_json::Value;
-use std::env;
-use std::fs;
-use std::sync::Arc;
 
 pub mod utils;
+use ethers::core::types::Signature;
+use ethers::utils::hash_message;
 use utils::setup_env::Env;
 
 #[tokio::main]
@@ -15,6 +10,11 @@ async fn main() -> eyre::Result<()> {
     dotenv().ok(); // Carga variables de entorno
                    // using anvil
 
+    // Cosas que tengo que hacer
+    // 1) Setting up env
+    //      - abrir el json del deployment
+    //      - extraer el contrato de loop
+    //      - traernos los signers del env
     let env = match Env::setup().await {
         Ok(env) => env,
         Err(e) => {
@@ -24,11 +24,6 @@ async fn main() -> eyre::Result<()> {
     };
     println!(" Env listo para usarse: {:?}", env);
 
-    // Cosas que tengo que hacer
-    // 1) Setting up env
-    //      - abrir el json del deployment
-    //      - extraer el contrato de loop
-    //      - traernos los signers del env
     //2) Interacciones
     //      - construir un loop
     //      - firmar con el trusted_signer para que bad_actor pueda reclamar varias veces
