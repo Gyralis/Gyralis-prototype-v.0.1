@@ -1,9 +1,14 @@
 use dotenv::dotenv;
 
 pub mod utils;
+use ethers::abi::Address;
 use ethers::core::types::Signature;
+use ethers::types::H256;
 use ethers::utils::hash_message;
 use utils::setup_env::Env;
+
+pub mod events;
+use events::recover_loop::{find_loop_created_event,LoopCreatedEvent};
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
@@ -26,6 +31,8 @@ async fn main() -> eyre::Result<()> {
     if let Some(org_contract) =env.org_contract {
         let loop_receipt = Env::create_loop(&env, Some(org_contract), 120).await?
     }
+
+
     //2) Interacciones
     //      - construir un loop
     //      - firmar con el trusted_signer para que bad_actor pueda reclamar varias veces
