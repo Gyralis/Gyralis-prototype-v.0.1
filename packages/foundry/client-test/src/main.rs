@@ -1,14 +1,12 @@
 use dotenv::dotenv;
 
 pub mod utils;
-use ethers::abi::Address;
-use ethers::core::types::Signature;
-use ethers::types::H256;
-use ethers::utils::hash_message;
-use utils::setup_env::Env;
+use ethers::types::U256;
 
+use utils::setup_env::Env;
+pub mod functions;
+pub use functions::create_loop::*;
 pub mod events;
-use events::recover_loop::{find_loop_created_event,LoopCreatedEvent};
 
 #[tokio::main]
 async fn main() -> eyre::Result<()> {
@@ -27,11 +25,13 @@ async fn main() -> eyre::Result<()> {
             return Err(e);
         }
     };
-    println!(" Env listo para usarse: {:?}", env);
-    if let Some(org_contract) =env.org_contract {
-        let loop_receipt = Env::create_loop(&env, Some(org_contract), 120).await?
+    // println!(" Env listo para usarse: {:?}", env);
+    if let Some(org_contract) = env.org_contract.clone() {
+        let time: U256 = U256::from(120);
+        let (tx_hash, loop_event) = create_loop(&env, org_contract, time).await?;
+        println!("Tx_hash : {:?}", tx_hash);
+        println!("loop_event : {:?}", loop_event)
     }
-
 
     //2) Interacciones
     //      - construir un loop

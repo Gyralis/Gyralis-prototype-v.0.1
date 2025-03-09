@@ -1,8 +1,8 @@
 use ethers::abi::{ParamType, Token};
 use ethers::prelude::*;
+use ethers::utils::keccak256;
 use eyre::Result;
 use std::sync::Arc;
-
 // Estructura para almacenar los datos del evento `LoopCreated`
 #[derive(Debug)]
 pub struct LoopCreatedEvent {

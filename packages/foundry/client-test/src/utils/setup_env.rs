@@ -151,80 +151,80 @@ impl Env {
 }
 
 impl Env {
-    pub async fn create_loop(
-        env: &Env,
-        contract: Option<Contract<Provider<Http>>>,
-        time: U256,
-    ) -> Result<H256> {
-        let system_diamond: Address = env
-            .deployemt_data
-            .get("system_diamond")
-            .and_then(Value::as_str)
-            .ok_or_else(|| eyre::eyre!("❌ system_diamond no encontrado o inválido"))?
-            .parse()?;
+    // pub async fn create_loop(
+    //     env: &Env,
+    //     contract: Option<Contract<Provider<Http>>>,
+    //     time: U256,
+    // ) -> Result<H256> {
+    //     let system_diamond: Address = env
+    //         .deployemt_data
+    //         .get("system_diamond")
+    //         .and_then(Value::as_str)
+    //         .ok_or_else(|| eyre::eyre!("❌ system_diamond no encontrado o inválido"))?
+    //         .parse()?;
 
-        let token: Address = env
-            .deployemt_data
-            .get("test_token_address")
-            .and_then(Value::as_str)
-            .ok_or_else(|| eyre::eyre!("❌ test_token_address no encontrado o inválido"))?
-            .parse()?;
+    //     let token: Address = env
+    //         .deployemt_data
+    //         .get("test_token_address")
+    //         .and_then(Value::as_str)
+    //         .ok_or_else(|| eyre::eyre!("❌ test_token_address no encontrado o inválido"))?
+    //         .parse()?;
 
-        let percent_per_period: U256 = U256::from(5);
+    //     let percent_per_period: U256 = U256::from(5);
 
-        match contract {
-            Some(c) => {
-                let signer = env
-                    .trusted_signer
-                    .clone()
-                    .ok_or_else(|| eyre::eyre!("❌ No hay signer disponible"))?;
-                let c_with_user = c.connect(signer);
-                // Conectar el contrato con el signer
-                // let org_contract_with_signer = c.clone().connect(signer);
+    //     match contract {
+    //         Some(c) => {
+    //             let signer = env
+    //                 .trusted_signer
+    //                 .clone()
+    //                 .ok_or_else(|| eyre::eyre!("❌ No hay signer disponible"))?;
+    //             let c_with_user = c.connect(signer);
+    //             // Conectar el contrato con el signer
+    //             // let org_contract_with_signer = c.clone().connect(signer);
 
-                // Enviar la transacción
+    //             // Enviar la transacción
 
-                // Enviar la transacción y obtener el objeto PendingTransaction
-                let pending_tx = c_with_user
-                    .method::<(Address, Address, U256, U256), Address>(
-                        "createNewLoop",
-                        (system_diamond, token, time, percent_per_period),
-                    )?
-                    .send()
-                    .await?
-                    .tx_hash();
+    //             // Enviar la transacción y obtener el objeto PendingTransaction
+    //             let pending_tx = c_with_user
+    //                 .method::<(Address, Address, U256, U256), Address>(
+    //                     "createNewLoop",
+    //                     (system_diamond, token, time, percent_per_period),
+    //                 )?
+    //                 .send()
+    //                 .await?
+    //                 .tx_hash();
 
-                // let receipt = pending_tx
-                //     .await?
-                //     .ok_or_else(|| eyre::eyre!("❌ La transacción no se confirmó"))?;
-                // // Extraer el valor de retorno desde los logs (si `createNewLoop` lo devuelve)
-                // let new_loop_address = receipt
-                //     .clone()
-                //     .logs
-                //     .iter()
-                //     .find_map(|log| {
-                //         log.topics.get(0).and_then(|topic| {
-                //             if *topic == c.abi().event("LoopCreated").unwrap().signature() {
-                //                 Some(
-                //                     ethers::abi::decode(&[ParamType::Address], &log.data)
-                //                         .ok()?
-                //                         .remove(0),
-                //                 )
-                //             } else {
-                //                 None
-                //             }
-                //         })
-                //     })
-                //     .ok_or_else(|| {
-                //         eyre::eyre!("❌ No se pudo recuperar la dirección del nuevo Loop")
-                //     })?;
-                Ok(pending_tx)
-                // println!("✅ Loop creado en la dirección: {:?}", new_loop_address);
-            }
-            // Ok((, new_loop_address.into_address().unwrap()))
-            None => Ok(H256::default()),
-        }
-    }
+    //             // let receipt = pending_tx
+    //             //     .await?
+    //             //     .ok_or_else(|| eyre::eyre!("❌ La transacción no se confirmó"))?;
+    //             // // Extraer el valor de retorno desde los logs (si `createNewLoop` lo devuelve)
+    //             // let new_loop_address = receipt
+    //             //     .clone()
+    //             //     .logs
+    //             //     .iter()
+    //             //     .find_map(|log| {
+    //             //         log.topics.get(0).and_then(|topic| {
+    //             //             if *topic == c.abi().event("LoopCreated").unwrap().signature() {
+    //             //                 Some(
+    //             //                     ethers::abi::decode(&[ParamType::Address], &log.data)
+    //             //                         .ok()?
+    //             //                         .remove(0),
+    //             //                 )
+    //             //             } else {
+    //             //                 None
+    //             //             }
+    //             //         })
+    //             //     })
+    //             //     .ok_or_else(|| {
+    //             //         eyre::eyre!("❌ No se pudo recuperar la dirección del nuevo Loop")
+    //             //     })?;
+    //             Ok(pending_tx)
+    //             // println!("✅ Loop creado en la dirección: {:?}", new_loop_address);
+    //         }
+    //         // Ok((, new_loop_address.into_address().unwrap()))
+    //         None => Ok(H256::default()),
+    //     }
+    // }
     pub async fn claim_and_register(env: &Env, signature: Vec<u8>) -> Result<H256> {
         match &env.loop_contract {
             Some(c) => {
