@@ -1,9 +1,9 @@
 use dotenv::dotenv;
 
 pub mod utils;
-use ethers::types::U256;
+use ethers::types::{Filter, U256};
 
-use utils::setup_env::Env;
+use utils::{get_provider, setup_env::Env};
 pub mod functions;
 pub use functions::create_loop::*;
 pub mod events;
@@ -25,6 +25,7 @@ async fn main() -> eyre::Result<()> {
             return Err(e);
         }
     };
+
     // println!(" Env listo para usarse: {:?}", env);
     if let Some(org_contract) = env.org_contract.clone() {
         let time: U256 = U256::from(120);

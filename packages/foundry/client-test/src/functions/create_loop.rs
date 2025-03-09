@@ -6,6 +6,7 @@ use eyre::Result;
 use serde_json::Value;
 
 use crate::events::recover_loop::{find_loop_created_event, LoopCreatedEvent};
+
 use crate::Env;
 
 pub async fn create_loop(
@@ -36,9 +37,9 @@ pub async fn create_loop(
         .clone()
         .ok_or_else(|| eyre::eyre!("❌ No hay signer disponible"))?;
     let c_with_user = contract.clone().connect(signer);
-
+    println!("contract(organization) : {:?}", c_with_user.address());
     // 1. Enviar la transacción y obtener el `tx_hash`
-    let tx_hash = c_with_user
+    let tx_hash_pending = c_with_user
         .method::<(Address, Address, U256, U256), Address>(
             "createNewLoop",
             (system_diamond, token, time, percent_per_period),
@@ -46,20 +47,9 @@ pub async fn create_loop(
         .send()
         .await?
         .tx_hash();
-    // .await?;
+    let tx_hash = tx_hash_pending.clone();
 
-    // 2 Esperar confirmación de la transacción
-    // let receipt = pending_tx
-    // .await?
-    // .ok_or_else(|| eyre::eyre!("❌ La transacción no se confirmó"))?;
-
-    println!(" Loop creado en TX: {:?}", tx_hash);
-    let provider: Arc<Provider<Http>> = Arc::new(Provider::<Http>::try_from(&env.rpc_url.clone())?);
-    // 3 Extraer el evento `LoopCreated`
-    let loop_event = find_loop_created_event(provider, tx_hash).await?;
-
-    // OK::  Devolvemos `tx_hash` y la información del evento `LoopCreated`
+    println!(" Loop creado en TX [pending]: {:?}", tx_hash);
+    let loop_event = find_loop_created_event(system_diamond, tx_hash).await?;
     Ok((tx_hash, loop_event))
-    // }
-    // None => Ok((H256::default(), None)), // ❌ Si no hay contrato, devolvemos valores vacíos
 }

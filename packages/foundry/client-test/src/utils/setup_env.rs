@@ -103,7 +103,7 @@ impl Env {
             .ok_or_else(|| eyre::eyre!("Loop address not found in JSON."))?
             .parse()?;
 
-        println!("✅ Loop address: {:?}", loop_address);
+        println!(" Loop address: {:?}", loop_address);
 
         // Extraer dirección del contrato "org"
         let org_address: Address = json["organization"]
@@ -111,7 +111,7 @@ impl Env {
             .ok_or_else(|| eyre::eyre!("Organization address not found in JSON."))?
             .parse()?;
 
-        println!("✅ Organization address: {:?}", org_address);
+        println!("Organization address: {:?}", org_address);
 
         // Extraer y parsear ABI del contrato
         let loop_contract_abi: Abi = serde_json::from_value(
@@ -143,8 +143,8 @@ impl Env {
         env_struct.deployemt_data = json;
         env_struct.setup_providers(&org_struct, &loop_struct)?;
 
-        println!("✅ Loop Contract ABI cargado correctamente.");
-        println!("✅ Organization Contract ABI cargado correctamente.");
+        println!("Loop Contract ABI cargado correctamente.");
+        println!("Organization Contract ABI cargado correctamente.");
 
         Ok(env_struct)
     }
