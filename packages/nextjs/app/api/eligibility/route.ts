@@ -11,6 +11,7 @@ const GITCOIN_PASSPORT_API_KEY = process.env.GITCOIN_PASSPORT_API_KEY ?? "";
 console.log("***** GITCOIN_PASSPORT_API_KEY *****", GITCOIN_PASSPORT_API_KEY);
 const SCORER_ID = process.env.SCORER_ID ?? "";
 const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.12";
+const THRESHOLD = 10
 
 /**
  * Gets the Viem chain configuration for a given chain ID
@@ -128,7 +129,7 @@ export async function POST(req: Request) {
       );
     }
 
-    if (passportScore <= 20) {
+    if (passportScore <= THRESHOLD ) {
       return NextResponse.json(
         { success: false, error: "User does not meet passport score requirement" },
         { status: 403 },

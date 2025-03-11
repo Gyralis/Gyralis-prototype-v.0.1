@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 
 interface PassportData {
   address: string;
-  signature: string;
-  nonce: string;
 }
 
 export async function POST(request: Request) {

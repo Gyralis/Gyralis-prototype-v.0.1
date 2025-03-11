@@ -10,6 +10,7 @@ interface Params {
 export async function GET(request: Request, { params }: Params) {
   const { account } = params;
 
+  
   if (!account) {
     return NextResponse.json({ error: "Account address is required" }, { status: 400 });
   }

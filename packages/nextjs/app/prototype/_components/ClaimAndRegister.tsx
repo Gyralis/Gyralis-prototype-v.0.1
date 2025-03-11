@@ -17,20 +17,23 @@ export const ClaimAndRegister: React.FC = () => {
   const [score, setScore] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-  const [isEligible, setIsElegible] =  useState<boolean>(false);
+  const [isEligible, setIsElegible] = useState<boolean>(false);
   const { address } = useAccount();
+
+  console.log(address);
 
   useEffect(() => {
     if (address) {
       handleFetchScore();
+      //handleSubmitPassport(address);
     }
   }, [address]);
 
   const checkEligibility = async (userAddress: string, loopAddress: string, chainId: number) => {
     if (!userAddress || !loopAddress || !chainId) {
-        console.error("Missing parameters...");
-        return;
-      }
+      console.error("Missing parameters...");
+      return;
+    }
     try {
       const response = await fetch("/api/eligibility", {
         method: "POST",
@@ -46,9 +49,9 @@ export const ClaimAndRegister: React.FC = () => {
 
       if (response.ok) {
         const data = await response.json();
-        setIsElegible(true)
+        setIsElegible(true);
         console.log("Eligibility check successful:", data);
-   
+
         if (data.success) {
           console.log("Signature:", data.signature);
         } else {
@@ -79,18 +82,26 @@ export const ClaimAndRegister: React.FC = () => {
 
       if (!response.ok) {
         if (response.status === 400) {
-          // If status is 400, handle as "no score" or malformed request
           console.log("No score available or invalid request.");
-          setScore(0); // This is where you decide what to do with 400
+          setScore(0);
+          setHasSubmitted(false)
           return;
         }
         throw new Error(`Error: ${response.status} - ${response.statusText}`);
       }
 
       const data = await response.json();
-      if (data.score) {
-        setScore(data.score);
-        setHasSubmitted(true); // Passport is submitted, so score is available
+      if (data.score !== undefined && data.score !== null) {
+        const numericScore = Number(data.score); // Ensure it's a proper number
+        if (numericScore <= 0) {
+          // Includes 0, 0E-9, and negatives
+          console.log("No score available");
+          setScore(0);
+        } else {
+          console.log(`Score: ${numericScore}`);
+          setScore(numericScore);
+        }
+        setHasSubmitted(true);
       } else {
         setScore(null); // No score found, need to submit
       }
@@ -101,7 +112,7 @@ export const ClaimAndRegister: React.FC = () => {
 
   const handleSubmitPassport = async (address: Address) => {
     try {
-      const response = await fetch("/api/passport/submit-passport", {
+      const response = await fetch("/api/submit-passport", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,12 +121,14 @@ export const ClaimAndRegister: React.FC = () => {
       });
 
       if (!response.ok) {
+        console.log("The submit has been succesfull...");
         return {
           error: true,
           data: response,
         };
       }
-
+      //cuando el usuario hace submit y no tiene score - me devuelve un 400
+      //score 0
       const data = await response.json();
 
       return { error: false, data };
@@ -146,6 +159,8 @@ export const ClaimAndRegister: React.FC = () => {
       </div>
       <br />
       <button onClick={() => address && checkEligibility(address, LOOP_ADDRESS, CHAIN_ID)}>Check eligibility</button>
+      <br />
+      <div>{hasSubmitted ? <p>You have already submitted your passport</p> : <p>submit fish!</p>}</div>
     </div>
   );
 };
