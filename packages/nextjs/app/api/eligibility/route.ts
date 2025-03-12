@@ -4,6 +4,8 @@ import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
 import { Chain, createWalletClient, encodePacked, getContract, http, keccak256, parseAbi, toHex } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import * as chains from "viem/chains";
+import { THRESHOLD } from "~~/utils/loop";
+
 
 // Backend private key to sign eligibility messages
 const TRUSTED_BACKEND_SIGNER_PK = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"; //process.env.TRUSTED_BACKEND_SIGNER_PK ?? "";
@@ -11,7 +13,7 @@ const GITCOIN_PASSPORT_API_KEY = process.env.GITCOIN_PASSPORT_API_KEY ?? "";
 console.log("***** GITCOIN_PASSPORT_API_KEY *****", GITCOIN_PASSPORT_API_KEY);
 const SCORER_ID = process.env.SCORER_ID ?? "";
 const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.12";
-const THRESHOLD = 10
+
 
 /**
  * Gets the Viem chain configuration for a given chain ID

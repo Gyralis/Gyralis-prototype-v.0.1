@@ -1,6 +1,7 @@
 import { useScaffoldContract } from "~~/hooks/scaffold-eth"; // Adjust import according to your project
 import { useWalletClient } from "wagmi"; // Import necessary hooks from wagmi
 
+export const THRESHOLD = 15
 // Function to get User Status
 // export function useUserStatus(fid: number) {
 //   // Destructure the contract using useScaffoldContract hook
