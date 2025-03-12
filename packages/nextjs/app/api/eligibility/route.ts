@@ -6,14 +6,12 @@ import { privateKeyToAccount } from "viem/accounts";
 import * as chains from "viem/chains";
 import { THRESHOLD } from "~~/utils/loop";
 
-
 // Backend private key to sign eligibility messages
 const TRUSTED_BACKEND_SIGNER_PK = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"; //process.env.TRUSTED_BACKEND_SIGNER_PK ?? "";
 const GITCOIN_PASSPORT_API_KEY = process.env.GITCOIN_PASSPORT_API_KEY ?? "";
 console.log("***** GITCOIN_PASSPORT_API_KEY *****", GITCOIN_PASSPORT_API_KEY);
 const SCORER_ID = process.env.SCORER_ID ?? "";
-const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.12";
-
+const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.13";
 
 /**
  * Gets the Viem chain configuration for a given chain ID
@@ -105,6 +103,8 @@ async function fetchNextPeriod(chainId: number, loopAddress: string): Promise<bi
     });
 
     const currentPeriod: bigint = await loopContract.read.getCurrentPeriod();
+    console.log(`Next Period: ${currentPeriod + BigInt(1)}`);
+
     return currentPeriod + BigInt(1);
   } catch (error) {
     console.error("Error fetching current period:", error);
@@ -116,6 +116,8 @@ export async function POST(req: Request) {
   try {
     const { userAddress, loopAddress, chainId } = await req.json();
 
+    console.log({ userAddress, loopAddress, chainId });
+
     if (!userAddress || !loopAddress || !chainId) {
       return NextResponse.json({ success: false, error: "Missing parameters" }, { status: 400 });
     }
@@ -124,6 +126,7 @@ export async function POST(req: Request) {
     let passportScore: number;
     try {
       passportScore = await fetchPassportScore(userAddress);
+      console.log(passportScore);
     } catch (error) {
       return NextResponse.json(
         { success: false, error: error instanceof Error ? error.message : "An unknown error occurred" },
@@ -131,14 +134,14 @@ export async function POST(req: Request) {
       );
     }
 
-    if (passportScore <= THRESHOLD ) {
+    if (Number(passportScore) <= THRESHOLD) {
       return NextResponse.json(
         { success: false, error: "User does not meet passport score requirement" },
         { status: 403 },
       );
     }
 
-    // Query the subgraph for membership
+    //Query the subgraph for membership
     const apolloClient = getApolloClient(chainId);
     const { data, errors } = await apolloClient.query({
       query: gql`
@@ -163,7 +166,9 @@ export async function POST(req: Request) {
     // Fetch next period number from Loop contract
     let nextPeriod: bigint;
     try {
-      nextPeriod = await fetchNextPeriod(chainId, loopAddress);
+      //change the chainId for chains.localhost.id
+      nextPeriod = await fetchNextPeriod(chains.localhost.id, loopAddress);
+      console.log("Next Period...", nextPeriod);
     } catch (error) {
       return NextResponse.json(
         { success: false, error: "Failed to fetch current period from Loop contract" },
@@ -175,6 +180,9 @@ export async function POST(req: Request) {
     const eligibilityMessageHash = keccak256(
       encodePacked(["address", "uint256", "address"], [userAddress, nextPeriod, loopAddress]),
     );
+    console.log("Hash Inputs:", userAddress, nextPeriod.toString(), loopAddress);
+
+    console.log("Generated Hash:", eligibilityMessageHash);
 
     // Sign the message with the trusted backend signer
     const walletClient = createWalletClient({

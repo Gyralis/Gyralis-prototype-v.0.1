@@ -181,7 +181,7 @@ export const ClaimAndRegister: React.FC = () => {
       <br />
       <button onClick={() => address && checkEligibility(address, LOOP_ADDRESS, CHAIN_ID)}>Check eligibility</button>
       <br />
-      <div>{hasSubmitted ? <p>You have already submitted your passport</p> : <p>submit fish!</p>}</div>
+      {/* <div>{hasSubmitted ? <p>You have already submitted your passport</p> : <p>submit fish!</p>}</div> */}
       <br />
       <button
         className="btn btn-primary"
@@ -190,7 +190,7 @@ export const ClaimAndRegister: React.FC = () => {
             await writeLoopContractAsync({
               functionName: "claimAndRegister",
               args: [
-                "0xf3abd7394190de19feb929dd66774adbead0e0fe4af2a39540ab3e09f2f9529f65871ab2d8e4104649ad959adf99f7ab2b583aed1c037dbc47b6bf9b6cf293e31c",
+                "0x34edb21f1f18b3ef7123c7475244be860f7f5e1944e0643136392e5c3c1748ad028742a9bdc3d5e542d7923130fb0eec54713241dda2f583cc695ab22d5548491b",
               ],
             });
           } catch (e) {

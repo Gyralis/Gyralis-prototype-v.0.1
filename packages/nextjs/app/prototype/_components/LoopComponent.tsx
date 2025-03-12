@@ -32,7 +32,7 @@ export const LoopComponent = () => {
 
   const claimBefore = clientTime !== null ? nextPeriodStart - clientTime - 1n : null;
 
-  console.log("Im rendering");
+  //console.log("Im rendering");
 
   return (
     <main className="px-4 mt-6">
