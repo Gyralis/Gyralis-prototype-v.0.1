@@ -8,6 +8,8 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
+import "forge-std/console2.sol";
+import "forge-std/console.sol";
 
 contract LoopFacet is ILoop, AccessControlBase {
     using ECDSA for bytes32;
@@ -212,8 +214,20 @@ contract LoopFacet is ILoop, AccessControlBase {
    function _verifyEligibility(address user, uint256 nextPeriod, bytes calldata signature) internal view returns (bool) {
         LoopStorage.Layout storage ds = LoopStorage.layout();
         bytes32 messageHash = keccak256(abi.encodePacked(user, nextPeriod, address(this)));
-        bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
-        return ECDSA.recover(ethSignedMessageHash, signature) == ds.trustedBackendSigner;
+        // bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
+        address recoveredSigner = ECDSA.recover(messageHash, signature);
+
+        console.log("Next period", nextPeriod);
+        console.log("Expected Signer:", ds.trustedBackendSigner);
+        console.log("Recovered Signer:", recoveredSigner);
+
+        
+        console.logBytes32(messageHash);
+        // console.logBytes32(ethSignedMessageHash);
+
+        
+        console.logBytes(signature);
+        return recoveredSigner == ds.trustedBackendSigner;
     }   
 
 }

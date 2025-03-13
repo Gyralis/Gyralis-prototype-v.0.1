@@ -7,7 +7,7 @@ setup-anvil-wallet:
 
 # Start local chain
 chain: setup-anvil-wallet
-	anvil
+	anvil -v
 
 # Start a fork
 fork: setup-anvil-wallet

@@ -1,7 +1,17 @@
 // api/eligibility/
 import { NextResponse } from "next/server";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-import { Chain, createWalletClient, encodePacked, getContract, http, keccak256, parseAbi, toHex } from "viem";
+import {
+  Chain,
+  createWalletClient,
+  encodePacked,
+  getContract,
+  hashMessage,
+  http,
+  keccak256,
+  parseAbi,
+  toHex,
+} from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import * as chains from "viem/chains";
 import { THRESHOLD } from "~~/utils/loop";
@@ -103,6 +113,8 @@ async function fetchNextPeriod(chainId: number, loopAddress: string): Promise<bi
     });
 
     const currentPeriod: bigint = await loopContract.read.getCurrentPeriod();
+
+    console.log("current Period ", currentPeriod);
     console.log(`Next Period: ${currentPeriod + BigInt(1)}`);
 
     return currentPeriod + BigInt(1);
@@ -142,26 +154,26 @@ export async function POST(req: Request) {
     }
 
     //Query the subgraph for membership
-    const apolloClient = getApolloClient(chainId);
-    const { data, errors } = await apolloClient.query({
-      query: gql`
-        query CheckMembership($userAddress: String!) {
-          memberCommunities(
-            where: { registryCommunity: "0xe2396fe2169ca026962971d3b2e373ba925b6257", memberAddress: $userAddress }
-          ) {
-            memberAddress
-          }
-        }
-      `,
-      variables: { userAddress: userAddress.toLowerCase() },
-    });
+    // const apolloClient = getApolloClient(chainId);
+    // const { data, errors } = await apolloClient.query({
+    //   query: gql`
+    //     query CheckMembership($userAddress: String!) {
+    //       memberCommunities(
+    //         where: { registryCommunity: "0xe2396fe2169ca026962971d3b2e373ba925b6257", memberAddress: $userAddress }
+    //       ) {
+    //         memberAddress
+    //       }
+    //     }
+    //   `,
+    //   variables: { userAddress: userAddress.toLowerCase() },
+    // });
 
-    if (errors || !data?.memberCommunities?.length) {
-      return NextResponse.json(
-        { success: false, error: "User is not a member of the required community" },
-        { status: 403 },
-      );
-    }
+    // if (errors || !data?.memberCommunities?.length) {
+    //   return NextResponse.json(
+    //     { success: false, error: "User is not a member of the required community" },
+    //     { status: 403 },
+    //   );
+    // }
 
     // Fetch next period number from Loop contract
     let nextPeriod: bigint;
@@ -176,13 +188,11 @@ export async function POST(req: Request) {
       );
     }
 
-    // Correct eligibility message hashing
-    const eligibilityMessageHash = keccak256(
-      encodePacked(["address", "uint256", "address"], [userAddress, nextPeriod, loopAddress]),
-    );
-    console.log("Hash Inputs:", userAddress, nextPeriod.toString(), loopAddress);
+    const eligibilityMessage = encodePacked(["address", "uint256", "address"], [userAddress, nextPeriod, loopAddress]);
 
-    console.log("Generated Hash:", eligibilityMessageHash);
+    const eligibilityMessageHash = keccak256(eligibilityMessage);
+
+    // const ethSignedMessageHash = hashMessage(eligibilityMessageHash);
 
     // Sign the message with the trusted backend signer
     const walletClient = createWalletClient({
@@ -193,8 +203,12 @@ export async function POST(req: Request) {
 
     const backendSignature = await walletClient.signMessage({
       account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
-      message: toHex(eligibilityMessageHash), // Convert to hex format
+      message: eligibilityMessageHash,
     });
+
+    console.log("eligibilityMessageHash: ", eligibilityMessageHash);
+    // console.log("ethSignedMessageHash: ", ethSignedMessageHash);
+    console.log("Signature:", backendSignature);
 
     return NextResponse.json({
       success: true,
