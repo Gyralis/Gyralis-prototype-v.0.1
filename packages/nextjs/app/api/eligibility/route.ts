@@ -97,27 +97,31 @@ async function fetchPassportScore(userAddress: string): Promise<number> {
  * @param loopAddress The address of the Loop contract
  * @returns The current period number (incremented by 1 for nextPeriod)
  */
-async function fetchNextPeriod(chainId: number, loopAddress: string): Promise<bigint> {
+async function fetchNextPeriod(chainId: number, loopAddress: string): Promise<number> {
   try {
     const viemChain = getViemChain(chains.localhost.id);
+
+    console.log("Viem Chain: ", viemChain);
     const walletClient = createWalletClient({
       account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
       chain: viemChain,
       transport: http(),
     });
 
+    console.log("LOOP ADDRESS: ", loopAddress);
     const loopContract = getContract({
       address: loopAddress as `0x${string}`,
       abi: parseAbi(["function getCurrentPeriod() public view returns (uint256)"]),
       client: walletClient,
     });
 
-    const currentPeriod: bigint = await loopContract.read.getCurrentPeriod();
+    console.log("Loop Contract: ", loopContract);
+    const currentPeriod = await loopContract.read.getCurrentPeriod();
 
     console.log("current Period ", currentPeriod);
     console.log(`Next Period: ${currentPeriod + BigInt(1)}`);
 
-    return currentPeriod + BigInt(1);
+    return Number(currentPeriod + BigInt(1));
   } catch (error) {
     console.error("Error fetching current period:", error);
     throw new Error("Failed to fetch current period");
@@ -176,7 +180,7 @@ export async function POST(req: Request) {
     // }
 
     // Fetch next period number from Loop contract
-    let nextPeriod: bigint;
+    let nextPeriod: number;
     try {
       //change the chainId for chains.localhost.id
       nextPeriod = await fetchNextPeriod(chains.localhost.id, loopAddress);
@@ -188,7 +192,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const eligibilityMessage = encodePacked(["address", "uint256", "address"], [userAddress, nextPeriod, loopAddress]);
+    const eligibilityMessage = encodePacked(
+      ["address", "uint256", "address"],
+      [userAddress, BigInt(Math.floor(nextPeriod)), loopAddress],
+    );
 
     const eligibilityMessageHash = keccak256(eligibilityMessage);
 
@@ -197,13 +204,13 @@ export async function POST(req: Request) {
     // Sign the message with the trusted backend signer
     const walletClient = createWalletClient({
       account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
-      chain: getViemChain(chainId),
+      chain: chains.localhost, //getViemChain(chainId),
       transport: http(),
     });
 
     const backendSignature = await walletClient.signMessage({
       account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
-      message: eligibilityMessageHash,
+      message: { raw: eligibilityMessageHash },
     });
 
     console.log("eligibilityMessageHash: ", eligibilityMessageHash);

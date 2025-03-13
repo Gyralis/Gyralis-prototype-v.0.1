@@ -125,6 +125,7 @@ contract LoopFacet is ILoop, AccessControlBase {
      * @notice Get the current period number.
      */
     function getCurrentPeriod() public view override returns (uint256) {
+        console2.log("Current Period", (block.timestamp - LoopStorage.layout().firstPeriodStart) / LoopStorage.layout().periodLength);
         return (block.timestamp - LoopStorage.layout().firstPeriodStart) / LoopStorage.layout().periodLength;
     }
 
