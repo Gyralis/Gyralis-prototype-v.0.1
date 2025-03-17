@@ -215,12 +215,13 @@ contract LoopFacet is ILoop, AccessControlBase {
    function _verifyEligibility(address user, uint256 nextPeriod, bytes calldata signature) internal view returns (bool) {
         LoopStorage.Layout storage ds = LoopStorage.layout();
         bytes32 messageHash = keccak256(abi.encodePacked(user, nextPeriod, address(this)));
-        // bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
-        address recoveredSigner = ECDSA.recover(messageHash, signature);
+        bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
+        address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
 
         console.log("Next period", nextPeriod);
         console.log("Expected Signer:", ds.trustedBackendSigner);
-        console.log("Recovered Signer:", recoveredSigner);
+        console.log("Recovered Signer:", recoveredSigner); 
+        console.log("USER: ", user);
 
         
         console.logBytes32(messageHash);

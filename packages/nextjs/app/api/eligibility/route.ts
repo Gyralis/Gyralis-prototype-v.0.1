@@ -152,27 +152,27 @@ export async function POST(req: Request) {
       );
     }
 
-    //Query the subgraph for membership
-    const apolloClient = getApolloClient(chainId);
-    const { data, errors } = await apolloClient.query({
-      query: gql`
-        query CheckMembership($userAddress: String!) {
-          memberCommunities(
-            where: { registryCommunity: "0xe2396fe2169ca026962971d3b2e373ba925b6257", memberAddress: $userAddress }
-          ) {
-            memberAddress
-          }
-        }
-      `,
-      variables: { userAddress: userAddress.toLowerCase() },
-    });
+    // //Query the subgraph for membership
+    // const apolloClient = getApolloClient(chainId);
+    // const { data, errors } = await apolloClient.query({
+    //   query: gql`
+    //     query CheckMembership($userAddress: String!) {
+    //       memberCommunities(
+    //         where: { registryCommunity: "0xe2396fe2169ca026962971d3b2e373ba925b6257", memberAddress: $userAddress }
+    //       ) {
+    //         memberAddress
+    //       }
+    //     }
+    //   `,
+    //   variables: { userAddress: userAddress.toLowerCase() },
+    // });
 
-    if (errors || !data?.memberCommunities?.length) {
-      return NextResponse.json(
-        { success: false, error: "User is not a member of the required community" },
-        { status: 403 },
-      );
-    }
+    // if (errors || !data?.memberCommunities?.length) {
+    //   return NextResponse.json(
+    //     { success: false, error: "User is not a member of the required community" },
+    //     { status: 403 },
+    //   );
+    // }
 
     // Fetch next period number from Loop contract
     let nextPeriod: number;
@@ -192,6 +192,8 @@ export async function POST(req: Request) {
     );
 
     const eligibilityMessageHash = keccak256(eligibilityMessage);
+
+    console.log("eligibilityMessageHash ", eligibilityMessageHash);
 
     // Sign the message with the trusted backend signer
     const walletClient = createWalletClient({

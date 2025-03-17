@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:3000/api/eligibility";
-const TEST_CHAIN_ID = 100;
-const TEST_USER_ADDRESS = "0xa25211B64D041F690C0c818183E32f28ba9647Dd";
+const TEST_CHAIN_ID = 31337;
+const TEST_USER_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 const TEST_LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 
 async function testEligibility() {
