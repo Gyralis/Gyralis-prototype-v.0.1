@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     loop: {
-      address: "0x36d4475f3bacDA9f3A2cE98c0c025B16ab1faFd9",
+      address: "0xED179b78D5781f93eb169730D8ad1bE7313123F4",
       abi: [
         {
           type: "function",
@@ -887,7 +887,7 @@ const deployedContracts = {
       ],
     },
     organization: {
-      address: "0x4fBd2B1681897666FCc9E953839f3F49cA16bf20",
+      address: "0x06B1D212B8da92b83AF328De5eef4E211Da02097",
       abi: [
         {
           type: "function",
@@ -1595,7 +1595,7 @@ const deployedContracts = {
       ],
     },
     system_diamond: {
-      address: "0xb17646006b3057714eafF5329b8e95F654B03Ba4",
+      address: "0x94099942864EA81cCF197E9D71ac53310b1468D8",
       abi: [
         {
           type: "function",
@@ -2814,7 +2814,7 @@ const deployedContracts = {
       ],
     },
     test_token_address: {
-      address: "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650",
+      address: "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
       abi: [
         {
           type: "constructor",
@@ -3143,7 +3143,7 @@ const deployedContracts = {
       ],
     },
     FacetRegistry: {
-      address: "0x9d4454b023096f34b160d6b654540c56a1f81688",
+      address: "0x5fbdb2315678afecb367f032d93f642f64180aa3",
       abi: [
         {
           type: "constructor",
@@ -3395,10 +3395,19 @@ const deployedContracts = {
           ],
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        addFacet: "contracts/registry/IFacetRegistry.sol",
+        computeFacetAddress: "contracts/registry/IFacetRegistry.sol",
+        deployFacet: "contracts/registry/IFacetRegistry.sol",
+        facetAddresses: "contracts/registry/IFacetRegistry.sol",
+        facetSelectors: "contracts/registry/IFacetRegistry.sol",
+        getFacetBySelector: "contracts/registry/IFacetRegistry.sol",
+        removeFacet: "contracts/registry/IFacetRegistry.sol",
+        owner: "contracts/registry/FacetRegistryBase.sol",
+      },
     },
     DiamondFactory: {
-      address: "0xcd8a1c3ba11cf5ecfa6267617243239504a98d90",
+      address: "0x2279b7a0a67db372996a5fab50d91eaa73d2ebe6",
       abi: [
         {
           type: "constructor",
@@ -3548,10 +3557,14 @@ const deployedContracts = {
           inputs: [],
         },
       ],
-      inheritedFunctions: {},
+      inheritedFunctions: {
+        createDiamond: "contracts/factory/IDiamondFactory.sol",
+        owner: "contracts/factory/DiamondFactoryBase.sol",
+        systemDiamond: "contracts/factory/DiamondFactoryBase.sol",
+      },
     },
     TestToken: {
-      address: "0x7bc06c482dead17c0e297afbc32f6e63d3846650",
+      address: "0xa51c1fc2f0d1a1b8494ed1fe312d7c3a78ed91c0",
       abi: [
         {
           type: "constructor",

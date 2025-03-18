@@ -81,7 +81,7 @@ const OrganizationHeader = ({ title }: { title: string }) => {
         <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo repudiandae aliquam nesciunt dolore voluptatibus et praesentium amet tempore totam.</p>
       </div> */}
       </div>
-      {/* <LoopComponent />  */}
+      <LoopComponent /> 
       <ClaimAndRegister />
     </>
   );

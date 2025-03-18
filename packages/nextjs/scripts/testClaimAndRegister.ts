@@ -5,7 +5,7 @@ import { anvil } from "viem/chains";
 const API_URL = "http://localhost:3000/api/eligibility";
 const TEST_CHAIN_ID = anvil.id;
 const TEST_USER_ADDRESS = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
-const TEST_LOOP_ADDRESS = "0x36d4475f3bacDA9f3A2cE98c0c025B16ab1faFd9";
+const TEST_LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const USER_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
 
 async function testFullFlow() {

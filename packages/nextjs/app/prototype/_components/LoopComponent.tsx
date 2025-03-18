@@ -101,7 +101,7 @@ export const LoopComponent = () => {
             </section>
           </div>
           <div>
-            <section>
+            {/* <section>
               <div className="p-6 flex flex-col gap-7 items-start">
                 <LoopContractUI contractName="loop" />
                 <div className="card-white w-full flex flex-col items-start gap-2">
@@ -132,7 +132,7 @@ export const LoopComponent = () => {
                   </div>
                 </div>
               </div>
-            </section>
+            </section> */}
           </div>
         </div>
       </div>

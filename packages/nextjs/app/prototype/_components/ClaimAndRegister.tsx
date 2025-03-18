@@ -1,14 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Address } from "viem";
-import { useAccount } from "wagmi";
+import { Address, stringify } from "viem";
+import { useAccount, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import * as abis from "~~/contracts/deployedContracts";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
+import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { THRESHOLD } from "~~/utils/loop";
 
 //test params
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
-const CHAIN_ID = 100;
+const CHAIN_ID = 31337;
 
 type SubmitPassportResponse = {
   data: any;
@@ -20,31 +22,46 @@ export const ClaimAndRegister: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
   const [isEligible, setIsElegible] = useState<boolean>(false);
+  const [signature, setSignature] = useState<string | null>(null);
+
+  const { data, error, isPending, isError, writeContract } = useWriteContract();
+  const { data: receipt, isLoading, isSuccess } = useWaitForTransactionReceipt({ hash: data });
+
+  //
+  const abi = abis?.default?.["31337"]?.loop?.abi;
+  //
 
   const { address } = useAccount();
-  const {
-    writeContractAsync: writeLoopContractAsync,
-    isMining,
-    isSuccess,
-    error,
-    isError,
-  } = useScaffoldWriteContract("loop");
+  const { writeContractAsync: writeLoopContractAsync, isMining } = useScaffoldWriteContract("loop");
 
-  console.log(isMining, isSuccess);
+  // console.log(isMining, isSuccess);
 
-  console.log(isError && "Checking error...",  error);
+  // console.log(isError && "Checking error...", error);
 
-  console.log("Threshold...", THRESHOLD);
-  console.log("Connected Address...", address);
-  console.log({ isSubmitting, hasSubmitted, isEligible });
+  // console.log("Threshold...", THRESHOLD);
+  // console.log("Connected Address...", address);
+  // console.log({ isSubmitting, hasSubmitted, isEligible });
 
   useEffect(() => {
     if (address) {
       handleFetchScore();
-      //   checkEligibility()
+      //checkEligibility()
       //handleSubmitPassport(address);
     }
   }, [address]);
+
+
+
+  const writeInContract = async (signature: `0x${string}` | undefined) => {
+    try {
+      await writeLoopContractAsync({
+        functionName: "claimAndRegister",
+        args: [signature],
+      });
+    } catch (e) {
+      console.error("Error claim&Register:", e);
+    }
+  }
 
   const checkEligibility = async (userAddress: string, loopAddress: string, chainId: number) => {
     if (!userAddress || !loopAddress || !chainId) {
@@ -71,6 +88,10 @@ export const ClaimAndRegister: React.FC = () => {
 
         if (data.success) {
           console.log("Signature:", data.signature);
+          setSignature(data.signature);
+          
+          writeInContract(data.signature);
+          console.log(receipt);
         } else {
           console.error("Error:", data.error);
           // Show error message if eligibility check fails
@@ -160,37 +181,55 @@ export const ClaimAndRegister: React.FC = () => {
     }
   };
 
+
+
   return (
     <div>
       {/* Pr */}
       <h2>Claim and Register</h2>
 
-      <div>
-        <div>
-          {/* Primer render  */}
-          <p>Your score: {score}</p>
-        </div>
-
-        <div>
-          <br />
-          <button onClick={() => address && handleSubmitPassport(address)} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Passport"}
-          </button>
-        </div>
-      </div>
       <br />
-      <button onClick={() => address && checkEligibility(address, LOOP_ADDRESS, CHAIN_ID)}>Check eligibility</button>
+      <button className="btn btn-circle"  onClick={() => address && checkEligibility(address, LOOP_ADDRESS, CHAIN_ID)}>Check eligibility</button>
       <br />
       {/* <div>{hasSubmitted ? <p>You have already submitted your passport</p> : <p>submit fish!</p>}</div> */}
       <br />
-      <button
+      <div>
+        <div>
+          {/* <button
+            disabled={isPending}
+            className="btn btn-primary"
+            onClick={() =>
+              writeContract({
+                address: LOOP_ADDRESS,
+                abi: abi,
+                functionName: "claimAndRegister",
+                args: [(signature as `0x${string}`) || "0x"],
+                chainId: CHAIN_ID,
+              })
+            }
+          >
+            Claim and Register 2
+          </button> */}
+        </div>
+        {isPending && <div>Pending...</div>}
+        {isSuccess && (
+          <>
+            Transaction Hash: {data}
+            <div>
+              Transaction Receipt: <pre>{stringify(receipt, null, 2)}</pre>
+            </div>
+          </>
+        )}
+        {isError && <div>{error?.message}</div>}
+      </div>
+      {/* <button
         className="btn btn-primary"
         onClick={async () => {
           try {
             await writeLoopContractAsync({
               functionName: "claimAndRegister",
               args: [
-                "0x34edb21f1f18b3ef7123c7475244be860f7f5e1944e0643136392e5c3c1748ad028742a9bdc3d5e542d7923130fb0eec54713241dda2f583cc695ab22d5548491b",
+                signature as `0x${string}` || "0x",
               ],
             });
           } catch (e) {
@@ -199,7 +238,7 @@ export const ClaimAndRegister: React.FC = () => {
         }}
       >
         claim & Register
-      </button>
+      </button> */}
     </div>
   );
 };
