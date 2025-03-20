@@ -23,8 +23,9 @@ contract BaseScript is Script {
     FacetHelper[] internal facetHelpers;
     address deployer;
     address systemAdmin;
+    // NOTE this is foundry's generated pk, DOES NOT hold any money
     uint _testerPk = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 ;
-    address trustedBackendSigner = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
+    //address trustedBackendSigner = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
     modifier broadcaster() virtual{
         //address deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
         //vm.startBroadcast(deployer);

@@ -1,5 +1,7 @@
 @openzeppelin/contracts/=lib/openzeppelin-contracts/contracts
 @openzeppelin/contracts-upgradeable=lib/openzeppelin-contracts-upgradeable/contracts
+@oz-upgrades/=lib/openzeppelin-contracts-upgradeable/contracts
+
 src/=contracts/
 test/=contracts/test/
 @prb/test=lib/prb-test/src

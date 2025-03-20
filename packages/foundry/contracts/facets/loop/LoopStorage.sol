@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import{IERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 library LoopStorage {
     bytes32 internal constant STORAGE_SLOT = keccak256("diamond.loop.storage");
 
     struct Layout {
         address loopAdmin;
-        ERC20 token;
+        IERC20 token;
         uint256 periodLength;
         uint256 percentPerPeriod;
         uint256 firstPeriodStart;
