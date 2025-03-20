@@ -10,11 +10,11 @@ import { ERC20 } from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import { DEFAULT_ADMIN_ROLE } from "src/Constants.sol";
 import { ECDSA } from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
-import "forge-std/console2.sol";
-import "forge-std/console.sol";
+import { Initializable } from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
+
 
 contract LoopFacet is ILoop,Initializable, AccessControlBase {
-  
+
     using ECDSA for bytes32;
     address constant VOID = address(0);
     ///@custom:note xq 100% es 1e18???
@@ -141,7 +141,6 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
      * @notice Get the current period number.
      */
     function getCurrentPeriod() public view override returns (uint256) {
-        console2.log("Current Period", (block.timestamp - LoopStorage.layout().firstPeriodStart) / LoopStorage.layout().periodLength);
         return (block.timestamp - LoopStorage.layout().firstPeriodStart) / LoopStorage.layout().periodLength;
     }
 
@@ -179,7 +178,7 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
 
         return (period.totalRegisteredUsers, period.maxPayout);
     }
-    
+
     function _canClaim(LoopStorage.Claimer storage claimer, uint256 currentPeriod) internal view returns (bool) {
         bool userRegisteredCurrentPeriod = claimer.registeredForPeriod == currentPeriod;
         bool userYetToClaimCurrentPeriod = claimer.latestClaimPeriod < currentPeriod;
@@ -233,19 +232,7 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
         bytes32 messageHash = keccak256(abi.encodePacked(user, nextPeriod, address(this)));
         bytes32 ethSignedMessageHash = MessageHashUtils.toEthSignedMessageHash(messageHash);
         address recoveredSigner = ECDSA.recover(ethSignedMessageHash, signature);
-
-        console.log("Next period", nextPeriod);
-        console.log("Expected Signer:", ds.trustedBackendSigner);
-        console.log("Recovered Signer:", recoveredSigner); 
-        console.log("USER: ", user);
-
-        
-        console.logBytes32(messageHash);
-        // console.logBytes32(ethSignedMessageHash);
-
-        
-        console.logBytes(signature);
         return recoveredSigner == ds.trustedBackendSigner;
-    }   
+    }
 
 }
