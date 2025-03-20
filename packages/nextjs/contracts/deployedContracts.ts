@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   31337: {
     loop: {
-      address: "0x39c3A55F68Bf9f2992776991F25Aac6813a4F1d0",
+      address: "0x36d4475f3bacDA9f3A2cE98c0c025B16ab1faFd9",
       abi: [
         {
           type: "function",
@@ -887,7 +887,7 @@ const deployedContracts = {
       ],
     },
     organization: {
-      address: "0xA43C8fA0cb6567312091fb14ebf4d0f65De4a6E4",
+      address: "0x4fBd2B1681897666FCc9E953839f3F49cA16bf20",
       abi: [
         {
           type: "function",
@@ -1595,7 +1595,7 @@ const deployedContracts = {
       ],
     },
     system_diamond: {
-      address: "0xB5d064b44960FdedA1072f983C3E8f1e123cE154",
+      address: "0xb17646006b3057714eafF5329b8e95F654B03Ba4",
       abi: [
         {
           type: "function",
@@ -2814,7 +2814,7 @@ const deployedContracts = {
       ],
     },
     test_token_address: {
-      address: "0xD8a5a9b31c3C0232E196d518E89Fd8bF83AcAd43",
+      address: "0x7bc06c482DEAd17c0e297aFbC32f6e63d3846650",
       abi: [
         {
           type: "constructor",
@@ -3143,7 +3143,7 @@ const deployedContracts = {
       ],
     },
     FacetRegistry: {
-      address: "0xcbeaf3bde82155f56486fb5a1072cb8baaf547cc",
+      address: "0x9d4454b023096f34b160d6b654540c56a1f81688",
       abi: [
         {
           type: "constructor",
@@ -3398,7 +3398,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     DiamondFactory: {
-      address: "0x04c89607413713ec9775e14b954286519d836fef",
+      address: "0xcd8a1c3ba11cf5ecfa6267617243239504a98d90",
       abi: [
         {
           type: "constructor",
@@ -3551,7 +3551,7 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     TestToken: {
-      address: "0xd8a5a9b31c3c0232e196d518e89fd8bf83acad43",
+      address: "0x7bc06c482dead17c0e297afbc32f6e63d3846650",
       abi: [
         {
           type: "constructor",
