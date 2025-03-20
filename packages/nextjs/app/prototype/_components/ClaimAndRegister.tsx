@@ -29,6 +29,8 @@ export const ClaimAndRegister: React.FC = () => {
 
   //
   const abi = abis?.default?.["31337"]?.loop?.abi;
+
+  console.log(abi);
   //
 
   const { address } = useAccount();
