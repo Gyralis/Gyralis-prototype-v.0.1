@@ -56,8 +56,9 @@ contract Deploy is BaseScript {
     function _run()internal {
         trusted_signer = vm.envAddress("TRUSTED_SIGNER");
         deployer =  vm.addr(deployer_pk);
-        systemAdmin =  0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // address that can call the diamondCut on the diamonds
-
+        systemAdmin = vm.envAddress("SYSTEM_ADDRESS");
+        //systemAdmin =  0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // address that can call the diamondCut on the diamonds
+        //systemAdmin = deployer;
         // Create the Facet Registry
         FacetRegistry registry = new FacetRegistry();
         d.facet_registry = address(registry);
@@ -104,7 +105,9 @@ contract Deploy is BaseScript {
             IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](5);
         {
             // Prepare the Init Data for the Facets
-            diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], abi.encode(systemAdmin)); // DiamondCut
+            // NOTE : usamos el deployer para poder interactuar con el contrato, luego transferimos la autorizacion a otro address
+            //        luego usamos systemAdmin como address
+            diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], abi.encode(deployer)); // DiamondCut
             diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
             diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
             diamondInitData[3] = facetHelpers[3].makeInitData(facetAddresses[3], abi.encode(diamondFactory, registry)); // OrganizationFactory
@@ -179,7 +182,7 @@ contract Deploy is BaseScript {
                 d.system_diamond, // LoopFactory address
                 address(newToken), // New token address
                 10,
-                100000000000000000 // Example percentage (10% in 1e18 precision)
+                10 // Example percentage (10% in 1e0 precision)
             )
         );
 
@@ -193,6 +196,9 @@ contract Deploy is BaseScript {
             console.log("Loop Creation Failed!");
             console.logBytes(loopResult);
         }
+        // Pasamos el systemAdmin a otra address diferente al deployer
+
+
     }
 
     string root;

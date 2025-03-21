@@ -26,13 +26,19 @@ contract BaseScript is Script {
     // NOTE this is foundry's generated pk, DOES NOT hold any money
     uint _testerPk = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 ;
     //address trustedBackendSigner = 0x70997970C51812dc3A010C7d01b50e0d17dc79C8;
-    modifier broadcaster() virtual{
-        //address deployer =  0xa0Ee7A142d267C1f36714E4a8F75612F20a79720;
-        //vm.startBroadcast(deployer);
-        vm.startBroadcast(_testerPk);
+
+
+    modifier broadcaster() virtual {
+        uint deployer_pk = vm.envUint("DEPLOYER_PK");
+        _readInputJson();
+        vm.startBroadcast(deployer_pk);
         _;
         vm.stopBroadcast();
+        _writeOutputJson();
     }
+
+    function _readInputJson() internal virtual {}
+    function _writeOutputJson() internal virtual {}
 
     function setUp() public virtual {
         // console2.log("ETH_KEYSTORE_ACCOUNT: %s",vm.envAddress("ETH_KEYSTORE_ACCOUNT"));
