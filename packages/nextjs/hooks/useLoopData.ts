@@ -33,6 +33,7 @@ export const useLoopData = () => {
     watch: false,
   });
 
+
   interface LoopDetails {
     token: Address;
     periodLength: number;

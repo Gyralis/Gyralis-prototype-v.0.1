@@ -169,7 +169,7 @@ contract Deploy is BaseScript {
                 "createNewLoop(address,address,uint256,uint256)",
                 d.system_diamond, // LoopFactory address
                 address(newToken), // New token address
-                60,
+                120, // Example duration (120 seconds)
                 100000000000000000 // Example percentage (10% in 1e18 precision)
             )
         );

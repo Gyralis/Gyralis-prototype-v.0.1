@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Address, stringify } from "viem";
+import { Address, stringify, formatUnits } from "viem";
 import { useAccount, useBalance, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import * as abis from "~~/contracts/deployedContracts";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { THRESHOLD } from "~~/utils/loop";
+import { useCurrentPeriodPayout } from "~~/utils/loop";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
@@ -15,22 +16,17 @@ export const ClaimAndRegister: React.FC = () => {
   const [score, setScore] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-  const [isEligible, setIsEligible] = useState<boolean>(false);
-  const [signature, setSignature] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-
-
 
   const { address: connectedAccount } = useAccount();
 
- 
   const { data: addressConnectedTokenBalance } = useBalance({
     address: connectedAccount,
     token: TOKEN_ADDRESS as `0x${string}` | undefined,
     chainId: CHAIN_ID,
   });
 
-  const { data: loopTokenBalance} = useBalance({
+  const { data: loopTokenBalance } = useBalance({
     address: LOOP_ADDRESS,
     token: TOKEN_ADDRESS as `0x${string}` | undefined,
     chainId: CHAIN_ID,
@@ -87,6 +83,10 @@ export const ClaimAndRegister: React.FC = () => {
     }
   };
 
+
+  //onst currentPeriodPayout = useCurrentPeriodPayout();
+
+
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
       await writeLoopContractAsync({
@@ -124,7 +124,6 @@ export const ClaimAndRegister: React.FC = () => {
 
         if (data.success) {
           console.log("Signature:", data.signature);
-          setSignature(data.signature);
           writeInContract(data.signature);
         } else {
           console.error("Error:", data.error);
@@ -175,9 +174,9 @@ export const ClaimAndRegister: React.FC = () => {
           )}
           <div className="flex flex-col gap-1 mt-4">
             <p>Connected account: {connectedAccount}</p>
-            <p>Connected account balance: {addressConnectedTokenBalance?.value.toString()}</p>
-            <p>Loop token balance: {loopTokenBalance?.value.toString()}</p>
-            </div>
+            <p>Connected account balance: {formatUnits(addressConnectedTokenBalance?.value || 0n, 18)}</p>
+            <p>Loop token balance: {formatUnits(loopTokenBalance?.value || 0n, 18)}</p>
+          </div>
         </div>
       )}
     </div>
