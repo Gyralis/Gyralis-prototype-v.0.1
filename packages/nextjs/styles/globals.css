@@ -13,12 +13,14 @@ body {
 
 
 h1 {
+  /* font-family: var(--font-poppins); */
   margin-bottom: 1rem;
   margin-top: 0.5rem;
   font-size: 52px;
   font-weight: 700;
   line-height: 56px;
   text-align: left;
+
 
   /* @media only screen and (max-width: 680px) {
     font-size: 2.5rem;

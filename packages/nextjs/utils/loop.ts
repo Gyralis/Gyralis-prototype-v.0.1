@@ -33,7 +33,7 @@ export const THRESHOLD = 15
 // Function to get the Next Period Start
 
 
-// Function to get the Current Period Payout
+//Function to get the Current Period Payout
 // export function useCurrentPeriodPayout() {
 //   const { data: contract } = useScaffoldContract({
 //     contractName: "loop", // Replace with your actual contract name

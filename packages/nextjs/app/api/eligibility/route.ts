@@ -187,6 +187,7 @@ export async function POST(req: Request) {
       );
     }
 
+
     const eligibilityMessage = encodePacked(
       ["address", "uint256", "address"],
       [userAddress, BigInt(Math.floor(nextPeriod)), loopAddress],

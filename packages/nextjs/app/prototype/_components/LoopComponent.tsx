@@ -17,10 +17,21 @@ export const LoopComponent = () => {
   const { loopDetails, isLoading } = useLoopData();
 
   const nextPeriodStart = useMemo(() => {
-    return loopDetails && loopDetails.currentPeriod !== undefined
-      ? loopDetails.firstPeriodStart + BigInt(loopDetails.periodLength) * (BigInt(loopDetails.currentPeriod) + 1n)
-      : 0n;
+    if (
+      loopDetails &&
+      loopDetails.currentPeriod !== undefined &&
+      !isNaN(loopDetails.currentPeriod) &&
+      !isNaN(Number(loopDetails.firstPeriodStart)) &&
+      !isNaN(loopDetails.periodLength)
+    ) {
+      return (
+        BigInt(loopDetails.firstPeriodStart) +
+        BigInt(loopDetails.periodLength) * (BigInt(loopDetails.currentPeriod) + 1n)
+      );
+    }
+    return 0n;
   }, [loopDetails]);
+  
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -36,50 +47,50 @@ export const LoopComponent = () => {
 
   return (
     <main className="px-4 mt-6">
-      <h2 className="text-xl py-1">LOOPS</h2>
-      <div className="mx-auto max-w-3xl lg:max-w-7xl">
-        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
-          <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-            <section>
-              <div className="card-white flex flex-col items-center justify-between gap-24">
-                <div className="w-full">
-                  <div className="flex flex-col items-start  w-full border2">
-                    <div className="flex flex-col gap-1">
-                      <h5>
-                        Loop period length:{" "}
-                        <span>
-                          {loopDetails?.periodLength !== undefined
-                            ? secondsToTime(Number(loopDetails.periodLength))
-                            : "N/A"}
-                        </span>
-                      </h5>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <h5>
-                        Loop distribution: <span>{loopDetails?.percentPerPeriod} %</span>
-                      </h5>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                      <h5>
-                        Currento Period: <span>{loopDetails?.currentPeriod}</span>
-                      </h5>
-                    </div>
-                    <div className="flex flex-col gap-1 items-start">
-                      <h5>
-                        Current period registrations: <span>{loopDetails?.currentPeriodRegistrations}</span>
-                      </h5>
-                      <h5>
-                        Estimated claim amount for next period: <span>0</span>
-                      </h5>
-                    </div>
+      <h2 className="text-xl py-1">TEST LOOP:</h2>
+      {/* <div className="mx-auto max-w-3xl lg:max-w-7xl"> */}
+      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+        <div className="grid grid-cols-1 gap-4 lg:col-span-2">
+          <section>
+            <div className="card-white flex flex-col items-center justify-between gap-10">
+              <div className="w-full">
+                <div className="flex flex-col items-start w-full">
+                  <div className="flex flex-col gap-1">
+                    <h5>
+                      Loop period length:{" "}
+                      <span>
+                        {loopDetails?.periodLength !== undefined
+                          ? secondsToTime(Number(loopDetails.periodLength))
+                          : "N/A"}
+                      </span>
+                    </h5>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <h5>
+                      Loop distribution: <span>{loopDetails?.percentPerPeriod} %</span>
+                    </h5>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <h5>
+                      Currento Period: <span>{loopDetails?.currentPeriod}</span>
+                    </h5>
+                  </div>
+                  <div className="flex flex-col gap-1 items-start">
+                    <h5>
+                      Current period registrations: <span>{loopDetails?.currentPeriodRegistrations}</span>
+                    </h5>
+                    <h5>
+                      Estimated claim amount for next period: <span>0</span>
+                    </h5>
                   </div>
                 </div>
-                <div className="">
-                  {clientTime !== null ? `Next period in ${formatTime(Number(claimBefore))}` : "...loading"}
-                </div>
+              </div>
+              <div className="">
+                {clientTime !== null ? `Next period in ${formatTime(Number(claimBefore))}` : "...loading"}
+              </div>
 
-                <div className="">
-                  {/* <button
+              <div className="">
+                {/* <button
                     className="btn btn-primary"
                     onClick={async () => {
                       const hashedSignature = await simulateSignature({ message: address ?? "" });
@@ -96,12 +107,12 @@ export const LoopComponent = () => {
                   >
                     claim & Register
                   </button> */}
-                </div>
               </div>
-            </section>
-          </div>
-          <div>
-            <section>
+            </div>
+          </section>
+        </div>
+        <div>
+          {/* <section>
               <div className="p-6 flex flex-col gap-7 items-start">
                 <LoopContractUI contractName="loop" />
                 <div className="card-white w-full flex flex-col items-start gap-2">
@@ -132,10 +143,10 @@ export const LoopComponent = () => {
                   </div>
                 </div>
               </div>
-            </section>
-          </div>
+            </section> */}
         </div>
       </div>
+      {/* </div> */}
     </main>
   );
 };

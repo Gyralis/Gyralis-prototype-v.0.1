@@ -11,6 +11,8 @@ import { Button } from "~~/components/Button";
 import { HeaderMenuLinks } from "~~/components/Header";
 import { SwitchTheme } from "~~/components/SwitchTheme";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
+import Image from "next/image";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -20,6 +22,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const path = usePathname();
   const pathSegmentsLength = path.split("/").length;
+
+
 
   return (
     <>
@@ -45,7 +49,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </TransitionChild>
               <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
                 <div className="flex h-16 shrink-0 items-center">
-                  <img alt="Your Company" src="/logo.jpg" className="h-14 w-auto" />
+                  <Image alt="Your Company" src={GyralisLogo} width={30} height={30} />
                 </div>
                 <nav className="flex flex-1 flex-col">
                   <ul role="list" className="flex flex-1 flex-col gap-y-7">
@@ -67,8 +71,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         {/* Static sidebar for desktop */}
         <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-60 lg:flex-col ">
           <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-            <div className="flex h-16 shrink-0 items-center">
-              <img alt="Your Company" src="/logo.jpg" className="h-14 w-auto" />
+            <div className="flex h-16 shrink-0 items-center gap-2">
+            <Image alt="Your Company" src={GyralisLogo} width={30} height={30} />
+              <span className="text-xl">Gyralis</span>
             </div>
             <nav className="flex flex-1 flex-col ">
               <ul role="list" className="flex flex-1 flex-col gap-y-7">
