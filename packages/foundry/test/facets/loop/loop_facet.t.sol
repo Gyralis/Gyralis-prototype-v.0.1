@@ -2,7 +2,9 @@
 pragma solidity >=0.8.20;
 
 import {Test,console2} from "forge-std/Test.sol";
-import{LoopFacet,LoopStorage,ILoop} from 'contracts/facets/loop/LoopFacet.sol';
+import{LoopFacet,LoopStorage} from 'contracts/facets/loop/LoopFacet.sol';
+
+import{ILoop} from 'contracts/facets/loop/LoopFacet.sol';
 import {IERC20,MockERC20 as ERC20} from 'forge-std/mocks/MockERC20.sol';
 
 import { MessageHashUtils } from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
@@ -30,7 +32,15 @@ contract WLoopFacet is LoopFacet {
     return (ds.registeredForPeriod,ds.latestClaimPeriod);
   }
 }
+
 contract LoopFacetBaseTest is Test {
+  event Initialize(address indexed token, uint256 periodLength, uint256 percentPerPeriod);
+  event Register(address indexed sender, uint256 periodNumber);
+  event TrustedBackendSignerUpdated(address indexed newSigner);
+  event SetPercentPerPeriod(uint256 percentPerPeriod);
+  event Claim(address indexed claimer, uint256 periodNumber, uint256 payout);
+  event Transfer(address indexed from, address indexed to, uint256 value);
+
   WLoopFacet loop;
   WERC20 token;
   address [] bad_addresses;
@@ -70,13 +80,13 @@ contract LoopFacetBaseTest is Test {
        _signature = _digestAndSign(_a, _nextPeriod);
        vm.prank(_a);
        vm.expectEmit(address(loop));
-       emit ILoop.Register(_a,_nextPeriod); 
+       emit Register(_a,_nextPeriod); 
        loop.claimAndRegister(_signature);
      }
      _signature = _digestAndSign(_claimer, _nextPeriod);
      vm.prank(_claimer);
      vm.expectEmit(address(loop));
-     emit ILoop.Register(_claimer,_nextPeriod); 
+     emit Register(_claimer,_nextPeriod); 
      loop.claimAndRegister(_signature);
      vm.warp(block.timestamp + 101);
     _;
@@ -115,12 +125,12 @@ contract LoopFacet_Initializer is LoopFacetBaseTest {
   }
   function test_init_ok()external{
     vm.expectEmit(address(loop));
-    emit ILoop.Initialize(address(token),11,11);
+    emit Initialize(address(token),11,11);
     loop.Loop_init(address(token),admin,11,11,be_signer.addr);
   }
   function test_init_reinit()external{
     vm.expectEmit(address(loop));
-    emit ILoop.Initialize(address(token),11,11);
+    emit Initialize(address(token),11,11);
     loop.Loop_init(address(token),admin,11,11,be_signer.addr);
     vm.expectRevert();
     loop.Loop_init(address(token),admin,11,11,be_signer.addr);
@@ -131,7 +141,7 @@ contract LoopFacet_AuthedFunctionsTest is LoopFacetBaseTest {
   function setUp() public virtual override {
     super.setUp();
     vm.expectEmit(address(loop));
-    emit ILoop.Initialize(address(token),11,11);
+    emit Initialize(address(token),11,11);
     loop.Loop_init(address(token),admin,11,11,be_signer.addr);
   }
   function test_set_trusted_backend_signer_reverts_unauthorized() external {
@@ -157,7 +167,7 @@ contract LoopFacet_AuthedFunctionsTest is LoopFacetBaseTest {
     address _admin = makeAddr('ADDR');
     vm.prank(admin);
     vm.expectEmit(address(loop));
-    emit ILoop.TrustedBackendSignerUpdated(_admin);
+    emit TrustedBackendSignerUpdated(_admin);
     loop.setTrustedBackendSigner(_admin);
   }
 } 
@@ -166,7 +176,7 @@ contract LoopFacet_SetPercentTest is LoopFacetBaseTest {
   function setUp() public virtual override {
     super.setUp();
     vm.expectEmit(address(loop));
-    emit ILoop.Initialize(address(token),11,11);
+    emit Initialize(address(token),11,11);
     loop.Loop_init(address(token),admin,11,11,be_signer.addr);
   }
   function test_set_percent_reverts_unauthorized()external {
@@ -185,7 +195,7 @@ contract LoopFacet_SetPercentTest is LoopFacetBaseTest {
     uint8 _p = 55;
     vm.prank(admin);
     vm.expectEmit(address(loop));
-    emit ILoop.SetPercentPerPeriod(_p);
+    emit SetPercentPerPeriod(_p);
     loop.setPercentPerPeriod(_p);
     (,,uint p_stored,)=loop.getLoopDetails();
     assertEq(uint8(p_stored),_p,'stored!=sent');
@@ -197,7 +207,7 @@ contract LoopFacer_externalFuncsTest is LoopFacetBaseTest{
     uint32 _n = 100;
     super.setUp();
     vm.expectEmit(address(loop));
-    emit ILoop.Initialize(address(token),_n,_n);
+    emit Initialize(address(token),_n,_n);
     loop.Loop_init(address(token),admin,_n,_n,be_signer.addr);
   }
   /**
@@ -221,7 +231,7 @@ contract LoopFacet_claimTest is LoopFacetBaseTest {
     uint32 _n = 100;
     super.setUp();
     vm.expectEmit(address(loop));
-    emit ILoop.Initialize(address(token),_n,_n);
+    emit Initialize(address(token),_n,_n);
     loop.Loop_init(address(token),admin,_n,_n,be_signer.addr);
   }
   /**
@@ -249,9 +259,9 @@ contract LoopFacet_claimTest is LoopFacetBaseTest {
     uint _period = loop.getCurrentPeriod() ;
     vm.prank(_claimer);
     vm.expectEmit(address(token));
-    emit IERC20.Transfer(address(loop),_claimer,0);
+    emit Transfer(address(loop),_claimer,0);
     vm.expectEmit(address(loop));
-    emit ILoop.Claim(_claimer,_period,0);
+    emit Claim(_claimer,_period,0);
     loop.claim();
     // quedo grabado en el st?
     (uint _r,uint _c)= loop.getClaimerData(_claimer);
@@ -265,9 +275,9 @@ contract LoopFacet_claimTest is LoopFacetBaseTest {
     uint _expected = am/ (_period +1) ;
     vm.prank(_claimer);
     vm.expectEmit(address(token));
-    emit IERC20.Transfer(address(loop),_claimer,_expected);
+    emit Transfer(address(loop),_claimer,_expected);
     vm.expectEmit(address(loop));
-    emit ILoop.Claim(_claimer,_period,_expected);
+    emit Claim(_claimer,_period,_expected);
     loop.claim();
     // quedo grabado en el st?
     (uint _r,uint _c)= loop.getClaimerData(_claimer);
@@ -291,7 +301,7 @@ contract LoopFacet_ClaimWSignature is LoopFacetBaseTest {
       uint32 _n = delta_period;
       super.setUp();
       vm.expectEmit(address(loop));
-      emit ILoop.Initialize(address(token),_n,percentaje);
+      emit Initialize(address(token),_n,percentaje);
       loop.Loop_init(address(token),admin,_n,percentaje,be_signer.addr);
     }
     function test_claimAndRegister_invalidSignature() external {
@@ -354,9 +364,9 @@ contract LoopFacet_ClaimWSignature is LoopFacetBaseTest {
         uint expectedClaim = (am /100)*percentage;
         vm.prank(user);
         vm.expectEmit(address(token));
-        emit IERC20.Transfer(address(loop), user, expectedClaim);
+        emit Transfer(address(loop), user, expectedClaim);
         vm.expectEmit(address(loop));
-        emit ILoop.Claim(user, period, expectedClaim);
+        emit Claim(user, period, expectedClaim);
 
         loop.claim();
 
