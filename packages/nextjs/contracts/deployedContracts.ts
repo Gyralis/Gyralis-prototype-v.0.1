@@ -453,25 +453,12 @@ const deployedContracts = {
         },
         {
           type: "function",
-          name: "LOOP_ADMIN_ROLE",
-          inputs: [],
-          outputs: [
-            {
-              name: "",
-              type: "bytes32",
-              internalType: "bytes32",
-            },
-          ],
-          stateMutability: "view",
-        },
-        {
-          type: "function",
           name: "Loop_init",
           inputs: [
             {
               name: "_token",
               type: "address",
-              internalType: "contract ERC20",
+              internalType: "address",
             },
             {
               name: "_loopAdmin",
@@ -500,6 +487,19 @@ const deployedContracts = {
         {
           type: "function",
           name: "ONE_HUNDRED_PERCENT",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint8",
+              internalType: "uint8",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "UNIT",
           inputs: [],
           outputs: [
             {
@@ -724,6 +724,19 @@ const deployedContracts = {
         },
         {
           type: "event",
+          name: "Initialized",
+          inputs: [
+            {
+              name: "version",
+              type: "uint64",
+              indexed: false,
+              internalType: "uint64",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "event",
           name: "Register",
           inputs: [
             {
@@ -735,7 +748,7 @@ const deployedContracts = {
             {
               name: "periodNumber",
               type: "uint256",
-              indexed: false,
+              indexed: true,
               internalType: "uint256",
             },
           ],
@@ -871,6 +884,26 @@ const deployedContracts = {
         },
         {
           type: "error",
+          name: "INVALID_ADDRESS",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "INVALID_ADMIN_ADDRESS",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "INVALID_SIGNER_ADDRESS",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "InvalidInitialization",
+          inputs: [],
+        },
+        {
+          type: "error",
           name: "InvalidPeriodLength",
           inputs: [],
         },
@@ -882,6 +915,11 @@ const deployedContracts = {
         {
           type: "error",
           name: "NotAuthorized",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "NotInitializing",
           inputs: [],
         },
       ],

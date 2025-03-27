@@ -17,7 +17,7 @@ interface ILoop {
     event Initialize(address indexed token, uint256 periodLength, uint256 percentPerPeriod);
     event SetPercentPerPeriod(uint256 percentPerPeriod);
     event Claim(address indexed claimer, uint256 periodNumber, uint256 payout);
-    event Register(address indexed sender, uint256 periodNumber);
+    event Register(address indexed sender, uint256 indexed periodNumber);
     event Withdraw(address indexed admin, address indexed to, uint256 amount);
     event TrustedBackendSignerUpdated(address indexed newSigner);
 
