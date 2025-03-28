@@ -19,7 +19,6 @@ import { THRESHOLD } from "~~/utils/loop";
 // Backend private key to sign eligibility messages
 const TRUSTED_BACKEND_SIGNER_PK = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"; //process.env.TRUSTED_BACKEND_SIGNER_PK ?? "";
 const GITCOIN_PASSPORT_API_KEY = process.env.GITCOIN_PASSPORT_API_KEY ?? "";
-console.log("***** GITCOIN_PASSPORT_API_KEY *****", GITCOIN_PASSPORT_API_KEY);
 const SCORER_ID = process.env.SCORER_ID ?? "";
 const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.13";
 
@@ -97,23 +96,21 @@ async function fetchPassportScore(userAddress: string): Promise<number> {
  * @param loopAddress The address of the Loop contract
  * @returns The current period number (incremented by 1 for nextPeriod)
  */
+
 async function fetchNextPeriod(chainId: number, loopAddress: string): Promise<number> {
   try {
     const viemChain = getViemChain(chainId);
-
     const walletClient = createWalletClient({
       account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
       chain: viemChain,
       transport: http(),
     });
-
     console.log("LOOP ADDRESS: ", loopAddress);
     const loopContract = getContract({
       address: loopAddress as `0x${string}`,
       abi: parseAbi(["function getCurrentPeriod() public view returns (uint256)"]),
       client: walletClient,
     });
-
     const currentPeriod = await loopContract.read.getCurrentPeriod();
 
     return Number(currentPeriod + BigInt(1));
@@ -128,7 +125,6 @@ export async function POST(req: Request) {
     const { userAddress, loopAddress, chainId } = await req.json();
 
     console.log({ userAddress, loopAddress, chainId });
-
     if (!userAddress || !loopAddress || !chainId) {
       return NextResponse.json({ success: false, error: "Missing parameters" }, { status: 400 });
     }
@@ -186,7 +182,6 @@ export async function POST(req: Request) {
       );
     }
 
-
     const eligibilityMessage = encodePacked(
       ["address", "uint256", "address"],
       [userAddress, BigInt(Math.floor(nextPeriod)), loopAddress],
@@ -195,7 +190,6 @@ export async function POST(req: Request) {
     const eligibilityMessageHash = keccak256(eligibilityMessage);
 
     console.log("eligibilityMessageHash ", eligibilityMessageHash);
-
     // Sign the message with the trusted backend signer
     const walletClient = createWalletClient({
       account: privateKeyToAccount(TRUSTED_BACKEND_SIGNER_PK as `0x${string}`),
@@ -209,7 +203,6 @@ export async function POST(req: Request) {
     });
 
     console.log("Signature:", backendSignature);
-
     return NextResponse.json({
       success: true,
       signature: backendSignature,

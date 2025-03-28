@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Address, stringify, formatUnits } from "viem";
+import { Address, formatUnits, stringify } from "viem";
 import { useAccount, useBalance, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import * as abis from "~~/contracts/deployedContracts";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
+import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 import { THRESHOLD } from "~~/utils/loop";
 import { useCurrentPeriodPayout } from "~~/utils/loop";
 
@@ -32,8 +33,11 @@ export const ClaimAndRegister: React.FC = () => {
     chainId: CHAIN_ID,
   });
 
-
   const { writeContractAsync: writeLoopContractAsync, isMining } = useScaffoldWriteContract("loop");
+
+  const { users: registeredUsers, loading: usersLoading } = useRegisteredUsers(LOOP_ADDRESS);
+
+  console.log("registeredUsers:", registeredUsers);
 
   const handleFetchScore = async () => {
     setLoading(true);
@@ -83,9 +87,7 @@ export const ClaimAndRegister: React.FC = () => {
     }
   };
 
-
   //onst currentPeriodPayout = useCurrentPeriodPayout();
-
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
