@@ -53,7 +53,7 @@ export const useLoopData = () => {
       setLoopDetails({
         token: readContractData[0] as Address,
         periodLength: Number(readContractData[1]),
-        percentPerPeriod: +formatUnits(readContractData[2], 18) * 100,
+        percentPerPeriod: Number(readContractData[2]),
         firstPeriodStart: readContractData[3] as bigint,
         currentPeriod: Number(currentPeriod),
         currentPeriodRegistrations: currentPeriodData ? Number(currentPeriodData[0]) : 0,

@@ -7,7 +7,6 @@ import * as abis from "~~/contracts/deployedContracts";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 import { THRESHOLD } from "~~/utils/loop";
-import { useCurrentPeriodPayout } from "~~/utils/loop";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
@@ -33,9 +32,13 @@ export const ClaimAndRegister: React.FC = () => {
     chainId: CHAIN_ID,
   });
 
-  const { writeContractAsync: writeLoopContractAsync, isMining } = useScaffoldWriteContract("loop");
+  const { writeContractAsync: writeLoopContractAsync, isMining  } = useScaffoldWriteContract("loop");
+
+  console.log("isMining", isMining);
 
   const { users: registeredUsers, loading: usersLoading } = useRegisteredUsers(LOOP_ADDRESS);
+
+
 
   console.log("registeredUsers:", registeredUsers);
 
@@ -94,6 +97,7 @@ export const ClaimAndRegister: React.FC = () => {
       await writeLoopContractAsync({
         functionName: "claimAndRegister",
         args: [signature],
+        
       });
     } catch (e) {
       console.error("Error claim&Register:", e);
@@ -171,7 +175,7 @@ export const ClaimAndRegister: React.FC = () => {
               className="btn btn-primary mt-2"
               onClick={() => connectedAccount && claimAndRegister(connectedAccount, LOOP_ADDRESS, CHAIN_ID)}
             >
-              Claim and Register
+              {isMining ? "loading..." : "Claim and Register"}
             </button>
           )}
           <div className="flex flex-col gap-1 mt-4">
@@ -180,7 +184,22 @@ export const ClaimAndRegister: React.FC = () => {
             <p>Loop token balance: {formatUnits(loopTokenBalance?.value || 0n, 18)}</p>
           </div>
         </div>
+        
       )}
+      <div>
+        <h3 className="text-lg">Registered Users</h3>
+        {usersLoading ? (
+          <p>Loading registered users...</p>
+        ) : (
+          <ul className="list-disc pl-6">
+            {registeredUsers.map((user, index) => (
+              <li key={index} className="py-1">
+                {user}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 };
