@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Address, formatUnits, stringify } from "viem";
+import { formatUnits } from "viem";
 import { useAccount, useBalance, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { Address } from "~~/components/scaffold-eth";
 import * as abis from "~~/contracts/deployedContracts";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
+import { useLoopDataGlobal } from "~~/hooks/useLoopDataGlobal";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 import { THRESHOLD } from "~~/utils/loop";
 
@@ -20,25 +22,31 @@ export const ClaimAndRegister: React.FC = () => {
 
   const { address: connectedAccount } = useAccount();
 
-  const { data: addressConnectedTokenBalance } = useBalance({
+  const { data: conectedAccountBalance } = useBalance({
     address: connectedAccount,
     token: TOKEN_ADDRESS as `0x${string}` | undefined,
     chainId: CHAIN_ID,
   });
 
-  const { data: loopTokenBalance } = useBalance({
+  const { data: loopBalance, refetch: fetchLoopBalance } = useBalance({
     address: LOOP_ADDRESS,
     token: TOKEN_ADDRESS as `0x${string}` | undefined,
     chainId: CHAIN_ID,
   });
 
-  const { writeContractAsync: writeLoopContractAsync, isMining  } = useScaffoldWriteContract("loop");
+  const { writeContractAsync: writeLoopContractAsync, isMining, status, isSuccess  } = useScaffoldWriteContract("loop");
+
+  console.log("status", status);
+
+  console.log(isSuccess);
 
   console.log("isMining", isMining);
 
   const { users: registeredUsers, loading: usersLoading } = useRegisteredUsers(LOOP_ADDRESS);
 
+  // const {data} = useLoopDataGlobal(LOOP_ADDRESS);
 
+  // console.log("latestHookData", data );
 
   console.log("registeredUsers:", registeredUsers);
 
@@ -97,7 +105,6 @@ export const ClaimAndRegister: React.FC = () => {
       await writeLoopContractAsync({
         functionName: "claimAndRegister",
         args: [signature],
-        
       });
     } catch (e) {
       console.error("Error claim&Register:", e);
@@ -148,9 +155,14 @@ export const ClaimAndRegister: React.FC = () => {
 
   useEffect(() => {
     if (connectedAccount) handleFetchScore();
+    fetchLoopBalance();
   }, [connectedAccount]);
 
   if (loading) return <div className="p-4">Loading...</div>;
+
+  const canClaim = connectedAccount && registeredUsers.includes(connectedAccount);
+
+  console.log("im rendering...");
 
   return (
     <div className="container p-6 mt-2 flex gap-2 flex-col shadow-md">
@@ -175,16 +187,21 @@ export const ClaimAndRegister: React.FC = () => {
               className="btn btn-primary mt-2"
               onClick={() => connectedAccount && claimAndRegister(connectedAccount, LOOP_ADDRESS, CHAIN_ID)}
             >
-              {isMining ? "loading..." : "Claim and Register"}
+              {canClaim ? "Claim" : "Register"}
             </button>
           )}
+            <div>
+          <h4>Transaction message to user:</h4>
+            {isSuccess && canClaim && "You successfully claimed! X hny tokens and already registered for next period"} 
+            {isSuccess && !canClaim && "Registered for next period!!"}
+            {status === "error" && "Error in transaction"}
+        </div>
           <div className="flex flex-col gap-1 mt-4">
             <p>Connected account: {connectedAccount}</p>
-            <p>Connected account balance: {formatUnits(addressConnectedTokenBalance?.value || 0n, 18)}</p>
-            <p>Loop token balance: {formatUnits(loopTokenBalance?.value || 0n, 18)}</p>
+            <p>Connected account balance: {formatUnits(conectedAccountBalance?.value || 0n, 18)}</p>
+            <p>Loop token balance: {formatUnits(loopBalance?.value || 0n, 18)}</p>
           </div>
         </div>
-        
       )}
       <div>
         <h3 className="text-lg">Registered Users</h3>
@@ -194,11 +211,12 @@ export const ClaimAndRegister: React.FC = () => {
           <ul className="list-disc pl-6">
             {registeredUsers.map((user, index) => (
               <li key={index} className="py-1">
-                {user}
+                <Address address={user} onlyEnsOrAddress />
               </li>
             ))}
           </ul>
         )}
+      
       </div>
     </div>
   );

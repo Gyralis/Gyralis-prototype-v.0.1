@@ -4,7 +4,7 @@
  */
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
-const deployedContracts = {
+export const deployedContracts = {
   31337: {
     loop: {
       address: "0xED179b78D5781f93eb169730D8ad1bE7313123F4",

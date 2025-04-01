@@ -43,6 +43,11 @@ export const LoopComponent = () => {
 
   const claimBefore = clientTime !== null ? nextPeriodStart - clientTime - 1n : null;
 
+  const maxPayout = loopDetails?.maxPayout
+
+  console.log(maxPayout);
+
+
   //console.log("Im rendering");
 
   return (

@@ -1,3 +1,4 @@
+import { truncate } from "fs";
 import { useEffect, useState } from "react";
 import { Address, formatUnits } from "viem";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
@@ -8,9 +9,10 @@ export const useLoopData = () => {
     isLoading: isLoadingDetails,
     refetch: refetchDetails,
   } = useScaffoldReadContract({
+    
     contractName: "loop",
     functionName: "getLoopDetails",
-    watch: false, // Disable auto-watch, we'll manually refetch
+    watch: true, // Disable auto-watch, we'll manually refetch
   });
 
   const {
@@ -34,6 +36,8 @@ export const useLoopData = () => {
   });
 
 
+
+
   interface LoopDetails {
     token: Address;
     periodLength: number;
@@ -41,6 +45,7 @@ export const useLoopData = () => {
     firstPeriodStart: bigint;
     currentPeriod: number;
     currentPeriodRegistrations: number;
+    maxPayout: number;
   }
 
   const [loopDetails, setLoopDetails] = useState<LoopDetails | undefined>(undefined);
@@ -57,19 +62,20 @@ export const useLoopData = () => {
         firstPeriodStart: readContractData[3] as bigint,
         currentPeriod: Number(currentPeriod),
         currentPeriodRegistrations: currentPeriodData ? Number(currentPeriodData[0]) : 0,
+        maxPayout: currentPeriodData ? Number(currentPeriodData[1]) : 0,
       });
     };
 
     updateLoopDetails();
   }, [readContractData, currentPeriod, currentPeriodData]);
 
-  // Refetch every 3 seconds
+  //Refetch every 3 seconds
   useEffect(() => {
     const interval = setInterval(() => {
       refetchDetails();
       refetchPeriod();
       refetchPeriodData();
-    }, 1000);
+    }, 3000);
 
     return () => clearInterval(interval);
   }, []);

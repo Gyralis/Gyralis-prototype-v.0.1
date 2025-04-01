@@ -1,51 +1,25 @@
-import { useScaffoldContract } from "~~/hooks/scaffold-eth"; // Adjust import according to your project
-import { useWalletClient } from "wagmi"; // Import necessary hooks from wagmi
+import { useScaffoldContract } from "~~/hooks/scaffold-eth";
+import { useWalletClient } from "wagmi"; 
+import * as deployedContracts  from "~~/contracts/deployedContracts";
+import { useMemo } from "react";
+
+const CONTRACT_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
+const CHAIN_ID = 31337 // Replace with your actual cont address
+
+// const loopAbi = useMemo(() => {
+//     return deployedContracts?.[chainId as keyof typeof deployedContracts]?.loop?.abi ?? [];
+//   }, [chainId]);
 
 export const THRESHOLD = 15
-// Function to get User Status
-// export function useUserStatus(fid: number) {
-//   // Destructure the contract using useScaffoldContract hook
-//   const { data: contract } = useScaffoldContract({
-//     contractName: "YourContract", // Replace with your actual contract name
-//   });
 
-//   const { data: walletClient } = useWalletClient(); // Get walletClient for transactions, if needed
-
-//   const getUserStatus = async () => {
-//     if (!contract) return;
-
-//     const [currentPeriod, [registeredClaimPeriod, latestClaimPeriod]] = await Promise.all([
+// export async function getNextPeriodStart() {
+//     const [firstPeriodStart, periodLength, currentPeriod] = await Promise.all([
+//       contract.read.firstPeriodStart(),
+//       contract.read.periodLength(),
 //       contract.read.getCurrentPeriod(),
-//       contract.read.claimers([BigInt(fid)]),
-//     ]);
-
-//     const registeredNextPeriod = registeredClaimPeriod === currentPeriod + 1n;
-
-//     return {
-//       canClaim: latestClaimPeriod < currentPeriod && registeredClaimPeriod === currentPeriod,
-//       registeredNextPeriod: registeredNextPeriod,
-//     };
-//   };
-
-//   return { getUserStatus };
-// }
-
-// Function to get the Next Period Start
+//     ])
+  
+//     return firstPeriodStart + periodLength * (currentPeriod + 1n)
+//   }
 
 
-//Function to get the Current Period Payout
-// export function useCurrentPeriodPayout() {
-//   const { data: contract } = useScaffoldContract({
-//     contractName: "loop", // Replace with your actual contract name
-//   });
-
-//   const getCurrentPeriodPayout = async () => {
-//     if (!contract) return;
-
-//     const currentPeriod = await contract.read.getCurrentPeriod();
-
-//     return contract.read.getPeriodIndividualPayout([currentPeriod]);
-//   };
-
-//   return { getCurrentPeriodPayout };
-// }
