@@ -62,7 +62,7 @@ export const useLoopData = () => {
         firstPeriodStart: readContractData[3] as bigint,
         currentPeriod: Number(currentPeriod),
         currentPeriodRegistrations: currentPeriodData ? Number(currentPeriodData[0]) : 0,
-        maxPayout: currentPeriodData ? Number(currentPeriodData[1]) : 0,
+        maxPayout:  Number(currentPeriodData?.[1] ?? 0),
       });
     };
 

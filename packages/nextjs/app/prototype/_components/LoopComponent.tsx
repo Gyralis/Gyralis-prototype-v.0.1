@@ -81,9 +81,7 @@ export const LoopComponent = () => {
                     </h5>
                   </div>
                   <div className="flex flex-col gap-1 items-start">
-                    <h5>
-                      Current period registrations: <span>{loopDetails?.currentPeriodRegistrations}</span>
-                    </h5>
+               
                     <h5>
                       Estimated claim amount for next period: <span>0</span>
                     </h5>

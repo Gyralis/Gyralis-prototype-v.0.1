@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { formatUnits } from "viem";
-import { useAccount, useBalance, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useAccount, useBalance, useTransactionReceipt, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import * as abis from "~~/contracts/deployedContracts";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
@@ -28,19 +28,17 @@ export const ClaimAndRegister: React.FC = () => {
     chainId: CHAIN_ID,
   });
 
-  const { data: loopBalance, refetch: fetchLoopBalance } = useBalance({
+  const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
     address: LOOP_ADDRESS,
     token: TOKEN_ADDRESS as `0x${string}` | undefined,
     chainId: CHAIN_ID,
+    
   });
 
-  const { writeContractAsync: writeLoopContractAsync, isMining, status, isSuccess  } = useScaffoldWriteContract("loop");
+  const { data:contractData, writeContractAsync: writeLoopContractAsync, isMining, status, isSuccess} = useScaffoldWriteContract("loop");
 
-  console.log("status", status);
+  console.log(contractData);
 
-  console.log(isSuccess);
-
-  console.log("isMining", isMining);
 
   const { users: registeredUsers, loading: usersLoading } = useRegisteredUsers(LOOP_ADDRESS);
 
@@ -49,6 +47,14 @@ export const ClaimAndRegister: React.FC = () => {
   // console.log("latestHookData", data );
 
   console.log("registeredUsers:", registeredUsers);
+
+  
+  const Txresult = useWaitForTransactionReceipt({
+    hash: contractData as `0x${string}` | undefined,
+    confirmations: 1,
+  });
+
+  console.log("TxResult", Txresult);
 
   const handleFetchScore = async () => {
     setLoading(true);
@@ -106,6 +112,7 @@ export const ClaimAndRegister: React.FC = () => {
         functionName: "claimAndRegister",
         args: [signature],
       });
+      
     } catch (e) {
       console.error("Error claim&Register:", e);
     }
@@ -155,14 +162,16 @@ export const ClaimAndRegister: React.FC = () => {
 
   useEffect(() => {
     if (connectedAccount) handleFetchScore();
-    fetchLoopBalance();
+    refetchLoopBalance();  
   }, [connectedAccount]);
 
   if (loading) return <div className="p-4">Loading...</div>;
 
   const canClaim = connectedAccount && registeredUsers.includes(connectedAccount);
 
-  console.log("im rendering...");
+
+
+
 
   return (
     <div className="container p-6 mt-2 flex gap-2 flex-col shadow-md">
@@ -192,7 +201,7 @@ export const ClaimAndRegister: React.FC = () => {
           )}
             <div>
           <h4>Transaction message to user:</h4>
-            {isSuccess && canClaim && "You successfully claimed! X hny tokens and already registered for next period"} 
+            {isSuccess && canClaim && `You successfully claimed! X hny tokens and already registered for next period`} 
             {isSuccess && !canClaim && "Registered for next period!!"}
             {status === "error" && "Error in transaction"}
         </div>
@@ -204,7 +213,7 @@ export const ClaimAndRegister: React.FC = () => {
         </div>
       )}
       <div>
-        <h3 className="text-lg">Registered Users</h3>
+        <h3 className="text-lg">Registered Users Current Period</h3>
         {usersLoading ? (
           <p>Loading registered users...</p>
         ) : (
