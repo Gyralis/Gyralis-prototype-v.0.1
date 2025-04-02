@@ -1,14 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { ModalAnimated } from "./ModalAnimated";
+import { stat } from "fs";
 import { formatUnits } from "viem";
-import { useAccount, useBalance, useTransactionReceipt, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import {
+  useAccount,
+  useBalance,
+  useTransactionConfirmations,
+  useTransactionReceipt,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import * as abis from "~~/contracts/deployedContracts";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useLoopDataGlobal } from "~~/hooks/useLoopDataGlobal";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 import { THRESHOLD } from "~~/utils/loop";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
@@ -19,6 +29,8 @@ export const ClaimAndRegister: React.FC = () => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const { address: connectedAccount } = useAccount();
 
@@ -32,29 +44,44 @@ export const ClaimAndRegister: React.FC = () => {
     address: LOOP_ADDRESS,
     token: TOKEN_ADDRESS as `0x${string}` | undefined,
     chainId: CHAIN_ID,
-    
   });
 
-  const { data:contractData, writeContractAsync: writeLoopContractAsync, isMining, status, isSuccess} = useScaffoldWriteContract("loop");
+  const {
+    data: contractData,
+    writeContractAsync: writeLoopContractAsync,
+    isMining,
+    status,
+    isSuccess,
+    error,
+    reset
+  } = useScaffoldWriteContract("loop");
 
   console.log(contractData);
 
+  console.log(error);
 
   const { users: registeredUsers, loading: usersLoading } = useRegisteredUsers(LOOP_ADDRESS);
 
   // const {data} = useLoopDataGlobal(LOOP_ADDRESS);
 
-  // console.log("latestHookData", data );
+  // console.log("latestHookData", data );]
+  console.log(status);
 
   console.log("registeredUsers:", registeredUsers);
 
-  
+  const transactionConfirmation = useTransactionConfirmations({
+    hash: contractData as `0x${string}` | undefined,
+  });
+
   const Txresult = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
-    confirmations: 1,
+    confirmations: 3,
+  
   });
 
   console.log("TxResult", Txresult);
+
+  console.log("Confirmation", transactionConfirmation);
 
   const handleFetchScore = async () => {
     setLoading(true);
@@ -85,6 +112,19 @@ export const ClaimAndRegister: React.FC = () => {
     }
   };
 
+    const {
+      data: currentPeriod,
+      isLoading: isLoadingCurrentPeriod,
+      refetch: refetchPeriod,
+    } = useScaffoldReadContract({
+      contractName: "loop",
+      functionName: "getCurrentPeriod",
+      watch: true,
+    });
+
+
+    console.log(currentPeriod);
+
   const handleSubmitPassport = async () => {
     setIsSubmitting(true);
     try {
@@ -112,7 +152,6 @@ export const ClaimAndRegister: React.FC = () => {
         functionName: "claimAndRegister",
         args: [signature],
       });
-      
     } catch (e) {
       console.error("Error claim&Register:", e);
     }
@@ -123,6 +162,7 @@ export const ClaimAndRegister: React.FC = () => {
       console.error("Missing parameters...");
       return;
     }
+    setIsOpen(true);
     //First: we need to check if the user is eligible to claim or register
     try {
       const response = await fetch("/api/eligibility", {
@@ -162,21 +202,31 @@ export const ClaimAndRegister: React.FC = () => {
 
   useEffect(() => {
     if (connectedAccount) handleFetchScore();
-    refetchLoopBalance();  
+    refetchLoopBalance();
   }, [connectedAccount]);
 
   if (loading) return <div className="p-4">Loading...</div>;
 
   const canClaim = connectedAccount && registeredUsers.includes(connectedAccount);
 
-
-
-
+  // const OpenModal = () => {
+  //   return (
+  //     <div className="px-4 py-8 bg-slate-900 grid place-content-center">
+  //
+  //       <ModalAnimated isOpen={isOpen} setIsOpen={setIsOpen}>
+  //       <h4>Transaction message to user:</h4>
+  //           {isSuccess && canClaim && `You successfully claimed! X hny tokens and already registered for next period`}
+  //           {isSuccess && !canClaim && "Registered for next period!!"}
+  //           {status === "error" && "Error in transaction"}
+  //       </ModalAnimated>
+  //     </div>
+  //   );
+  // };
 
   return (
     <div className="container p-6 mt-2 flex gap-2 flex-col shadow-md">
       <h2 className="text-xl py-1">Passport and Claim & Register</h2>
-
+      {/* <OpenModal /> */}
       {!hasSubmitted ? (
         <div>
           <p>Submit your passport to continue.</p>
@@ -189,22 +239,40 @@ export const ClaimAndRegister: React.FC = () => {
           <p>
             Your score: <span className="font-bold">{score}</span>
           </p>
-          {score !== null && score < THRESHOLD ? (
-            <p className="text-red-500">Your score is too low to proceed.</p>
-          ) : (
-            <button
-              className="btn btn-primary mt-2"
-              onClick={() => connectedAccount && claimAndRegister(connectedAccount, LOOP_ADDRESS, CHAIN_ID)}
-            >
-              {canClaim ? "Claim" : "Register"}
-            </button>
-          )}
-            <div>
-          <h4>Transaction message to user:</h4>
-            {isSuccess && canClaim && `You successfully claimed! X hny tokens and already registered for next period`} 
-            {isSuccess && !canClaim && "Registered for next period!!"}
-            {status === "error" && "Error in transaction"}
-        </div>
+
+          <div>
+            {score !== null && score < THRESHOLD ? (
+              <p className="text-red-500">Your score is too low to proceed.</p>
+            ) : (
+              <div className="flex flex-col gap-1 border2">
+                <button
+                  className="btn btn-primary mt-2"
+                  onClick={() => connectedAccount && claimAndRegister(connectedAccount, LOOP_ADDRESS, CHAIN_ID)}
+                >
+                  {canClaim ? "Claim" : "Register"}
+                </button>
+                <div>
+                  {isMining && <p>Waiting for signature ...</p>}
+                  {Txresult?.status === "success" && !canClaim && (
+                    <div>
+                      <p>Transaction successful! You are registered for next period</p>
+                      <p>Transaction hash: {contractData}</p>
+                      <p>Status: {status}</p>
+                    </div>
+                  )}
+                  {Txresult?.status === "success" && canClaim && (
+                    <div>
+                      <p>Transaction successful! You claim X HNY tokens and registred for ext period!</p>
+                      <p>Transaction hash: {contractData}</p>
+                      <p>Status: {status}</p>
+                    </div>
+                  )}
+                  {error && <p>Error: {error?.message}</p>}
+                </div>
+                <button onClick={() => reset()}>reset state</button>
+              </div>
+            )}
+          </div>
           <div className="flex flex-col gap-1 mt-4">
             <p>Connected account: {connectedAccount}</p>
             <p>Connected account balance: {formatUnits(conectedAccountBalance?.value || 0n, 18)}</p>
@@ -225,7 +293,6 @@ export const ClaimAndRegister: React.FC = () => {
             ))}
           </ul>
         )}
-      
       </div>
     </div>
   );

@@ -11,9 +11,6 @@ import { formatTime, secondsToTime } from "~~/utils";
 export const LoopComponent = () => {
   const [clientTime, setClientTime] = useState<bigint | null>(null);
 
-  const { address: connectedAccount } = useAccount();
-  const { writeContractAsync: writeLoopContractAsync } = useScaffoldWriteContract("loop");
-
   const { loopDetails, isLoading } = useLoopData();
 
   const nextPeriodStart = useMemo(() => {
@@ -43,9 +40,6 @@ export const LoopComponent = () => {
 
   const claimBefore = clientTime !== null ? nextPeriodStart - clientTime - 1n : null;
 
-  const maxPayout = loopDetails?.maxPayout
-
-  console.log(maxPayout);
 
 
   //console.log("Im rendering");
