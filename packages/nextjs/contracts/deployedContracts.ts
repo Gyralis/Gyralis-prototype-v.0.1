@@ -532,6 +532,30 @@ const deployedContracts = {
         },
         {
           type: "function",
+          name: "getClaimerStatus",
+          inputs: [
+            {
+              name: "user",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "isRegistered",
+              type: "bool",
+              internalType: "bool",
+            },
+            {
+              name: "hasClaimed",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
           name: "getCurrentPeriod",
           inputs: [],
           outputs: [

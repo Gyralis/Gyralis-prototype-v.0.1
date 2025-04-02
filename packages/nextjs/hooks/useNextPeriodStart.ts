@@ -1,23 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import { Address, parseAbiItem } from "viem";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useChainId, usePublicClient, useReadContract } from "wagmi";
 import deployedContracts from "~~/contracts/deployedContracts";
 
-
-interface LoopDetails {
-    token: Address;
-    periodLength: number;
-    percentPerPeriod: number;
-    firstPeriodStart: bigint;
-    // currentPeriod: number;
-    // currentPeriodRegistrations: number;
-    // maxPayout: number;
-  }
-
-export function useLoopDataGlobal(loopAddress: `0x${string}`) {
+export function useNextPeriodStart(loopAddress: `0x${string}`) {
   const chainId = useChainId();
   const publicClient = usePublicClient();
-  const [data, setData] = useState<LoopDetails[]>([]);
+  const [nextPeriodStart, setNextPeriodStart] = useState<bigint | undefined>();
   const [loading, setLoading] = useState(true);
 
   const loopAbi = useMemo(() => {
@@ -29,6 +17,12 @@ export function useLoopDataGlobal(loopAddress: `0x${string}`) {
     abi: loopAbi,
     functionName: "getCurrentPeriod",
   });
+
+  // Function to calculate the next period start timestamp
+  const calculateNextPeriodStart = useCallback((loopDetails: any, currentPeriod: bigint) => {
+    // Assuming loopDetails[3] is the base timestamp and loopDetails[1] is the period duration
+    return BigInt(loopDetails[3]) + BigInt(loopDetails[1]) * (currentPeriod + 1n);
+  }, []);
 
   useEffect(() => {
     if (!publicClient || currentPeriod === undefined) return;
@@ -42,12 +36,8 @@ export function useLoopDataGlobal(loopAddress: `0x${string}`) {
           functionName: "getLoopDetails",
         });
 
-        setData([{
-            token: loopDetails[0],
-            periodLength: Number(loopDetails[1]),
-            percentPerPeriod: Number(loopDetails[2]),
-            firstPeriodStart: loopDetails[3],
-          }]);
+        const nextStart = calculateNextPeriodStart(loopDetails, currentPeriod);
+        setNextPeriodStart(nextStart);
       } catch (err) {
         console.error("Error fetching Register logs:", err);
       } finally {
@@ -56,7 +46,7 @@ export function useLoopDataGlobal(loopAddress: `0x${string}`) {
     };
 
     fetchData();
-  }, [publicClient, loopAddress, currentPeriod]);
+  }, [publicClient, loopAddress, currentPeriod, loopAbi, calculateNextPeriodStart]);
 
-  return { data, loading };
+  return { nextPeriodStart, loading };
 }

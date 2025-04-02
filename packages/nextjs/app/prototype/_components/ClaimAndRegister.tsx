@@ -14,11 +14,11 @@ import {
 } from "wagmi";
 import { Address } from "~~/components/scaffold-eth";
 import * as abis from "~~/contracts/deployedContracts";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
-import { useLoopDataGlobal } from "~~/hooks/useLoopDataGlobal";
+import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 import { THRESHOLD } from "~~/utils/loop";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
@@ -34,17 +34,17 @@ export const ClaimAndRegister: React.FC = () => {
 
   const { address: connectedAccount } = useAccount();
 
-  const { data: conectedAccountBalance } = useBalance({
-    address: connectedAccount,
-    token: TOKEN_ADDRESS as `0x${string}` | undefined,
-    chainId: CHAIN_ID,
-  });
+  // const { data: conectedAccountBalance } = useBalance({
+  //   address: connectedAccount,
+  //   token: TOKEN_ADDRESS as `0x${string}` | undefined,
+  //   chainId: CHAIN_ID,
+  // });
 
-  const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
-    address: LOOP_ADDRESS,
-    token: TOKEN_ADDRESS as `0x${string}` | undefined,
-    chainId: CHAIN_ID,
-  });
+  // const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
+  //   address: LOOP_ADDRESS,
+  //   token: TOKEN_ADDRESS as `0x${string}` | undefined,
+  //   chainId: CHAIN_ID,
+  // });
 
   const {
     data: contractData,
@@ -53,21 +53,17 @@ export const ClaimAndRegister: React.FC = () => {
     status,
     isSuccess,
     error,
-    reset
+    reset,
   } = useScaffoldWriteContract("loop");
 
   console.log(contractData);
 
   console.log(error);
 
-  const { users: registeredUsers, loading: usersLoading } = useRegisteredUsers(LOOP_ADDRESS);
+   //const { users: registeredUsers, loading: usersLoading } = useRegisteredUsers(LOOP_ADDRESS);
 
-  // const {data} = useLoopDataGlobal(LOOP_ADDRESS);
 
-  // console.log("latestHookData", data );]
-  console.log(status);
-
-  console.log("registeredUsers:", registeredUsers);
+  
 
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
@@ -75,8 +71,7 @@ export const ClaimAndRegister: React.FC = () => {
 
   const Txresult = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
-    confirmations: 3,
-  
+    
   });
 
   console.log("TxResult", Txresult);
@@ -112,19 +107,27 @@ export const ClaimAndRegister: React.FC = () => {
     }
   };
 
-    const {
-      data: currentPeriod,
-      isLoading: isLoadingCurrentPeriod,
-      refetch: refetchPeriod,
-    } = useScaffoldReadContract({
-      contractName: "loop",
-      functionName: "getCurrentPeriod",
-      watch: true,
-    });
+  // const {
+  //   data: currentPeriod,
+  //   isLoading: isLoadingCurrentPeriod,
+  //   refetch: refetchPeriod,
+  // } = useScaffoldReadContract({
+  //   contractName: "loop",
+  //   functionName: "getCurrentPeriod",
+  //   //watch: true,
+  // });
 
 
-    console.log(currentPeriod);
 
+
+
+  console.log("Im rendering ...");
+
+
+
+
+
+  //
   const handleSubmitPassport = async () => {
     setIsSubmitting(true);
     try {
@@ -202,12 +205,14 @@ export const ClaimAndRegister: React.FC = () => {
 
   useEffect(() => {
     if (connectedAccount) handleFetchScore();
-    refetchLoopBalance();
+    //refetchLoopBalance();
   }, [connectedAccount]);
 
   if (loading) return <div className="p-4">Loading...</div>;
 
-  const canClaim = connectedAccount && registeredUsers.includes(connectedAccount);
+  console.log("Im rendering ...");
+
+   //const canClaim = connectedAccount && registeredUsers.includes(connectedAccount);
 
   // const OpenModal = () => {
   //   return (
@@ -244,43 +249,44 @@ export const ClaimAndRegister: React.FC = () => {
             {score !== null && score < THRESHOLD ? (
               <p className="text-red-500">Your score is too low to proceed.</p>
             ) : (
-              <div className="flex flex-col gap-1 border2">
-                <button
-                  className="btn btn-primary mt-2"
-                  onClick={() => connectedAccount && claimAndRegister(connectedAccount, LOOP_ADDRESS, CHAIN_ID)}
-                >
-                  {canClaim ? "Claim" : "Register"}
-                </button>
-                <div>
-                  {isMining && <p>Waiting for signature ...</p>}
-                  {Txresult?.status === "success" && !canClaim && (
-                    <div>
-                      <p>Transaction successful! You are registered for next period</p>
-                      <p>Transaction hash: {contractData}</p>
-                      <p>Status: {status}</p>
-                    </div>
-                  )}
-                  {Txresult?.status === "success" && canClaim && (
-                    <div>
-                      <p>Transaction successful! You claim X HNY tokens and registred for ext period!</p>
-                      <p>Transaction hash: {contractData}</p>
-                      <p>Status: {status}</p>
-                    </div>
-                  )}
-                  {error && <p>Error: {error?.message}</p>}
-                </div>
-                <button onClick={() => reset()}>reset state</button>
-              </div>
+            <></>
+              // <div className="flex flex-col gap-1 border2">
+              //   <button
+              //     className="btn btn-primary mt-2"
+              //     onClick={() => connectedAccount && claimAndRegister(connectedAccount, LOOP_ADDRESS, CHAIN_ID)}
+              //   >
+              //     {canClaim ? "Claim" : "Register"}
+              //   </button>
+              //   <div>
+              //     {isMining && <p>Waiting for signature ...</p>}
+              //     {Txresult?.status === "success" && !canClaim && (
+              //       <div>
+              //         <p>Transaction successful! You are registered for next period</p>
+              //         <p>Transaction hash: {contractData}</p>
+              //         <p>Status: {status}</p>
+              //       </div>
+              //     )}
+              //     {Txresult?.status === "success" && canClaim && (
+              //       <div>
+              //         <p>Transaction successful! You claim X HNY tokens and registred for ext period!</p>
+              //         <p>Transaction hash: {contractData}</p>
+              //         <p>Status: {status}</p>
+              //       </div>
+              //     )}
+              //     {error && <p>Error: {error?.message}</p>}
+              //   </div>
+              //   <button onClick={() => reset()}>reset state</button>
+              // </div>
             )}
           </div>
           <div className="flex flex-col gap-1 mt-4">
             <p>Connected account: {connectedAccount}</p>
-            <p>Connected account balance: {formatUnits(conectedAccountBalance?.value || 0n, 18)}</p>
-            <p>Loop token balance: {formatUnits(loopBalance?.value || 0n, 18)}</p>
+            {/* <p>Connected account balance: {formatUnits(conectedAccountBalance?.value || 0n, 18)}</p>
+            <p>Loop token balance: {formatUnits(loopBalance?.value || 0n, 18)}</p> */}
           </div>
         </div>
       )}
-      <div>
+      {/* <div>
         <h3 className="text-lg">Registered Users Current Period</h3>
         {usersLoading ? (
           <p>Loading registered users...</p>
@@ -293,7 +299,7 @@ export const ClaimAndRegister: React.FC = () => {
             ))}
           </ul>
         )}
-      </div>
+      </div> */}
     </div>
   );
 };

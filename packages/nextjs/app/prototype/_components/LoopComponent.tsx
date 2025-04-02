@@ -6,43 +6,55 @@ import { ShieldCheckIcon, ShieldExclamationIcon } from "@heroicons/react/24/soli
 import { LoopContractUI } from "~~/app/prototype/_components/LoopContractUI";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
 import { useLoopData } from "~~/hooks/useLoopData";
+import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { formatTime, secondsToTime } from "~~/utils";
 
 export const LoopComponent = () => {
-  const [clientTime, setClientTime] = useState<bigint | null>(null);
 
-  const { loopDetails, isLoading } = useLoopData();
-
-  const nextPeriodStart = useMemo(() => {
-    if (
-      loopDetails &&
-      loopDetails.currentPeriod !== undefined &&
-      !isNaN(loopDetails.currentPeriod) &&
-      !isNaN(Number(loopDetails.firstPeriodStart)) &&
-      !isNaN(loopDetails.periodLength)
-    ) {
-      return (
-        BigInt(loopDetails.firstPeriodStart) +
-        BigInt(loopDetails.periodLength) * (BigInt(loopDetails.currentPeriod) + 1n)
-      );
-    }
-    return 0n;
-  }, [loopDetails]);
   
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setClientTime(BigInt(Date.now()) / 1000n);
-    }, 1000);
+  console.log("Im rendering...");
 
-    return () => clearInterval(interval);
-  }, []);
+ const { loopDetails, isLoading } = useLoopData();
 
-  const claimBefore = clientTime !== null ? nextPeriodStart - clientTime - 1n : null;
+  //hora se deployo el contrato 3:01 pm (firstPeriodStart) // PERIOD LENGHT 10min  // volver a llamar cuando > 3:11
 
+  // const nextPeriodStart = useMemo(() => {
+  //   if (
+  //     loopDetails &&
+  //     loopDetails.currentPeriod !== undefined &&
+  //     !isNaN(loopDetails.currentPeriod) &&
+  //     !isNaN(Number(loopDetails.firstPeriodStart)) &&
+  //     !isNaN(loopDetails.periodLength)
+  //   ) {
+  //     return (
+  //       BigInt(loopDetails.firstPeriodStart) +
+  //       BigInt(loopDetails.periodLength) * (BigInt(loopDetails.currentPeriod) + 1n)
+  //     );
+  //   }
+  //   return 0n;
+  // }, [loopDetails]);
 
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     setClientTime(BigInt(Date.now()) / 1000n);
+  //   }, 1000);
 
-  //console.log("Im rendering");
+  //   return () => clearInterval(interval);
+  // }, []);
+
+  //const claimBefore = clientTime !== null ? nextPeriodStart - clientTime - 1n : null;
+
+  // const { nextPeriodStart: nextPeriodStartAlso } = useNextPeriodStart("0xED179b78D5781f93eb169730D8ad1bE7313123F4");
+  // //testing time
+
+  // const currentTimeInSeconds = BigInt(Date.now()) / 1000n;
+
+  // const claimBeforeAlso = nextPeriodStartAlso && nextPeriodStartAlso - currentTimeInSeconds - 1n;
+
+  // const claimIn = nextPeriodStartAlso && nextPeriodStartAlso - currentTimeInSeconds;
+
+  // console.log(currentTimeInSeconds);
 
   return (
     <main className="px-4 mt-6">
@@ -81,10 +93,11 @@ export const LoopComponent = () => {
                     </h5>
                   </div>
                 </div>
+
               </div>
-              <div className="">
-                {clientTime !== null ? `Next period in ${formatTime(Number(claimBefore))}` : "...loading"}
-              </div>
+              <Countdown />
+              {/* <div className="">{`Claim Before: ${formatTime(Number(claimBeforeAlso))}`}</div>
+              <div className="">{`Claim in: ${formatTime(Number(claimIn))}`}</div> */}
 
               <div className="">
                 {/* <button
@@ -147,3 +160,44 @@ export const LoopComponent = () => {
     </main>
   );
 };
+
+export function Countdown() {
+  // Get the next period start from the custom hook
+  const { nextPeriodStart: nextPeriodStartAlso, loading } = useNextPeriodStart(
+    "0xED179b78D5781f93eb169730D8ad1bE7313123F4",
+  );
+
+  // State to keep track of the current time in seconds
+  const [currentTime, setCurrentTime] = useState<bigint>(BigInt(Date.now()) / 1000n);
+
+  // Update the current time every second for a live countdown
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(BigInt(Date.now()) / 1000n);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Calculate the time remaining until the next period starts
+  const claimIn =
+  nextPeriodStartAlso !== undefined
+    ? nextPeriodStartAlso - currentTime
+    : undefined;
+
+const displayClaimIn =
+  claimIn !== undefined ? (claimIn < 0n ? 0n : claimIn) : undefined;
+
+
+  if (loading) {
+    return <div>Loading countdown...</div>;
+  }
+
+  return (
+    <div>
+      <h2>Countdown to Next Period</h2>
+      <p>Time remaining (claimIn): {formatTime(Number(displayClaimIn))}</p>
+      
+    </div>
+  );
+}

@@ -7,32 +7,29 @@ export const useLoopData = () => {
   const {
     data: readContractData,
     isLoading: isLoadingDetails,
-    refetch: refetchDetails,
+    
   } = useScaffoldReadContract({
     
     contractName: "loop",
-    functionName: "getLoopDetails",
-    watch: true, // Disable auto-watch, we'll manually refetch
+    functionName: "getLoopDetails", // Disable auto-watch, we'll manually refetch
   });
 
   const {
     data: currentPeriod,
     isLoading: isLoadingCurrentPeriod,
-    refetch: refetchPeriod,
+    
   } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getCurrentPeriod",
-    watch: false,
   });
 
   const {
     data: currentPeriodData,
     isLoading: isLoadingCurrentPeriodData,
-    refetch: refetchPeriodData,
+   
   } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getCurrentPeriodData",
-    watch: false,
   });
 
 
@@ -70,15 +67,15 @@ export const useLoopData = () => {
   }, [readContractData, currentPeriod, currentPeriodData]);
 
   //Refetch every 3 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetchDetails();
-      refetchPeriod();
-      refetchPeriodData();
-    }, 3000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     refetchDetails();
+  //     refetchPeriod();
+  //     refetchPeriodData();
+  //   }, 3000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return { loopDetails, isLoading };
 };
