@@ -11,7 +11,8 @@ export const useLoopData = () => {
   } = useScaffoldReadContract({
     
     contractName: "loop",
-    functionName: "getLoopDetails", // Disable auto-watch, we'll manually refetch
+    functionName: "getLoopDetails",
+    watch:false // Disable auto-watch, we'll manually refetch
   });
 
   const {
@@ -21,6 +22,7 @@ export const useLoopData = () => {
   } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getCurrentPeriod",
+    watch:false // Disable auto-watch, we'll manually refetch
   });
 
   const {
@@ -30,6 +32,7 @@ export const useLoopData = () => {
   } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getCurrentPeriodData",
+    watch:false // Disable auto-watch, we'll manually refetch
   });
 
 

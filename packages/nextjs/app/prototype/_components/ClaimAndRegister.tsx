@@ -2,68 +2,34 @@
 
 import React, { useEffect, useState } from "react";
 import { ModalAnimated } from "./ModalAnimated";
-import { stat } from "fs";
-import { formatUnits } from "viem";
 import {
   useAccount,
-  useBalance,
   useTransactionConfirmations,
-  useTransactionReceipt,
   useWaitForTransactionReceipt,
-  useWriteContract,
 } from "wagmi";
-import { Address } from "~~/components/scaffold-eth";
-import * as abis from "~~/contracts/deployedContracts";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
-import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
-import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
-import { THRESHOLD } from "~~/utils/loop";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
-const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
 const CHAIN_ID = 31337;
 
-export const ClaimAndRegister: React.FC = () => {
+export const ClaimAndRegister = () => {
   const [score, setScore] = useState<number | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [hasSubmitted, setHasSubmitted] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [isOpen, setIsOpen] = useState(false);
+  const [buttonState, setButtonState] = useState("register");
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [hasClaimed, setHasClaimed] = useState(false);
 
   const { address: connectedAccount } = useAccount();
-
-  // const { data: conectedAccountBalance } = useBalance({
-  //   address: connectedAccount,
-  //   token: TOKEN_ADDRESS as `0x${string}` | undefined,
-  //   chainId: CHAIN_ID,
-  // });
-
-  // const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
-  //   address: LOOP_ADDRESS,
-  //   token: TOKEN_ADDRESS as `0x${string}` | undefined,
-  //   chainId: CHAIN_ID,
-  // });
 
   const {
     data: contractData,
     writeContractAsync: writeLoopContractAsync,
-    isMining,
-    status,
     isSuccess,
-    error,
-    reset,
+    status,
   } = useScaffoldWriteContract("loop");
-
-  console.log(contractData);
-
-  console.log(error);
-
-   //const { users: registeredUsers, loading: usersLoading } = useRegisteredUsers(LOOP_ADDRESS);
-
-
-  
 
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
@@ -71,12 +37,9 @@ export const ClaimAndRegister: React.FC = () => {
 
   const Txresult = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
-    
   });
 
-  console.log("TxResult", Txresult);
-
-  console.log("Confirmation", transactionConfirmation);
+  console.log("score", score);
 
   const handleFetchScore = async () => {
     setLoading(true);
@@ -107,27 +70,6 @@ export const ClaimAndRegister: React.FC = () => {
     }
   };
 
-  // const {
-  //   data: currentPeriod,
-  //   isLoading: isLoadingCurrentPeriod,
-  //   refetch: refetchPeriod,
-  // } = useScaffoldReadContract({
-  //   contractName: "loop",
-  //   functionName: "getCurrentPeriod",
-  //   //watch: true,
-  // });
-
-
-
-
-
-  console.log("Im rendering ...");
-
-
-
-
-
-  //
   const handleSubmitPassport = async () => {
     setIsSubmitting(true);
     try {
@@ -147,8 +89,6 @@ export const ClaimAndRegister: React.FC = () => {
     }
   };
 
-  //onst currentPeriodPayout = useCurrentPeriodPayout();
-
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
       await writeLoopContractAsync({
@@ -160,146 +100,94 @@ export const ClaimAndRegister: React.FC = () => {
     }
   };
 
-  const claimAndRegister = async (userAddress: string, loopAddress: string, chainId: number) => {
-    if (!userAddress || !loopAddress || !chainId) {
+  const claimAndRegister = async () => {
+    if (!connectedAccount || !LOOP_ADDRESS || !CHAIN_ID) {
       console.error("Missing parameters...");
       return;
     }
     setIsOpen(true);
-    //First: we need to check if the user is eligible to claim or register
     try {
       const response = await fetch("/api/eligibility", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          userAddress,
-          loopAddress,
-          chainId,
+          userAddress: connectedAccount,
+          loopAddress: LOOP_ADDRESS,
+          chainId: CHAIN_ID,
         }),
       });
 
-      // Check if the response is ok
       if (response.ok) {
         const data = await response.json();
-        console.log("Eligibility check successful:", data);
-
         if (data.success) {
-          console.log("Signature:", data.signature);
           writeInContract(data.signature);
         } else {
           console.error("Error:", data.error);
-          // Show error message if eligibility check fails
         }
       } else {
         const errorData = await response.json();
         console.error("Error response:", errorData);
-        // Handle any error responses from the server
       }
     } catch (error) {
       console.error("Network error:", error);
-      // Handle any network-related errors
     }
   };
 
   useEffect(() => {
     if (connectedAccount) handleFetchScore();
-    //refetchLoopBalance();
   }, [connectedAccount]);
+
+  const handleButtonClick = () => {
+    if (buttonState === "register") {
+      setButtonState("claim");
+      setIsRegistered(true);
+    } else if (buttonState === "claim") {
+      setButtonState("ok");
+      setHasClaimed(true);
+    } else {
+      setButtonState("register");
+      setIsRegistered(false);
+      setHasClaimed(false);
+    }
+  };
+
+  const getButtonConfig = () => {
+    switch (buttonState) {
+      case "register":
+        return { text: "Register", bgColor: "bg-[#f7cd6f]", textColor: "text-black" };
+      case "claim":
+        return { text: "Claim", bgColor: "bg-[#0065BD]", textColor: "text-white" };
+      case "ok":
+        return { text: "Ok", bgColor: "bg-[#16a34a]", textColor: "text-white" };
+      default:
+        return { text: "Register", bgColor: "bg-[#f7cd6f]", textColor: "text-black" };
+    }
+  };
+
+  const buttonConfig = getButtonConfig();
 
   if (loading) return <div className="p-4">Loading...</div>;
 
-  console.log("Im rendering ...");
-
-   //const canClaim = connectedAccount && registeredUsers.includes(connectedAccount);
-
-  // const OpenModal = () => {
-  //   return (
-  //     <div className="px-4 py-8 bg-slate-900 grid place-content-center">
-  //
-  //       <ModalAnimated isOpen={isOpen} setIsOpen={setIsOpen}>
-  //       <h4>Transaction message to user:</h4>
-  //           {isSuccess && canClaim && `You successfully claimed! X hny tokens and already registered for next period`}
-  //           {isSuccess && !canClaim && "Registered for next period!!"}
-  //           {status === "error" && "Error in transaction"}
-  //       </ModalAnimated>
-  //     </div>
-  //   );
-  // };
-
   return (
-    <div className="container p-6 mt-2 flex gap-2 flex-col shadow-md">
-      <h2 className="text-xl py-1">Passport and Claim & Register</h2>
-      {/* <OpenModal /> */}
-      {!hasSubmitted ? (
-        <div>
-          <p>Submit your passport to continue.</p>
-          <button className="btn btn-secondary" onClick={handleSubmitPassport} disabled={isSubmitting}>
-            {isSubmitting ? "Submitting..." : "Submit Passport"}
-          </button>
-        </div>
-      ) : (
-        <div>
-          <p>
-            Your score: <span className="font-bold">{score}</span>
-          </p>
-
-          <div>
-            {score !== null && score < THRESHOLD ? (
-              <p className="text-red-500">Your score is too low to proceed.</p>
-            ) : (
-            <></>
-              // <div className="flex flex-col gap-1 border2">
-              //   <button
-              //     className="btn btn-primary mt-2"
-              //     onClick={() => connectedAccount && claimAndRegister(connectedAccount, LOOP_ADDRESS, CHAIN_ID)}
-              //   >
-              //     {canClaim ? "Claim" : "Register"}
-              //   </button>
-              //   <div>
-              //     {isMining && <p>Waiting for signature ...</p>}
-              //     {Txresult?.status === "success" && !canClaim && (
-              //       <div>
-              //         <p>Transaction successful! You are registered for next period</p>
-              //         <p>Transaction hash: {contractData}</p>
-              //         <p>Status: {status}</p>
-              //       </div>
-              //     )}
-              //     {Txresult?.status === "success" && canClaim && (
-              //       <div>
-              //         <p>Transaction successful! You claim X HNY tokens and registred for ext period!</p>
-              //         <p>Transaction hash: {contractData}</p>
-              //         <p>Status: {status}</p>
-              //       </div>
-              //     )}
-              //     {error && <p>Error: {error?.message}</p>}
-              //   </div>
-              //   <button onClick={() => reset()}>reset state</button>
-              // </div>
-            )}
+    <>
+      <div className="p-4">
+        {buttonState === "claim" && (
+          <div className="text-center mb-4 text-sm text-[#0065BD] bg-[#0065BD]/10 p-2 rounded-lg">
+            You are registered! You can now claim your tokens.
           </div>
-          <div className="flex flex-col gap-1 mt-4">
-            <p>Connected account: {connectedAccount}</p>
-            {/* <p>Connected account balance: {formatUnits(conectedAccountBalance?.value || 0n, 18)}</p>
-            <p>Loop token balance: {formatUnits(loopBalance?.value || 0n, 18)}</p> */}
-          </div>
-        </div>
-      )}
-      {/* <div>
-        <h3 className="text-lg">Registered Users Current Period</h3>
-        {usersLoading ? (
-          <p>Loading registered users...</p>
-        ) : (
-          <ul className="list-disc pl-6">
-            {registeredUsers.map((user, index) => (
-              <li key={index} className="py-1">
-                <Address address={user} onlyEnsOrAddress />
-              </li>
-            ))}
-          </ul>
         )}
-      </div> */}
-    </div>
+        {buttonState === "ok" && (
+          <div className="text-center mb-4 text-sm text-green-600 bg-green-100 p-2 rounded-lg">
+            Tokens claimed successfully! Check back tomorrow.
+          </div>
+        )}
+        <button
+          onClick={handleButtonClick}
+          className={`w-full py-4 px-8 rounded-full text-center ${buttonConfig.bgColor} ${buttonConfig.textColor} font-semibold`}
+        >
+          {buttonConfig.text}
+        </button>
+      </div>
+    </>
   );
 };

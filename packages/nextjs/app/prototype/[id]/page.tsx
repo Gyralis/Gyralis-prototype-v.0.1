@@ -1,15 +1,19 @@
 import Image from "next/image";
+import BottomCardsSection from "../_components/BottomCardsSection";
 import { ClaimAndRegister } from "../_components/ClaimAndRegister";
+import InfoSection from "../_components/InfoSection";
 import { LoopComponent } from "../_components/LoopComponent";
 import { NextPage } from "next";
 
 const Page: NextPage<{ params: { id: string } }> = async ({ params }) => {
-  const { id } = params;
 
   return (
     <>
-      {/* <OrganizationHeader title={id} /> */}
-      {/* <LoopComponent /> */}
+      <main className="p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+        <InfoSection />
+        <LoopComponent />
+        <BottomCardsSection />
+      </main>
     </>
   );
 };
@@ -81,7 +85,7 @@ const OrganizationHeader = ({ title }: { title: string }) => {
         <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Explicabo repudiandae aliquam nesciunt dolore voluptatibus et praesentium amet tempore totam.</p>
       </div> */}
       </div>
-      <LoopComponent /> 
+      <LoopComponent />
       <ClaimAndRegister />
     </>
   );
