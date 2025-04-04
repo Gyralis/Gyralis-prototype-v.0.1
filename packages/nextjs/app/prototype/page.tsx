@@ -10,10 +10,10 @@ export const metadata = getMetadata({
 
 const Prototype: NextPage = () => {
   return (
-    <div className="py-4">
+    <div className="">
       <header>
         <div className="mx-auto max-w-7xl">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">Explore organizations</h1>
+          <h1 className="text-3xl tracking-tight text-white">Explore organizations</h1>
         </div>
       </header>
       <main>
@@ -41,15 +41,15 @@ const OrganizationCards = () => {
       {organizations.map(org => (
         <li
           key={org.name}
-          className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow-md cursor-pointer hover:shadow-lg transition-all ease-in-out duration-300"
+          className="col-span-1 flex flex-col divide-y divide-gray-500 rounded-lg text-center shadow-md cursor-pointer hover:shadow-lg transition-all ease-in-out duration-300 glass"
         >
           <div className="flex flex-1 flex-col p-8">
             {/* <img alt="" src={"/1hive-logo.png"} className="mx-auto shrink-0 rounded-full" /> */}
             <Image alt="" src={"/1hive-logo.svg"} className="mx-auto shrink-0 rounded-full" width={100} height={100} />
-            <h2 className="mt-6 font-bold text-gray-900 text-center">{org.name}</h2>
+            <h2 className="mt-6 font-bold text-white text-center">{org.name}</h2>
             <dl className="mt-1 flex grow flex-col justify-between">
               <dt className="sr-only">description</dt>
-              <dd className="text-sm text-gray-500">{org.description}</dd>
+              <dd className="text-sm">{org.description}</dd>
             </dl>
           </div>
           <div>

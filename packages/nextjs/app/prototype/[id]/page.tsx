@@ -8,7 +8,7 @@ const Page: NextPage<{ params: { id: string } }> = async ({ params }) => {
 
   return (
     <>
-      <OrganizationHeader title={id} />
+      {/* <OrganizationHeader title={id} /> */}
       {/* <LoopComponent /> */}
     </>
   );
