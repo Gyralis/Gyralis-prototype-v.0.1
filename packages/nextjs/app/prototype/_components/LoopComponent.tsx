@@ -73,7 +73,7 @@ export const LoopComponent = () => {
       {/* Countdown Timer */}
       <div className="text-center mb-8">
         <p className="text-sm text-gray-500 mb-2">Next distribution in:</p>
-        <div className="flex justify-center gap-2 sm:gap-4">
+        {/* <div className="flex justify-center gap-2 sm:gap-4">
           <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
             <div className="text-xl sm:text-2xl font-bold">{timeLeft.hours.toString().padStart(2, "0")}</div>
             <div className="text-xs text-gray-300">Hours</div>
@@ -86,7 +86,8 @@ export const LoopComponent = () => {
             <div className="text-xl sm:text-2xl font-bold">{timeLeft.seconds.toString().padStart(2, "0")}</div>
             <div className="text-xs text-gray-300">Seconds</div>
           </div>
-        </div>
+        </div> */}
+        <Countdown />
       </div>
 
       <ClaimAndRegister />
@@ -123,7 +124,6 @@ export function Countdown() {
 
   return (
     <div>
-      <h2>Countdown to Next Period</h2>
       <p>Time remaining (claimIn): {formatTime(Number(displayClaimIn))}</p>
     </div>
   );

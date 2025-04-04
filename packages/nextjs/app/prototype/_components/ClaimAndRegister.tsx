@@ -1,13 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { ModalAnimated } from "./ModalAnimated";
-import {
-  useAccount,
-  useTransactionConfirmations,
-  useWaitForTransactionReceipt,
-} from "wagmi";
+import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
+import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const CHAIN_ID = 31337;
@@ -29,7 +25,12 @@ export const ClaimAndRegister = () => {
     writeContractAsync: writeLoopContractAsync,
     isSuccess,
     status,
+    reset
   } = useScaffoldWriteContract("loop");
+
+  const { users } = useRegisteredUsers(LOOP_ADDRESS);
+
+  console.log(users);
 
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
@@ -38,8 +39,6 @@ export const ClaimAndRegister = () => {
   const Txresult = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
   });
-
-  console.log("score", score);
 
   const handleFetchScore = async () => {
     setLoading(true);
@@ -137,19 +136,9 @@ export const ClaimAndRegister = () => {
     if (connectedAccount) handleFetchScore();
   }, [connectedAccount]);
 
-  const handleButtonClick = () => {
-    if (buttonState === "register") {
-      setButtonState("claim");
-      setIsRegistered(true);
-    } else if (buttonState === "claim") {
-      setButtonState("ok");
-      setHasClaimed(true);
-    } else {
-      setButtonState("register");
-      setIsRegistered(false);
-      setHasClaimed(false);
-    }
-  };
+  const canClaim = connectedAccount && score !== null && score >= 15 && users.includes(connectedAccount);
+
+  console.log(canClaim);
 
   const getButtonConfig = () => {
     switch (buttonState) {
@@ -164,16 +153,31 @@ export const ClaimAndRegister = () => {
     }
   };
 
+  useEffect(() => {
+   
+    if (canClaim) {
+      setButtonState("claim");
+    }
+    if (Txresult?.status === "success" && canClaim) {
+      setButtonState("ok");
+    }
+    getButtonConfig();
+  }, [canClaim, Txresult]);
+
+
+  console.log(buttonState);
+
+ 
   const buttonConfig = getButtonConfig();
 
-  if (loading) return <div className="p-4">Loading...</div>;
+  if (loading) return <div className="p-4 text-center">Loading...</div>;
 
   return (
     <>
       <div className="p-4">
         {buttonState === "claim" && (
           <div className="text-center mb-4 text-sm text-[#0065BD] bg-[#0065BD]/10 p-2 rounded-lg">
-            You are registered! You can now claim your tokens.
+            You are registered for next Period! You can now claim your tokens.
           </div>
         )}
         {buttonState === "ok" && (
@@ -182,8 +186,8 @@ export const ClaimAndRegister = () => {
           </div>
         )}
         <button
-          onClick={handleButtonClick}
-          className={`w-full py-4 px-8 rounded-full text-center ${buttonConfig.bgColor} ${buttonConfig.textColor} font-semibold`}
+          onClick={buttonState === "ok" ? reset : claimAndRegister}
+          className={`btn btn-primary w-full py-4 px-8 rounded-full text-center ${buttonConfig.bgColor} ${buttonConfig.textColor} font-semibold`}
         >
           {buttonConfig.text}
         </button>

@@ -29,7 +29,7 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
         </main>
         {/* <Footer /> */}
      
-      {/* <Toaster /> */}
+      <Toaster />
     </>
   );
 };
