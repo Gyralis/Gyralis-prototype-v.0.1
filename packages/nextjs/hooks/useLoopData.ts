@@ -32,12 +32,7 @@ export const useLoopData = () => {
     maxPayout: number;
   }
 
-  const getSecondsUntilNextPeriod = () => {
-    const now = Math.floor(Date.now() / 1000);
-    const timeSinceStart = now - Number(loopDetails?.firstPeriodStart);
-    const secondsIntoCurrentPeriod = loopDetails?.periodLength !== undefined ? timeSinceStart % loopDetails.periodLength : 0;
-    return (loopDetails?.periodLength ?? 0) - secondsIntoCurrentPeriod;
-  };
+ 
   
 
 
@@ -62,41 +57,25 @@ export const useLoopData = () => {
     updateLoopDetails();
   }, [readContractData, currentPeriod, currentPeriodData]);
 
+
+  const getSecondsUntilNextPeriod = () => {
+    const now = Math.floor(Date.now() / 1000);
+    const timeSinceStart = now - Number(loopDetails?.firstPeriodStart);
+    const secondsIntoCurrentPeriod = loopDetails?.periodLength !== undefined ? timeSinceStart % loopDetails.periodLength : 0;
+    return (loopDetails?.periodLength ?? 0) - secondsIntoCurrentPeriod;
+  };
+
+
   useEffect(() => {
-    let timeout: NodeJS.Timeout;
-    const scheduleRefetch = () => {
-      const delay = getSecondsUntilNextPeriod() * 1000;
+    const delay = getSecondsUntilNextPeriod();
+    const interval = setInterval(() => {
+      refetch();
+       refetchPeriod();
+       refetchPeriodData();
+    }, delay);
 
-      timeout = setTimeout(() => {
-        console.log("🔁 Refetch triggered at:", new Date().toLocaleTimeString());
-        scheduleRefetch(); // reschedule for next period
-        refetch();
-        refetchPeriod();
-        refetchPeriodData();; // your refetch function
-      }, delay);
-    };
-  
-    scheduleRefetch();
-  
-    return () => clearTimeout(timeout);
+    return () => clearInterval(interval);
   }, []);
-
-
-  
- 
-
-
-  //Test Refetch every 3 seconds
-
-  // useEffect(() => {
-  //   const interval = setInterval(() => {
-  //     refetch();
-  //      refetchPeriod();
-  //      refetchPeriodData();
-  //   }, 3000);
-
-  //   return () => clearInterval(interval);
-  // }, []);
 
   return { loopDetails, isLoading };
 };

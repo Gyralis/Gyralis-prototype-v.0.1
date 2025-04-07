@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ClaimAndRegister } from "./ClaimAndRegister";
 import { motion, useSpring, useTransform } from "framer-motion";
 import { formatUnits } from "viem";
-import { useBalance, useChainId } from "wagmi";
+import { useAccount, useBalance, useChainId } from "wagmi";
 import { useLoopData } from "~~/hooks/useLoopData";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { formatTime, secondsToTime } from "~~/utils";
@@ -14,6 +14,12 @@ const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
 
 export const LoopComponent = () => {
   const chainId = useChainId();
+  const { address: connectedAccount } = useAccount();
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [score, setScore] = useState<number | null>(null);
 
   const { loopDetails, isLoading } = useLoopData();
 
@@ -23,8 +29,7 @@ export const LoopComponent = () => {
     chainId: chainId,
   });
 
-  console.log(loopDetails?.firstPeriodStart);
-
+  console.log("Im rendering...");
   // Countdown timer state and logic
   const [timeLeft, setTimeLeft] = useState({
     hours: 2,
@@ -32,11 +37,61 @@ export const LoopComponent = () => {
     seconds: 30,
   });
 
+  const handleFetchScore = async () => {
+    setLoading(true);
+    if (!connectedAccount) return;
+
+    try {
+      const response = await fetch(`/api/passport/${connectedAccount.toLowerCase()}`, { method: "GET" });
+      if (!response.ok) {
+        if (response.status === 400) {
+          setHasSubmitted(false);
+        } else {
+          throw new Error("Failed to fetch score");
+        }
+      } else {
+        const data = await response.json();
+        const numericScore = Number(data.score);
+        if (numericScore > 0) {
+          setScore(numericScore);
+          setHasSubmitted(true);
+        } else {
+          setScore(0);
+        }
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmitPassport = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/submit-passport", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ connectedAccount }),
+      });
+      if (!response.ok) throw new Error("Submission failed");
+
+      setHasSubmitted(true);
+      handleFetchScore();
+    } catch (err) {
+      console.error("Submission error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  useEffect(() => {
+    if (connectedAccount) handleFetchScore();
+  }, [connectedAccount]);
+
   const maxPayout = loopDetails?.maxPayout ?? 0;
 
   console.log("maxPayout", maxPayout);
-
-  const [buttonState, setButtonState] = useState("register"); // Possible states: register, claim, ok
 
   //const { loopData } = useLoopDataWagmi(LOOP_ADDRESS)
   //console.log(loopData);

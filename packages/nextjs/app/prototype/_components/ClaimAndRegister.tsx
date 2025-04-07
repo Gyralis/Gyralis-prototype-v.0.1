@@ -18,13 +18,12 @@ type ButtonState = "register" | "claim" | "ok";
 
 export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) => {
   const [score, setScore] = useState<number | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSubmitted, setHasSubmitted] = useState(false);
+ 
   const [loading, setLoading] = useState(true);
   const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [isRegistered, setIsRegistered] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
-  const [isEligible, setIsEligible] = useState(false);
+  const [checkEligibility, setCheckEligibility] = useState(false);
 
   const { address: connectedAccount } = useAccount();
 
@@ -55,55 +54,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
     hash: contractData as `0x${string}` | undefined,
   });
 
-
-  const handleFetchScore = async () => {
-    setLoading(true);
-    if (!connectedAccount) return;
-
-    try {
-      const response = await fetch(`/api/passport/${connectedAccount.toLowerCase()}`, { method: "GET" });
-      if (!response.ok) {
-        if (response.status === 400) {
-          setHasSubmitted(false);
-        } else {
-          throw new Error("Failed to fetch score");
-        }
-      } else {
-        const data = await response.json();
-        const numericScore = Number(data.score);
-        if (numericScore > 0) {
-          setScore(numericScore);
-          setHasSubmitted(true);
-        } else {
-          setScore(0);
-        }
-      }
-    } catch (error) {
-      console.error("Fetch error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmitPassport = async () => {
-    setIsSubmitting(true);
-    try {
-      const response = await fetch("/api/submit-passport", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ connectedAccount }),
-      });
-      if (!response.ok) throw new Error("Submission failed");
-
-      setHasSubmitted(true);
-      handleFetchScore();
-    } catch (err) {
-      console.error("Submission error:", err);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
       await writeLoopContractAsync({
@@ -120,6 +70,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
       console.error("Missing parameters...");
       return;
     }
+    setCheckEligibility(true);
     try {
       const response = await fetch("/api/eligibility", {
         method: "POST",
@@ -133,6 +84,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
+        setCheckEligibility(false);
           writeInContract(data.signature);
         } else {
           console.error("Error:", data.error);
@@ -145,11 +97,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
     } catch (error) {
       console.error("Network error:", error);
     }
-  };
-
-  useEffect(() => {
-    if (connectedAccount) handleFetchScore();
-  }, [connectedAccount]);
+  };;
 
   const canClaim =
     connectedAccount && score !== null && score >= 15 && users.includes(connectedAccount) ? true : undefined;
@@ -200,7 +148,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
           onClick={handleButtonClick}
           className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
-          {status === "pending" ? <span className="loading loading-spinner loading-md"></span> : buttonConfig.text}
+          {status === "pending" || checkEligibility ? <span className="loading loading-spinner loading-md"></span> : buttonConfig.text}
         </button>
       </div>
     </>
@@ -225,7 +173,7 @@ export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps)
     if (state === "claim") {
       return {
         key: "claim",
-        text: "🔥 You’re in the loop! Your tokens are ready to claim — don’t miss today’s drop.",
+        text: "🔥 You’re in the loop! Your tokens are ready to claim.",
         className: "text-[#0065BD] bg-[#0065BD]/10",
       };
     }
@@ -240,7 +188,7 @@ export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps)
       } else {
         return {
           key: "ok-done",
-          text: "✅ You’re locked in for the next period! Loop continues — see you tomorrow.",
+          text: "✅ You’re locked in for the next period!. Loop continues — see you tomorrow.",
           className: "text-green-600 bg-green-100",
         };
       }
