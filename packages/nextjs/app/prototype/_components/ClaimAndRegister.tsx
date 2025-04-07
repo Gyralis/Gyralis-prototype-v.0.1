@@ -47,20 +47,14 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
 
   const { users } = useRegisteredUsers(LOOP_ADDRESS);
 
-  console.log(users);
-
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
   });
-
-  console.log("status", status);
 
   const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
   });
 
-  console.log("Tx", Txresult);
-  console.log("waitTransactionStatus", waitTransactionStatus);
 
   const handleFetchScore = async () => {
     setLoading(true);
@@ -195,17 +189,18 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
 
   const buttonConfig = getButtonConfig();
 
-  if (loading) return <div className="p-4 text-center">Loading...</div>;
+  if (loading) return <div className="p-4 text-center">Loading data...</div>;
 
   return (
     <>
       <div className="p-4">
         <ClaimStatusMessage state={buttonState} canClaim={canClaim ?? false} />
         <button
+          disabled={!connectedAccount}
           onClick={handleButtonClick}
-          className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
+          className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
-          {buttonConfig.text}
+          {status === "pending" ? <span className="loading loading-spinner loading-md"></span> : buttonConfig.text}
         </button>
       </div>
     </>
@@ -245,7 +240,7 @@ export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps)
       } else {
         return {
           key: "ok-done",
-          text: "✅ You’re locked in for the next round! Loop continues — see you tomorrow.",
+          text: "✅ You’re locked in for the next period! Loop continues — see you tomorrow.",
           className: "text-green-600 bg-green-100",
         };
       }
@@ -273,4 +268,3 @@ export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps)
     </AnimatePresence>
   );
 };
-

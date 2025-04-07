@@ -23,6 +23,8 @@ export const LoopComponent = () => {
     chainId: chainId,
   });
 
+  console.log(loopDetails?.firstPeriodStart);
+
   // Countdown timer state and logic
   const [timeLeft, setTimeLeft] = useState({
     hours: 2,
@@ -97,7 +99,7 @@ export const LoopComponent = () => {
   );
 };
 
-export function Countdown() {
+const Countdown = () => {
   // Get the next period start from the custom hook
   const { nextPeriodStart: nextPeriodStartAlso, loading } = useNextPeriodStart(
     "0xED179b78D5781f93eb169730D8ad1bE7313123F4",
@@ -129,13 +131,13 @@ export function Countdown() {
       <p>Time remaining (claimIn): {formatTime(Number(displayClaimIn))}</p>
     </div>
   );
-}
+};
 
 type AnimatedNumberProps = {
   value: number;
 };
 
-export const AnimatedNumber = ({ value }: AnimatedNumberProps) => {
+const AnimatedNumber = ({ value }: AnimatedNumberProps) => {
   const spring = useSpring(value, {
     mass: 0.5,
     stiffness: 50,
