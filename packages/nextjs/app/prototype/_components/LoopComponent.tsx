@@ -137,9 +137,9 @@ type AnimatedNumberProps = {
 
 export const AnimatedNumber = ({ value }: AnimatedNumberProps) => {
   const spring = useSpring(value, {
-    mass: 0.8,
-    stiffness: 75,
-    damping: 15,
+    mass: 0.5,
+    stiffness: 50,
+    damping: 10,
   });
 
   const display = useTransform(spring, current =>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
@@ -13,12 +14,14 @@ type ClaimAndRegisterProps = {
   refecthLoopBalance: () => void;
 };
 
+type ButtonState = "register" | "claim" | "ok";
+
 export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) => {
   const [score, setScore] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [buttonState, setButtonState] = useState("register");
+  const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [isRegistered, setIsRegistered] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
   const [isEligible, setIsEligible] = useState(false);
@@ -52,9 +55,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
 
   console.log("status", status);
 
-  const {data:Txresult, status:waitTransactionStatus} = useWaitForTransactionReceipt({
+  const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
-    
   });
 
   console.log("Tx", Txresult);
@@ -133,11 +135,10 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
           loopAddress: LOOP_ADDRESS,
           chainId: CHAIN_ID,
         }),
-        
       });
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {  
+        if (data.success) {
           writeInContract(data.signature);
         } else {
           console.error("Error:", data.error);
@@ -152,24 +153,23 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
     }
   };
 
-  console.log(isEligible);
-
   useEffect(() => {
     if (connectedAccount) handleFetchScore();
   }, [connectedAccount]);
 
-  const canClaim = connectedAccount && score !== null && score >= 15 && users.includes(connectedAccount);
+  const canClaim =
+    connectedAccount && score !== null && score >= 15 && users.includes(connectedAccount) ? true : undefined;
 
   const getButtonConfig = () => {
     switch (buttonState) {
       case "register":
-        return { text: "Register", bgColor: "bg-[#f7cd6f]", textColor: "text-black" };
+        return { text: "register", bgColor: "bg-[#f7cd6f]", textColor: "text-black" };
       case "claim":
-        return { text: "Claim", bgColor: "bg-[#0065BD]", textColor: "text-white" };
+        return { text: "claim", bgColor: "bg-[#0065BD]", textColor: "text-white" };
       case "ok":
         return { text: "Ok", bgColor: "bg-[#16a34a]", textColor: "text-white" };
       default:
-        return { text: "Register", bgColor: "bg-[#f7cd6f]", textColor: "text-black" };
+        return { text: "register", bgColor: "bg-[#f7cd6f]", textColor: "text-black" };
     }
   };
 
@@ -192,10 +192,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
       claimAndRegister();
     }
   };
-  
-  
-
-  console.log(buttonState);
 
   const buttonConfig = getButtonConfig();
 
@@ -204,19 +200,10 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
   return (
     <>
       <div className="p-4">
-        {/* {buttonState === "claim" && (
-          <div className="text-center mb-4 text-sm text-[#0065BD] bg-[#0065BD]/10 p-2 rounded-lg">
-            You are registered for this Period! You can now claim your tokens.
-          </div>
-        )}
-        {buttonState === "ok" && (
-          <div className="text-center mb-4 text-sm text-green-600 bg-green-100 p-2 rounded-lg">
-            Tokens claimed successfully! Check back tomorrow.
-          </div>
-        )} */}
+        <ClaimStatusMessage state={buttonState} canClaim={canClaim ?? false} />
         <button
           onClick={handleButtonClick}
-          className={`btn btn-primary border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center ${buttonConfig.bgColor} ${buttonConfig.textColor} font-semibold`}
+          className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
           {buttonConfig.text}
         </button>
@@ -224,3 +211,66 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
     </>
   );
 };
+
+type ClaimStatusMessageProps = {
+  state: ButtonState;
+  canClaim: boolean;
+};
+
+export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps) => {
+  const getMessage = () => {
+    if (state === "register") {
+      return {
+        key: "register",
+        text: "🚀 You’re not in the loop yet. Register now and start your daily claiming!",
+        className: "text-yellow-700 bg-yellow-100",
+      };
+    }
+
+    if (state === "claim") {
+      return {
+        key: "claim",
+        text: "🔥 You’re in the loop! Your tokens are ready to claim — don’t miss today’s drop.",
+        className: "text-[#0065BD] bg-[#0065BD]/10",
+      };
+    }
+
+    if (state === "ok") {
+      if (canClaim) {
+        return {
+          key: "ok-claim",
+          text: "✅ Claimed! You’re still in the loop. Come back tomorrow for more tokens.",
+          className: "text-green-600 bg-green-100",
+        };
+      } else {
+        return {
+          key: "ok-done",
+          text: "✅ You’re locked in for the next round! Loop continues — see you tomorrow.",
+          className: "text-green-600 bg-green-100",
+        };
+      }
+    }
+
+    return null;
+  };
+
+  const message = getMessage();
+
+  return (
+    <AnimatePresence mode="wait">
+      {message && (
+        <motion.div
+          key={message.key}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.3 }}
+          className={`text-center mb-4 text-sm p-2 rounded-lg ${message.className}`}
+        >
+          <span className="first-letter:uppercase text-sm">{message.text}</span>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+};
+
