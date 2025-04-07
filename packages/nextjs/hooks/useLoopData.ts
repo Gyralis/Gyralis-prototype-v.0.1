@@ -1,42 +1,26 @@
-import { truncate } from "fs";
 import { useEffect, useState } from "react";
+import { truncate } from "fs";
 import { Address, formatUnits } from "viem";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export const useLoopData = () => {
-  const {
-    data: readContractData,
-    isLoading: isLoadingDetails,
-    
-  } = useScaffoldReadContract({
-    
+  const { data: readContractData, isLoading: isLoadingDetails } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getLoopDetails",
-    watch:false // Disable auto-watch, we'll manually refetch
+    watch: false,
   });
 
-  const {
-    data: currentPeriod,
-    isLoading: isLoadingCurrentPeriod,
-    
-  } = useScaffoldReadContract({
+  const { data: currentPeriod, isLoading: isLoadingCurrentPeriod } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getCurrentPeriod",
-    watch:false // Disable auto-watch, we'll manually refetch
+    watch: false,
   });
 
-  const {
-    data: currentPeriodData,
-    isLoading: isLoadingCurrentPeriodData,
-   
-  } = useScaffoldReadContract({
+  const { data: currentPeriodData, isLoading: isLoadingCurrentPeriodData } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getCurrentPeriodData",
-    watch:false // Disable auto-watch, we'll manually refetch
+    watch: false,
   });
-
-
-
 
   interface LoopDetails {
     token: Address;
@@ -62,7 +46,7 @@ export const useLoopData = () => {
         firstPeriodStart: readContractData[3] as bigint,
         currentPeriod: Number(currentPeriod),
         currentPeriodRegistrations: currentPeriodData ? Number(currentPeriodData[0]) : 0,
-        maxPayout:  Number(currentPeriodData?.[1] ?? 0),
+        maxPayout: Number(currentPeriodData?.[1] ?? 0),
       });
     };
 

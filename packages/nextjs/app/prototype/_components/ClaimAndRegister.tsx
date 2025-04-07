@@ -2,30 +2,44 @@
 
 import React, { useEffect, useState } from "react";
 import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
+import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const CHAIN_ID = 31337;
 
-export const ClaimAndRegister = () => {
+type ClaimAndRegisterProps = {
+  refecthLoopBalance: () => void;
+};
+
+export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) => {
   const [score, setScore] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
   const [buttonState, setButtonState] = useState("register");
   const [isRegistered, setIsRegistered] = useState(false);
   const [hasClaimed, setHasClaimed] = useState(false);
+  const [isEligible, setIsEligible] = useState(false);
 
   const { address: connectedAccount } = useAccount();
+
+  const { data: checkClaimer, isLoading: isLoadingDetails } = useScaffoldReadContract({
+    contractName: "loop",
+    functionName: "getClaimerStatus",
+    args: [connectedAccount], // Disable auto-watch, we'll manually refetch
+    watch: false,
+  });
+
+  console.log("claimer status", checkClaimer);
 
   const {
     data: contractData,
     writeContractAsync: writeLoopContractAsync,
     isSuccess,
     status,
-    reset
+    reset,
   } = useScaffoldWriteContract("loop");
 
   const { users } = useRegisteredUsers(LOOP_ADDRESS);
@@ -36,9 +50,15 @@ export const ClaimAndRegister = () => {
     hash: contractData as `0x${string}` | undefined,
   });
 
-  const Txresult = useWaitForTransactionReceipt({
+  console.log("status", status);
+
+  const {data:Txresult, status:waitTransactionStatus} = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
+    
   });
+
+  console.log("Tx", Txresult);
+  console.log("waitTransactionStatus", waitTransactionStatus);
 
   const handleFetchScore = async () => {
     setLoading(true);
@@ -104,7 +124,6 @@ export const ClaimAndRegister = () => {
       console.error("Missing parameters...");
       return;
     }
-    setIsOpen(true);
     try {
       const response = await fetch("/api/eligibility", {
         method: "POST",
@@ -114,17 +133,18 @@ export const ClaimAndRegister = () => {
           loopAddress: LOOP_ADDRESS,
           chainId: CHAIN_ID,
         }),
+        
       });
-
       if (response.ok) {
         const data = await response.json();
-        if (data.success) {
+        if (data.success) {  
           writeInContract(data.signature);
         } else {
           console.error("Error:", data.error);
         }
       } else {
         const errorData = await response.json();
+
         console.error("Error response:", errorData);
       }
     } catch (error) {
@@ -132,13 +152,13 @@ export const ClaimAndRegister = () => {
     }
   };
 
+  console.log(isEligible);
+
   useEffect(() => {
     if (connectedAccount) handleFetchScore();
   }, [connectedAccount]);
 
   const canClaim = connectedAccount && score !== null && score >= 15 && users.includes(connectedAccount);
-
-  console.log(canClaim);
 
   const getButtonConfig = () => {
     switch (buttonState) {
@@ -154,20 +174,29 @@ export const ClaimAndRegister = () => {
   };
 
   useEffect(() => {
-   
-    if (canClaim) {
-      setButtonState("claim");
-    }
-    if (Txresult?.status === "success" && canClaim) {
+    if (Txresult?.status === "success") {
       setButtonState("ok");
+    } else if (canClaim) {
+      setButtonState("claim");
+    } else {
+      setButtonState("register");
     }
-    getButtonConfig();
-  }, [canClaim, Txresult]);
+  }, [Txresult, canClaim]);
 
+  const handleButtonClick = () => {
+    if (buttonState === "ok") {
+      reset();
+      refecthLoopBalance();
+      setButtonState("register"); // optional: force fallback
+    } else {
+      claimAndRegister();
+    }
+  };
+  
+  
 
   console.log(buttonState);
 
- 
   const buttonConfig = getButtonConfig();
 
   if (loading) return <div className="p-4 text-center">Loading...</div>;
@@ -175,19 +204,19 @@ export const ClaimAndRegister = () => {
   return (
     <>
       <div className="p-4">
-        {buttonState === "claim" && (
+        {/* {buttonState === "claim" && (
           <div className="text-center mb-4 text-sm text-[#0065BD] bg-[#0065BD]/10 p-2 rounded-lg">
-            You are registered for next Period! You can now claim your tokens.
+            You are registered for this Period! You can now claim your tokens.
           </div>
         )}
         {buttonState === "ok" && (
           <div className="text-center mb-4 text-sm text-green-600 bg-green-100 p-2 rounded-lg">
             Tokens claimed successfully! Check back tomorrow.
           </div>
-        )}
+        )} */}
         <button
-          onClick={buttonState === "ok" ? reset : claimAndRegister}
-          className={`btn btn-primary w-full py-4 px-8 rounded-full text-center ${buttonConfig.bgColor} ${buttonConfig.textColor} font-semibold`}
+          onClick={handleButtonClick}
+          className={`btn btn-primary border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center ${buttonConfig.bgColor} ${buttonConfig.textColor} font-semibold`}
         >
           {buttonConfig.text}
         </button>

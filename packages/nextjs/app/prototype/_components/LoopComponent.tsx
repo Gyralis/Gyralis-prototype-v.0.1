@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { ClaimAndRegister } from "./ClaimAndRegister";
+import { motion, useSpring, useTransform } from "framer-motion";
 import { formatUnits } from "viem";
 import { useBalance, useChainId } from "wagmi";
 import { useLoopData } from "~~/hooks/useLoopData";
-import { useLoopDataWagmi } from "~~/hooks/useLoopDataWagmi";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { formatTime, secondsToTime } from "~~/utils";
 
@@ -29,6 +29,10 @@ export const LoopComponent = () => {
     minutes: 45,
     seconds: 30,
   });
+
+  const maxPayout = loopDetails?.maxPayout ?? 0;
+
+  console.log("maxPayout", maxPayout);
 
   const [buttonState, setButtonState] = useState("register"); // Possible states: register, claim, ok
 
@@ -64,10 +68,8 @@ export const LoopComponent = () => {
         </div>
       </div>
       <div className="text-center mb-4">
-        <div className="text-5xl sm:text-6xl md:text-7xl font-bold text-[#0065BD]">
-          {formatUnits(loopBalance?.value || 0n, 18)}
-        </div>
-        <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">HNY</div>
+        <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div>
+        <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
       </div>
 
       {/* Countdown Timer */}
@@ -90,7 +92,7 @@ export const LoopComponent = () => {
         <Countdown />
       </div>
 
-      <ClaimAndRegister />
+      <ClaimAndRegister refecthLoopBalance={refetchLoopBalance} />
     </div>
   );
 };
@@ -128,3 +130,28 @@ export function Countdown() {
     </div>
   );
 }
+
+type AnimatedNumberProps = {
+  value: number;
+};
+
+export const AnimatedNumber = ({ value }: AnimatedNumberProps) => {
+  const spring = useSpring(value, {
+    mass: 0.8,
+    stiffness: 75,
+    damping: 15,
+  });
+
+  const display = useTransform(spring, current =>
+    Number(current).toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }),
+  );
+
+  useEffect(() => {
+    spring.set(value);
+  }, [value, spring]);
+
+  return <motion.span className="text-5xl sm:text-6xl md:text-7xl font-bold text-[#0065BD]">{display}</motion.span>;
+};
