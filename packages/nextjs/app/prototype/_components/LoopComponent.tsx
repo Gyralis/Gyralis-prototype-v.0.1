@@ -31,13 +31,6 @@ export const LoopComponent = () => {
     chainId: chainId,
   });
 
-  // Countdown timer state and logic
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 2,
-    minutes: 45,
-    seconds: 30,
-  });
-
   const handleFetchScore = async () => {
     setLoadingScore(true);
     if (!connectedAccount) return;
@@ -92,7 +85,7 @@ export const LoopComponent = () => {
 
   return (
     <>
-      <div className="rounded-xl p-4 sm:p-8 flex flex-col justify-between  sticky top-8 bg-transparent border-[#0065BD] shadow-md shadow-[#0065BD]/20 backdrop-blur-sm z-50 ">
+      <div className="rounded-xl p-4 sm:p-8 flex flex-col justify-between group sticky top-8 bg-transparent border-[#0065BD] shadow-md shadow-[#0065BD]/20 backdrop-blur-sm z-50 ">
         <Image
           src={GyralisLogo}
           alt="Gyralis Logo"
@@ -166,9 +159,7 @@ export const LoopComponent = () => {
 
 const Countdown = () => {
   // Get the next period start from the custom hook
-  const { nextPeriodStart: nextPeriodStartAlso, loading: loadingNextPeriodStart } = useNextPeriodStart(
-    "0xED179b78D5781f93eb169730D8ad1bE7313123F4",
-  );
+  const { nextPeriodStart: nextPeriodStartAlso, loading: loadingNextPeriodStart } = useNextPeriodStart(LOOP_ADDRESS);
 
   // State to keep track of the current time in seconds
   const [currentTime, setCurrentTime] = useState<bigint>(BigInt(Date.now()) / 1000n);
@@ -187,15 +178,29 @@ const Countdown = () => {
 
   const displayClaimIn = claimIn !== undefined ? (claimIn < 0n ? 0n : claimIn) : undefined;
 
+  const { days, hours, minutes, seconds } = formatTime2(Number(displayClaimIn));
+
   if (loadingNextPeriodStart) {
     return <div>Loading countdown...</div>;
   }
 
   return (
-    <div>
-      <p>Time remaining (claimIn): {formatTime(Number(displayClaimIn))}</p>
+    <div className="flex justify-center gap-2 sm:gap-4">
+      <TimeBlock label="Hours" value={hours} />
+      <TimeBlock label="Minutes" value={minutes} />
+      <TimeBlock label="Seconds" value={seconds} />
     </div>
   );
+};
+
+// Utility to format seconds into { days, hours, minutes, seconds }
+const formatTime2 = (totalSeconds: number) => {
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return { days, hours, minutes, seconds };
 };
 
 type AnimatedNumberProps = {
@@ -221,4 +226,14 @@ const AnimatedNumber = ({ value }: AnimatedNumberProps) => {
   }, [value, spring]);
 
   return <motion.span className="text-5xl sm:text-6xl md:text-7xl font-bold text-[#0065BD]">{display}</motion.span>;
+};
+
+const TimeBlock = ({ label, value }: { label: string; value: number }) => {
+  const display = value != null ? value.toString().padStart(2, "0") : "--";
+  return (
+    <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
+      <div className="text-xl sm:text-2xl font-bold">{display}</div>
+      <div className="text-xs text-gray-300">{label}</div>
+    </div>
+  );
 };

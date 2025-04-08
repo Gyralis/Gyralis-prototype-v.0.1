@@ -18,9 +18,9 @@ export function useNextPeriodStart(loopAddress: `0x${string}`) {
     functionName: "getCurrentPeriod",
   });
 
-  // Function to calculate the next period start timestamp
+  // Function to calculate the next period start timestamp:
   const calculateNextPeriodStart = useCallback((loopDetails: any, currentPeriod: bigint) => {
-    // Assuming loopDetails[3] is the base timestamp and loopDetails[1] is the period duration
+    
     return BigInt(loopDetails[3]) + BigInt(loopDetails[1]) * (currentPeriod + 1n);
   }, []);
 
