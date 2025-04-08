@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import BottomCardsSection from "./BottomCardsSection";
 import { ClaimAndRegister } from "./ClaimAndRegister";
 import { motion, useSpring, useTransform } from "framer-motion";
 import { formatUnits } from "viem";
@@ -16,12 +17,16 @@ export const LoopComponent = () => {
   const chainId = useChainId();
   const { address: connectedAccount } = useAccount();
 
+  console.log("connectedAccount", connectedAccount);
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loadingScore, setLoadingScore] = useState(true);
   const [score, setScore] = useState<number | null>(null);
 
-  const { loopDetails, isLoading } = useLoopData();
+  console.log(hasSubmitted, score);
+
+  const { loopDetails } = useLoopData();
 
   const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
     address: LOOP_ADDRESS,
@@ -29,7 +34,6 @@ export const LoopComponent = () => {
     chainId: chainId,
   });
 
-  console.log("Im rendering...");
   // Countdown timer state and logic
   const [timeLeft, setTimeLeft] = useState({
     hours: 2,
@@ -38,7 +42,7 @@ export const LoopComponent = () => {
   });
 
   const handleFetchScore = async () => {
-    setLoading(true);
+    setLoadingScore(true);
     if (!connectedAccount) return;
 
     try {
@@ -62,7 +66,7 @@ export const LoopComponent = () => {
     } catch (error) {
       console.error("Fetch error:", error);
     } finally {
-      setLoading(false);
+      setLoadingScore(false);
     }
   };
 
@@ -97,66 +101,75 @@ export const LoopComponent = () => {
   //console.log(loopData);
 
   return (
-    <div className="bg-gray-100 rounded-xl p-4 sm:p-8 flex flex-col justify-between  sticky top-8">
-      <div>
-        <div className="max-w-md lg:max-w-lg mx-auto text-center mb-4 sm:mb-6">
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-center">
-            Use Gyralis in your organization
-          </h2>
-          <p className="text-center font-medium text-sm sm:text-base">
-            Create custom Loops to reward your community and align incentives with your goals.
-          </p>
+    <>
+      <div className="bg-gray-100 rounded-xl p-4 sm:p-8 flex flex-col justify-between  sticky top-8">
+        <div>
+          <div className="max-w-md lg:max-w-lg mx-auto text-center mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-center">
+              Use Gyralis in your organization
+            </h2>
+            <p className="text-center font-medium text-sm sm:text-base">
+              Create custom Loops to reward your community and align incentives with your goals.
+            </p>
+          </div>
+
+          {/* Badges and Loop Balance */}
+
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
+            <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
+              <span className="text-sm font-medium text-[#0065BD]">
+                Period length:{" "}
+                <span className="font-semibold text-lg">{secondsToTime(loopDetails?.periodLength ?? 0)}</span>
+              </span>
+            </div>
+            <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
+              <span className="text-sm font-medium text-[#0065BD]">
+                Period distribution: <span className="font-semibold text-lg">{loopDetails?.percentPerPeriod} %</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="text-center mb-4">
+          <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div>
+          <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
         </div>
 
-        {/* Badges and Loop Balance */}
-
-        <div className="flex flex-wrap justify-center gap-3 mb-6">
-          <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
-            <span className="text-sm font-medium text-[#0065BD]">
-              Period length:{" "}
-              <span className="font-semibold text-lg">{secondsToTime(loopDetails?.periodLength ?? 0)}</span>
-            </span>
-          </div>
-          <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
-            <span className="text-sm font-medium text-[#0065BD]">
-              Period distribution: <span className="font-semibold text-lg">{loopDetails?.percentPerPeriod} %</span>
-            </span>
-          </div>
+        {/* Countdown Timer */}
+        <div className="text-center mb-8">
+          <p className="text-sm text-gray-500 mb-2">Next distribution in:</p>
+          {/* <div className="flex justify-center gap-2 sm:gap-4">
+      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
+        <div className="text-xl sm:text-2xl font-bold">{timeLeft.hours.toString().padStart(2, "0")}</div>
+        <div className="text-xs text-gray-300">Hours</div>
+      </div>
+      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
+        <div className="text-xl sm:text-2xl font-bold">{timeLeft.minutes.toString().padStart(2, "0")}</div>
+        <div className="text-xs text-gray-300">Minutes</div>
+      </div>
+      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
+        <div className="text-xl sm:text-2xl font-bold">{timeLeft.seconds.toString().padStart(2, "0")}</div>
+        <div className="text-xs text-gray-300">Seconds</div>
+      </div>
+    </div> */}
+          <Countdown />
         </div>
-      </div>
-      <div className="text-center mb-4">
-        <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div>
-        <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
-      </div>
 
-      {/* Countdown Timer */}
-      <div className="text-center mb-8">
-        <p className="text-sm text-gray-500 mb-2">Next distribution in:</p>
-        {/* <div className="flex justify-center gap-2 sm:gap-4">
-          <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
-            <div className="text-xl sm:text-2xl font-bold">{timeLeft.hours.toString().padStart(2, "0")}</div>
-            <div className="text-xs text-gray-300">Hours</div>
-          </div>
-          <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
-            <div className="text-xl sm:text-2xl font-bold">{timeLeft.minutes.toString().padStart(2, "0")}</div>
-            <div className="text-xs text-gray-300">Minutes</div>
-          </div>
-          <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
-            <div className="text-xl sm:text-2xl font-bold">{timeLeft.seconds.toString().padStart(2, "0")}</div>
-            <div className="text-xs text-gray-300">Seconds</div>
-          </div>
-        </div> */}
-        <Countdown />
+        <ClaimAndRegister refecthLoopBalance={refetchLoopBalance} score={score} />
       </div>
-
-      <ClaimAndRegister refecthLoopBalance={refetchLoopBalance} />
-    </div>
+      <BottomCardsSection
+        score={score}
+        hasSubmitted={hasSubmitted}
+        loadingScore={loadingScore}
+        isSubmitting={isSubmitting}
+        handleSubmit={handleSubmitPassport}
+      />
+    </>
   );
 };
 
 const Countdown = () => {
   // Get the next period start from the custom hook
-  const { nextPeriodStart: nextPeriodStartAlso, loading } = useNextPeriodStart(
+  const { nextPeriodStart: nextPeriodStartAlso, loading: loadingNextPeriodStart } = useNextPeriodStart(
     "0xED179b78D5781f93eb169730D8ad1bE7313123F4",
   );
 
@@ -177,7 +190,7 @@ const Countdown = () => {
 
   const displayClaimIn = claimIn !== undefined ? (claimIn < 0n ? 0n : claimIn) : undefined;
 
-  if (loading) {
+  if (loadingNextPeriodStart) {
     return <div>Loading countdown...</div>;
   }
 

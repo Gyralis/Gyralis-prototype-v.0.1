@@ -12,13 +12,12 @@ const CHAIN_ID = 31337;
 
 type ClaimAndRegisterProps = {
   refecthLoopBalance: () => void;
+  score: number | null;
 };
 
 type ButtonState = "register" | "claim" | "ok";
 
-export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) => {
-  const [score, setScore] = useState<number | null>(null);
- 
+export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegisterProps) => {
   const [loading, setLoading] = useState(true);
   const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [isRegistered, setIsRegistered] = useState(false);
@@ -34,7 +33,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
     watch: false,
   });
 
-  console.log("claimer status", checkClaimer);
 
   const {
     data: contractData,
@@ -45,6 +43,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
   } = useScaffoldWriteContract("loop");
 
   const { users } = useRegisteredUsers(LOOP_ADDRESS);
+
+  console.log("usersReg:", users);
 
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
@@ -102,6 +102,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
   const canClaim =
     connectedAccount && score !== null && score >= 15 && users.includes(connectedAccount) ? true : undefined;
 
+    console.log("canClaim", canClaim);
+
   const getButtonConfig = () => {
     switch (buttonState) {
       case "register":
@@ -137,7 +139,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance }: ClaimAndRegisterProps) 
 
   const buttonConfig = getButtonConfig();
 
-  if (loading) return <div className="p-4 text-center">Loading data...</div>;
+  // if (loading) return <div className="p-4 text-center">Loading data...</div>;
 
   return (
     <>

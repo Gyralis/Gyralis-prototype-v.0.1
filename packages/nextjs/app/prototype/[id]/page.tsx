@@ -12,7 +12,6 @@ const Page: NextPage<{ params: { id: string } }> = async ({ params }) => {
       <main className="p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <InfoSection />
         <LoopComponent />
-        <BottomCardsSection />
       </main>
     </>
   );
