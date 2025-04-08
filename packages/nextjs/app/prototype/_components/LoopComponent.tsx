@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import BottomCardsSection from "./BottomCardsSection";
 import { ClaimAndRegister } from "./ClaimAndRegister";
 import { motion, useSpring, useTransform } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
+import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
 import { useLoopData } from "~~/hooks/useLoopData";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { formatTime, secondsToTime } from "~~/utils";
@@ -14,18 +16,13 @@ const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
 
 export const LoopComponent = () => {
-  const chainId = useChainId();
-  const { address: connectedAccount } = useAccount();
-
-  console.log("connectedAccount", connectedAccount);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [loadingScore, setLoadingScore] = useState(true);
   const [score, setScore] = useState<number | null>(null);
 
-  console.log(hasSubmitted, score);
-
+  const chainId = useChainId();
+  const { address: connectedAccount } = useAccount();
   const { loopDetails } = useLoopData();
 
   const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
@@ -93,16 +90,16 @@ export const LoopComponent = () => {
     if (connectedAccount) handleFetchScore();
   }, [connectedAccount]);
 
-  const maxPayout = loopDetails?.maxPayout ?? 0;
-
-  console.log("maxPayout", maxPayout);
-
-  //const { loopData } = useLoopDataWagmi(LOOP_ADDRESS)
-  //console.log(loopData);
-
   return (
     <>
-      <div className="bg-gray-100 rounded-xl p-4 sm:p-8 flex flex-col justify-between  sticky top-8">
+      <div className="rounded-xl p-4 sm:p-8 flex flex-col justify-between  sticky top-8 bg-transparent border-[#0065BD] shadow-md shadow-[#0065BD]/20 backdrop-blur-sm z-50 ">
+        <Image
+          src={GyralisLogo}
+          alt="Gyralis Logo"
+          width={400}
+          height={400}
+          className="absolute  top-10 lg:inset-28 -z-10 opacity-5"
+        />
         <div>
           <div className="max-w-md lg:max-w-lg mx-auto text-center mb-4 sm:mb-6">
             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-center">

@@ -18,7 +18,6 @@ type ClaimAndRegisterProps = {
 type ButtonState = "register" | "claim" | "ok";
 
 export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegisterProps) => {
- 
   const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [checkEligibility, setCheckEligibility] = useState(false);
 
@@ -31,20 +30,17 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
     watch: false,
   });
 
-
   console.log("claimerStatus:", checkClaimer);
 
   const {
     data: contractData,
     writeContractAsync: writeLoopContractAsync,
-    isSuccess,
     status,
     reset,
   } = useScaffoldWriteContract("loop");
 
   const { users } = useRegisteredUsers(LOOP_ADDRESS);
 
-  console.log("usersReg:", users);
 
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
@@ -53,6 +49,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
   const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
   });
+
+  console.log(waitTransactionStatus, Txresult);
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
@@ -84,7 +82,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-        setCheckEligibility(false);
+          setCheckEligibility(false);
           writeInContract(data.signature);
         } else {
           console.error("Error:", data.error);
@@ -97,12 +95,10 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
     } catch (error) {
       console.error("Network error:", error);
     }
-  };;
+  };
 
   const canClaim =
     connectedAccount && score !== null && score >= 15 && users.includes(connectedAccount) ? true : undefined;
-
-    console.log("canClaim", canClaim);
 
   const getButtonConfig = () => {
     switch (buttonState) {
@@ -144,13 +140,18 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
   return (
     <>
       <div className="p-4">
-        <ClaimStatusMessage state={buttonState} canClaim={canClaim ?? false} />
+        {connectedAccount && <ClaimStatusMessage state={buttonState} canClaim={canClaim ?? false} />}
+
         <button
           disabled={!connectedAccount}
           onClick={handleButtonClick}
           className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
-          {status === "pending" || checkEligibility ? <span className="loading loading-spinner loading-md"></span> : buttonConfig.text}
+          {status === "pending" || checkEligibility ? (
+            <span className="loading loading-spinner loading-md"></span>
+          ) : (
+            buttonConfig.text
+          )}
         </button>
       </div>
     </>
@@ -167,7 +168,8 @@ export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps)
     if (state === "register") {
       return {
         key: "register",
-        text: "🚀 You’re not in the loop yet. Register now and start your daily claiming!",
+        // text: "🚀 You’re not in the loop yet. Register now and start your daily claiming!",
+        text: "🚀 Register now and start your daily claiming!",
         className: "text-yellow-700 bg-yellow-100",
       };
     }
