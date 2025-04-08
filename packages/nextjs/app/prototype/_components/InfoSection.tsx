@@ -21,13 +21,11 @@ const InfoSection: React.FC = () => {
           <div className="space-y-4">
             <div className="bg-[#629fd3]/20 p-3 rounded-lg border-l-4 border-[#f7cd6f]">
               <div className="flex items-start gap-3">
-                <ShieldCheckIcon className="h-14 w-14 text-[#f7cd6f] " />
+                <ShieldCheckIcon className="h-10 w-10 text-[#f7cd6f] " />
                 <div>
-                  <h4 className="font-semibold text-[#f7cd6f] mb-1">Pass Loop Shield - Be Eligible</h4>
+                  <h4 className="font-semibold text-[#f7cd6f] mb-1">Pass Loop Shield And Be Eligible</h4>
                   <p className="text-sm text-gray-100">
-                    Verify your identity with a Passport score of 15+ to qualify for registration. This anti-Sybil
-                    ensures fair token distribution among genuine community members. Be sure to maintain your
-                    eligibility by meeting the required criteria.
+                    Verify your identity with a Passport score of 15+ to qualify for registration.  Additionally, maintain active membership in the 1Hive community within Gardens V2 to qualify for daily claims.​
                   </p>
                 </div>
               </div>
@@ -52,8 +50,7 @@ const InfoSection: React.FC = () => {
                 <div>
                   <h4 className="font-semibold text-[#f7cd6f] mb-1">Maintain Eligibility</h4>
                   <p className="text-sm text-gray-100">
-                    If you fail to claim within any distribution period you'll need to re-register to participate again.
-                    Stay as a 1hive member to claim your rewards!
+                  Consistent participation is key. Missing a claim during any distribution period will require re-registration to resume participation. Ensure your ongoing status as a 1Hive member to continue claiming rewards
                   </p>
                 </div>
               </div>

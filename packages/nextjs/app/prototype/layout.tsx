@@ -4,11 +4,11 @@ import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export default function GyralisUI({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white text-black relative ">
+    <div className="min-h-screen bg-white text-black relative">
       {/* Navigation Bar */}
-      <header className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 my-6 rounded-lg shadow-md">
-        <div className="flex items-center gap-4 w-full sm:w-auto justify-between">
-          <div className="flex items-center gap-2">
+      <nav className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 my-6 rounded-lg shadow-md ">
+        <div className="flex items-center gap-4 w-full justify-between">
+          <div className="flex items-center gap-2 ">
             <Image src={GyralisLogo} alt="Gyralis Logo" width={40} height={40} />
             <span className="text-2xl ">Gyralis</span>
           </div>
@@ -34,7 +34,7 @@ export default function GyralisUI({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        <nav className="hidden sm:flex items-center justify-center ml-0 sm:ml-8 space-x-6 md:space-x-14 mt-4 sm:mt-0 w-full">
+        <div className="hidden md:flex items-center justify-center ml-0 sm:ml-8 space-x-6 md:space-x-14 mt-4 sm:mt-0 w-full ">
           <div className="relative font-medium text-gray-600 hover:text-black whitespace-nowrap text-sm">
             Custom Loops
             <span className="absolute -top-4 -right-8 text-xs bg-[#e2e8ed] px-1.5 py-0.5 rounded-full">Soon</span>
@@ -47,12 +47,12 @@ export default function GyralisUI({ children }: { children: React.ReactNode }) {
             Tokenomics
             <span className="absolute -top-4 -right-8 text-xs bg-[#e2e8ed] px-1.5 py-0.5 rounded-full">Soon</span>
           </div>
-        </nav>
+        </div>
 
-        <div className="flex items-center gap-4 mt-4 sm:mt-0 w-full sm:w-auto justify-center sm:justify-end">
+        <div className="flex items-center gap-4 mt-4 sm:mt-0 w-full justify-center sm:justify-end">
           <RainbowKitCustomConnectButton />
         </div>
-      </header>
+      </nav>
       {children}
     </div>
   );

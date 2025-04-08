@@ -18,10 +18,8 @@ type ClaimAndRegisterProps = {
 type ButtonState = "register" | "claim" | "ok";
 
 export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegisterProps) => {
-  const [loading, setLoading] = useState(true);
+ 
   const [buttonState, setButtonState] = useState<ButtonState>("register");
-  const [isRegistered, setIsRegistered] = useState(false);
-  const [hasClaimed, setHasClaimed] = useState(false);
   const [checkEligibility, setCheckEligibility] = useState(false);
 
   const { address: connectedAccount } = useAccount();
@@ -33,6 +31,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
     watch: false,
   });
 
+
+  console.log("claimerStatus:", checkClaimer);
 
   const {
     data: contractData,
