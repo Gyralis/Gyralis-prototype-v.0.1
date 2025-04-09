@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
-import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 
@@ -29,8 +29,17 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
     args: [connectedAccount], // Disable auto-watch, we'll manually refetch
     watch: false,
   });
+  const { data } = useScaffoldReadContract({
+    contractName: "loop",
+    functionName: "isUserRegisteredForCurrentPeriod",
+    args: [connectedAccount],   
+  });
+ 
 
-  console.log("claimerStatus:", checkClaimer);
+
+
+  console.log("isRegistered:", data);
+
 
   const {
     data: contractData,
@@ -49,8 +58,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
   const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
   });
-
-  console.log(waitTransactionStatus, Txresult);
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
@@ -143,7 +150,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
         {connectedAccount && <ClaimStatusMessage state={buttonState} canClaim={canClaim ?? false} />}
 
         <button
-          disabled={!connectedAccount}
+          disabled={!connectedAccount || score === null || score < 15}
           onClick={handleButtonClick}
           className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >

@@ -4,19 +4,31 @@ import { Address, formatUnits } from "viem";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export const useLoopData = () => {
-  const { data: readContractData, isLoading: isLoadingDetails, refetch:refetch } = useScaffoldReadContract({
+  const {
+    data: readContractData,
+    isLoading: isLoadingDetails,
+    refetch: refetch,
+  } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getLoopDetails",
     watch: false,
   });
 
-  const { data: currentPeriod, isLoading: isLoadingCurrentPeriod, refetch:refetchPeriod } = useScaffoldReadContract({
+  const {
+    data: currentPeriod,
+    isLoading: isLoadingCurrentPeriod,
+    refetch: refetchPeriod,
+  } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getCurrentPeriod",
     watch: false,
   });
 
-  const { data: currentPeriodData, isLoading: isLoadingCurrentPeriodData, refetch:refetchPeriodData } = useScaffoldReadContract({
+  const {
+    data: currentPeriodData,
+    isLoading: isLoadingCurrentPeriodData,
+    refetch: refetchPeriodData,
+  } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getCurrentPeriodData",
     watch: false,
@@ -29,12 +41,8 @@ export const useLoopData = () => {
     firstPeriodStart: bigint;
     currentPeriod: number;
     currentPeriodRegistrations: number;
-    maxPayout: number;
+    maxPayout: bigint;
   }
-
- 
-  
-
 
   const [loopDetails, setLoopDetails] = useState<LoopDetails | undefined>(undefined);
   const isLoading = isLoadingDetails || isLoadingCurrentPeriod || isLoadingCurrentPeriodData;
@@ -50,28 +58,27 @@ export const useLoopData = () => {
         firstPeriodStart: readContractData[3] as bigint,
         currentPeriod: Number(currentPeriod),
         currentPeriodRegistrations: currentPeriodData ? Number(currentPeriodData[0]) : 0,
-        maxPayout: Number(currentPeriodData?.[1] ?? 0),
+        maxPayout: currentPeriodData?.[1] ?? 0n,
       });
     };
 
     updateLoopDetails();
   }, [readContractData, currentPeriod, currentPeriodData]);
 
-
   const getSecondsUntilNextPeriod = () => {
     const now = Math.floor(Date.now() / 1000);
     const timeSinceStart = now - Number(loopDetails?.firstPeriodStart);
-    const secondsIntoCurrentPeriod = loopDetails?.periodLength !== undefined ? timeSinceStart % loopDetails.periodLength : 0;
+    const secondsIntoCurrentPeriod =
+      loopDetails?.periodLength !== undefined ? timeSinceStart % loopDetails.periodLength : 0;
     return (loopDetails?.periodLength ?? 0) - secondsIntoCurrentPeriod;
   };
-
 
   useEffect(() => {
     const delay = getSecondsUntilNextPeriod();
     const interval = setInterval(() => {
       refetch();
-       refetchPeriod();
-       refetchPeriodData();
+      refetchPeriod();
+      refetchPeriodData();
     }, delay);
 
     return () => clearInterval(interval);
@@ -79,5 +86,3 @@ export const useLoopData = () => {
 
   return { loopDetails, isLoading };
 };
-
-
