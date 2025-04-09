@@ -112,6 +112,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
   };
 
   useEffect(() => {
+
     if (Txresult?.status === "success") {
       setButtonState("ok");
     } else if (canClaim) {
@@ -133,7 +134,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
 
   const buttonConfig = getButtonConfig();
 
-  // if (loading) return <div className="p-4 text-center">Loading data...</div>;
+  //  if (loading) return <div className="p-4 text-center">Loading data...</div>;
 
   return (
     <>

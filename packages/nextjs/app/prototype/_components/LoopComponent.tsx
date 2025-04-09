@@ -11,7 +11,7 @@ import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useLoopData } from "~~/hooks/useLoopData";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
-import { formatTime, secondsToTime } from "~~/utils";
+import { secondsToTime } from "~~/utils";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
@@ -24,7 +24,7 @@ export const LoopComponent = () => {
 
   const chainId = useChainId();
   const { address: connectedAccount } = useAccount();
-  const { loopDetails } = useLoopData();
+    const { loopDetails } = useLoopData();
 
   const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
     address: LOOP_ADDRESS,
@@ -32,16 +32,17 @@ export const LoopComponent = () => {
     chainId: chainId,
   });
 
+
+
   const { data: claimAmount, refetch: refetchClaimAmount } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getPeriodIndividualPayout",
-    args: [loopDetails?.currentPeriod],
+    // 
+    args:[1n],
     watch:false
   });
 
-  console.log("claimAmount", claimAmount);
-
-  const handleFetchScore = async () => {
+   const handleFetchScore = async () => {
     setLoadingScore(true);
     if (!connectedAccount) return;
 
@@ -126,8 +127,8 @@ export const LoopComponent = () => {
           </div>
         </div>
         <div className="text-center mb-4">
-          <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div>
-          <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
+          <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div> 
+         <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
         </div>
 
         {/* Countdown Timer */}
@@ -150,7 +151,7 @@ export const LoopComponent = () => {
           <Countdown />
         </div>
 
-        <ClaimAndRegister refecthLoopBalance={refetchLoopBalance} score={score} />
+        <ClaimAndRegister score={score} refecthLoopBalance={refetchLoopBalance} />
       </div>
       <BottomCardsSection
         score={score}
@@ -184,7 +185,7 @@ const Countdown = () => {
 
   const displayClaimIn = claimIn !== undefined ? (claimIn < 0n ? 0n : claimIn) : undefined;
 
-  const { days, hours, minutes, seconds } = formatTime2(Number(displayClaimIn));
+  const { hours, minutes, seconds } = formatTime2(Number(displayClaimIn));
 
   if (loadingNextPeriodStart) {
     return <div>Loading countdown...</div>;

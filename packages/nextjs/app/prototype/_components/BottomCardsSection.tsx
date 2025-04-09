@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { CheckCircleIcon, LinkIcon } from "@heroicons/react/20/solid";
 

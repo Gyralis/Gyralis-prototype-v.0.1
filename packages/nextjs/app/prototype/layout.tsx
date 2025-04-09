@@ -51,7 +51,7 @@ export default function GyralisUI({ children }: { children: React.ReactNode }) {
 
         <div className="flex items-center gap-4 mt-4 sm:mt-0 w-full justify-center sm:justify-end">
           <RainbowKitCustomConnectButton />
-          <FaucetButton />
+          {/* <FaucetButton /> */}
         </div>
       </nav>
       {children}
