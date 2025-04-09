@@ -8,10 +8,10 @@ import { motion, useSpring, useTransform } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useLoopData } from "~~/hooks/useLoopData";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { formatTime, secondsToTime } from "~~/utils";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
@@ -32,15 +32,14 @@ export const LoopComponent = () => {
     chainId: chainId,
   });
 
-  const { data: payout } = useScaffoldReadContract({
+  const { data: claimAmount, refetch: refetchClaimAmount } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getPeriodIndividualPayout",
-    args: [(loopDetails?.currentPeriod)],
+    args: [loopDetails?.currentPeriod],
+    watch:false
   });
 
-
-  console.log(payout);
-
+  console.log("claimAmount", claimAmount);
 
   const handleFetchScore = async () => {
     setLoadingScore(true);
@@ -97,14 +96,8 @@ export const LoopComponent = () => {
   return (
     <>
       <div className="rounded-xl p-4 sm:p-8 flex flex-col justify-between group sticky top-8 bg-transparent border-[#0065BD] shadow-md shadow-[#0065BD]/20 backdrop-blur-sm ">
-      <div className="absolute top-0 left-0 -z-10 right-0 bottom-0 h-full w-full flex items-center justify-center">
-        <Image
-          src={GyralisLogo}
-          alt="Gyralis Logo"
-          width={400}
-          height={400}
-          className="-z-10 opacity-5"
-        />
+        <div className="absolute top-0 left-0 -z-10 right-0 bottom-0 h-full w-full flex items-center justify-center">
+          <Image src={GyralisLogo} alt="Gyralis Logo" width={400} height={400} className="-z-10 opacity-5" />
         </div>
         <div>
           <div className="max-w-md lg:max-w-lg mx-auto text-center mb-4 sm:mb-6">

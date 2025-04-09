@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { truncate } from "fs";
-import { Address, formatUnits } from "viem";
+import { Address } from "viem";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
 export const useLoopData = () => {
@@ -39,9 +38,7 @@ export const useLoopData = () => {
     periodLength: number;
     percentPerPeriod: number;
     firstPeriodStart: bigint;
-    currentPeriod: number;
-    currentPeriodRegistrations: number;
-    maxPayout: bigint;
+    currentPeriod: bigint;
   }
 
   const [loopDetails, setLoopDetails] = useState<LoopDetails | undefined>(undefined);
@@ -56,9 +53,7 @@ export const useLoopData = () => {
         periodLength: Number(readContractData[1]),
         percentPerPeriod: Number(readContractData[2]),
         firstPeriodStart: readContractData[3] as bigint,
-        currentPeriod: Number(currentPeriod),
-        currentPeriodRegistrations: currentPeriodData ? Number(currentPeriodData[0]) : 0,
-        maxPayout: currentPeriodData?.[1] ?? 0n,
+        currentPeriod: currentPeriod as bigint,
       });
     };
 

@@ -29,16 +29,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
     args: [connectedAccount], // Disable auto-watch, we'll manually refetch
     watch: false,
   });
-  const { data } = useScaffoldReadContract({
-    contractName: "loop",
-    functionName: "isUserRegisteredForCurrentPeriod",
-    args: [connectedAccount],   
-  });
- 
 
-
-
-  console.log("isRegistered:", data);
 
 
   const {

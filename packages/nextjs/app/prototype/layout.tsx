@@ -1,6 +1,6 @@
 import Image from "next/image";
 import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
-import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
 export default function GyralisUI({ children }: { children: React.ReactNode }) {
   return (
@@ -51,6 +51,7 @@ export default function GyralisUI({ children }: { children: React.ReactNode }) {
 
         <div className="flex items-center gap-4 mt-4 sm:mt-0 w-full justify-center sm:justify-end">
           <RainbowKitCustomConnectButton />
+          <FaucetButton />
         </div>
       </nav>
       {children}
