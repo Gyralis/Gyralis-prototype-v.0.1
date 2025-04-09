@@ -97,7 +97,7 @@ export const LoopComponent = () => {
   return (
     <>
       <div className="rounded-xl p-4 sm:p-8 flex flex-col justify-between group sticky top-8 bg-transparent border-[#0065BD] shadow-md shadow-[#0065BD]/20 backdrop-blur-sm ">
-      <div className="absolute top-0 left-0 right-0 bottom-0 h-full w-full flex items-center justify-center">
+      <div className="absolute top-0 left-0 -z-10 right-0 bottom-0 h-full w-full flex items-center justify-center">
         <Image
           src={GyralisLogo}
           alt="Gyralis Logo"
