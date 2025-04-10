@@ -3,5 +3,4 @@
 @oz-upgrades/=lib/openzeppelin-contracts-upgradeable/contracts
 
 src/=contracts/
-test/=contracts/test/
 @prb/test=lib/prb-test/src

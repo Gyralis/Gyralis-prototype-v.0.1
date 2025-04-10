@@ -39,14 +39,9 @@ contract Deploy is BaseScript {
 
     modifier wrapDeployment(){
         console.log("Starting Deployment...");
+        deployer_pk = vm.envUint('DEPLOYER_PK');
         _;
         wrap_deployment();
-    }
-    modifier broadcaster() override {
-        deployer_pk = vm.envUint('DEPLOYER_PK');
-        vm.startBroadcast(_testerPk);
-        _;
-        vm.stopBroadcast();
     }
     function run() public virtual wrapDeployment broadcaster {
         _run();
@@ -56,8 +51,9 @@ contract Deploy is BaseScript {
     function _run()internal {
         trusted_signer = vm.envAddress("TRUSTED_SIGNER");
         deployer =  vm.addr(deployer_pk);
+        //systemAdmin = vm.envAddress("SYSTEM_ADDRESS");
         systemAdmin =  0x70997970C51812dc3A010C7d01b50e0d17dc79C8; // address that can call the diamondCut on the diamonds
-
+        //systemAdmin = deployer;
         // Create the Facet Registry
         FacetRegistry registry = new FacetRegistry();
         d.facet_registry = address(registry);
@@ -104,6 +100,8 @@ contract Deploy is BaseScript {
             IDiamond.MultiInit[] memory diamondInitData = new IDiamond.MultiInit[](5);
         {
             // Prepare the Init Data for the Facets
+            // NOTE : usamos el deployer para poder interactuar con el contrato, luego transferimos la autorizacion a otro address
+            //        luego usamos systemAdmin como address
             diamondInitData[0] = facetHelpers[0].makeInitData(facetAddresses[0], abi.encode(systemAdmin)); // DiamondCut
             diamondInitData[1] = facetHelpers[1].makeInitData(facetAddresses[1], ""); // DiamondLoupe
             diamondInitData[2] = facetHelpers[2].makeInitData(facetAddresses[2], abi.encode(msg.sender)); // AccessControl
@@ -193,6 +191,8 @@ contract Deploy is BaseScript {
             console.log("Loop Creation Failed!");
             console.logBytes(loopResult);
         }
+        // Pasamos el systemAdmin a otra address diferente al deployer
+
     }
 
     string root;
