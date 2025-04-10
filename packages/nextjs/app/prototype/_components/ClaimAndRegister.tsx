@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { formatUnits } from "viem";
 import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
@@ -13,20 +14,28 @@ const CHAIN_ID = 31337;
 type ClaimAndRegisterProps = {
   refecthLoopBalance: () => void;
   score: number | null;
+  currentPeriod: number | undefined;
 };
 
 type ButtonState = "register" | "claim" | "ok";
 
-export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegisterProps) => {
+export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: ClaimAndRegisterProps) => {
   const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [checkEligibility, setCheckEligibility] = useState(false);
 
   const { address: connectedAccount } = useAccount();
 
-  const { data: checkClaimer, isLoading: isLoadingDetails } = useScaffoldReadContract({
+  const { data: claimerStatus, refetch: refetchClaimerStatus } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getClaimerStatus",
     args: [connectedAccount], // Disable auto-watch, we'll manually refetch
+    watch: false,
+  });
+
+  const { data: claimAmount } = useScaffoldReadContract({
+    contractName: "loop",
+    functionName: "getPeriodIndividualPayout",
+    args: [currentPeriod !== undefined ? BigInt(currentPeriod) : undefined],
     watch: false,
   });
 
@@ -37,6 +46,14 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
     reset,
   } = useScaffoldWriteContract("loop");
 
+  useEffect(() => {
+    let prevPeriod: number | undefined;
+
+    if (currentPeriod !== undefined && prevPeriod !== currentPeriod) {
+      refetchClaimerStatus();
+    }
+  }, [currentPeriod]);
+
   const { users } = useRegisteredUsers(LOOP_ADDRESS);
 
   const transactionConfirmation = useTransactionConfirmations({
@@ -46,8 +63,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
   const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
   });
-
-  console.log(waitTransactionStatus, Txresult);
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
@@ -97,6 +112,9 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
   const canClaim =
     connectedAccount && score !== null && score >= 15 && users.includes(connectedAccount) ? true : undefined;
 
+  const hasClaimedInCurrentPeriod = connectedAccount && claimerStatus !== undefined ? claimerStatus?.[1] : undefined;
+  // const isRegisteredInCurrentPeriod = connectedAccount && claimerStatus !== undefined ? claimerStatus?.[0] : undefined;
+
   const getButtonConfig = () => {
     switch (buttonState) {
       case "register":
@@ -124,7 +142,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
     if (buttonState === "ok") {
       reset();
       refecthLoopBalance();
-      setButtonState("register"); // optional: force fallback
+      refetchClaimerStatus();
+      setButtonState("register");
     } else {
       claimAndRegister();
     }
@@ -132,15 +151,21 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
 
   const buttonConfig = getButtonConfig();
 
-  // if (loading) return <div className="p-4 text-center">Loading data...</div>;
 
   return (
     <>
       <div className="p-4">
-        {connectedAccount && <ClaimStatusMessage state={buttonState} canClaim={canClaim ?? false} />}
+        {connectedAccount && (
+          <ClaimStatusMessage
+            state={buttonState}
+            canClaim={canClaim ?? false}
+            hasClaimed={hasClaimedInCurrentPeriod ?? false}
+            claimAmount={claimAmount}
+          />
+        )}
 
         <button
-          disabled={!connectedAccount}
+          disabled={!connectedAccount || hasClaimedInCurrentPeriod}
           onClick={handleButtonClick}
           className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
@@ -150,6 +175,11 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
             buttonConfig.text
           )}
         </button>
+        {hasClaimedInCurrentPeriod && (
+          <div className="mt-2">
+            <p className="text-sm text-gray-500 text-center">You already claimed in this period.</p>
+          </div>
+        )}
       </div>
     </>
   );
@@ -158,9 +188,11 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
 type ClaimStatusMessageProps = {
   state: ButtonState;
   canClaim: boolean;
+  hasClaimed: boolean;
+  claimAmount: bigint | undefined;
 };
 
-export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps) => {
+export const ClaimStatusMessage = ({ state, canClaim, hasClaimed, claimAmount }: ClaimStatusMessageProps) => {
   const getMessage = () => {
     if (state === "register") {
       return {
@@ -174,7 +206,7 @@ export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps)
     if (state === "claim") {
       return {
         key: "claim",
-        text: "🔥 You’re in the loop! Your tokens are ready to claim.",
+        text: ` ${!hasClaimed ? "🔥 Claim your rewards and stay in the Loop!" : " You’re still in the loop!. Loop continues — see you tomorrow."} `,
         className: "text-[#0065BD] bg-[#0065BD]/10",
       };
     }
@@ -183,7 +215,7 @@ export const ClaimStatusMessage = ({ state, canClaim }: ClaimStatusMessageProps)
       if (canClaim) {
         return {
           key: "ok-claim",
-          text: "✅ Claimed! You’re still in the loop. Come back tomorrow for more tokens.",
+          text: `✅ You succesfully claimed ${Number(formatUnits(claimAmount || 0n, 18)).toFixed(2)} HNY tokens!`,
           className: "text-green-600 bg-green-100",
         };
       } else {
