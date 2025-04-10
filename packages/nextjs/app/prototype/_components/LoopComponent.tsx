@@ -21,10 +21,16 @@ export const LoopComponent = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [loadingScore, setLoadingScore] = useState(true);
   const [score, setScore] = useState<number | null>(null);
+  const [currentPeriod, setCurrentPeriod]= useState<number | undefined>(undefined);
 
   const chainId = useChainId();
   const { address: connectedAccount } = useAccount();
-    const { loopDetails } = useLoopData();
+  const { loopDetails, isLoading } = useLoopData();
+
+  useEffect(() => {
+    setCurrentPeriod(loopDetails?.currentPeriod);   
+  }, [loopDetails]);
+
 
   const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
     address: LOOP_ADDRESS,
@@ -33,16 +39,7 @@ export const LoopComponent = () => {
   });
 
 
-
-  const { data: claimAmount, refetch: refetchClaimAmount } = useScaffoldReadContract({
-    contractName: "loop",
-    functionName: "getPeriodIndividualPayout",
-    // 
-    args:[1n],
-    watch:false
-  });
-
-   const handleFetchScore = async () => {
+  const handleFetchScore = async () => {
     setLoadingScore(true);
     if (!connectedAccount) return;
 
@@ -94,9 +91,13 @@ export const LoopComponent = () => {
     if (connectedAccount) handleFetchScore();
   }, [connectedAccount]);
 
+  if (isLoading || !loopDetails) {
+    return <p>loading...</p>; // or null
+  }
+
   return (
     <>
-      <div className="rounded-xl p-4 sm:p-8 flex flex-col justify-between group sticky top-8 bg-transparent border-[#0065BD] shadow-md shadow-[#0065BD]/20 backdrop-blur-sm ">
+      <div className="rounded-xl p-4 sm:p-8 flex flex-col justify-between group relative lg:sticky top-8 bg-transparent border-[#0065BD] shadow-md shadow-[#0065BD]/20 backdrop-blur-sm ">
         <div className="absolute top-0 left-0 -z-10 right-0 bottom-0 h-full w-full flex items-center justify-center">
           <Image src={GyralisLogo} alt="Gyralis Logo" width={400} height={400} className="-z-10 opacity-5" />
         </div>
@@ -127,31 +128,17 @@ export const LoopComponent = () => {
           </div>
         </div>
         <div className="text-center mb-4">
-          <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div> 
-         <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
+          <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div>
+          <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
         </div>
 
         {/* Countdown Timer */}
         <div className="text-center mb-8">
           <p className="text-sm text-gray-500 mb-2">Next distribution in:</p>
-          {/* <div className="flex justify-center gap-2 sm:gap-4">
-      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
-        <div className="text-xl sm:text-2xl font-bold">{timeLeft.hours.toString().padStart(2, "0")}</div>
-        <div className="text-xs text-gray-300">Hours</div>
-      </div>
-      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
-        <div className="text-xl sm:text-2xl font-bold">{timeLeft.minutes.toString().padStart(2, "0")}</div>
-        <div className="text-xs text-gray-300">Minutes</div>
-      </div>
-      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
-        <div className="text-xl sm:text-2xl font-bold">{timeLeft.seconds.toString().padStart(2, "0")}</div>
-        <div className="text-xs text-gray-300">Seconds</div>
-      </div>
-    </div> */}
           <Countdown />
         </div>
 
-        <ClaimAndRegister score={score} refecthLoopBalance={refetchLoopBalance} />
+        <ClaimAndRegister score={score} refecthLoopBalance={refetchLoopBalance} currentPeriod={currentPeriod} />
       </div>
       <BottomCardsSection
         score={score}
