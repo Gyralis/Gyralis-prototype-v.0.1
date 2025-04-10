@@ -1,164 +1,60 @@
-"use client";
-
-import React from "react";
-import { useState } from "react";
-import { usePathname } from "next/navigation";
-import { Dialog, DialogBackdrop, DialogPanel, TransitionChild } from "@headlessui/react";
-import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
-import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
-import { Breadcrumbs, GoBackButton } from "~~/components/Breadcumbs";
-import { Button } from "~~/components/Button";
-import { HeaderMenuLinks } from "~~/components/Header";
-import { SwitchTheme } from "~~/components/SwitchTheme";
-import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
-import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
 import Image from "next/image";
+import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
+import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 
-interface LayoutProps {
-  children: React.ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const path = usePathname();
-  const pathSegmentsLength = path.split("/").length;
-
-
-
+export default function GyralisUI({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <div>
-        <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
-          <DialogBackdrop
-            transition
-            className="fixed inset-0 bg-gray-900/80 transition-opacity duration-300 ease-linear data-[closed]:opacity-0"
-          />
-
-          <div className="fixed inset-0 flex">
-            <DialogPanel
-              transition
-              className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full"
-            >
-              <TransitionChild>
-                <div className="absolute left-full top-0 flex w-16 justify-center pt-5 duration-300 ease-in-out data-[closed]:opacity-0">
-                  <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
-                    <span className="sr-only">Close sidebar</span>
-                    <XMarkIcon aria-hidden="true" className="size-6 text-white" />
-                  </button>
-                </div>
-              </TransitionChild>
-              <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
-                <div className="flex h-16 shrink-0 items-center">
-                  <Image alt="Your Company" src={GyralisLogo} width={30} height={30} />
-                </div>
-                <nav className="flex flex-1 flex-col">
-                  <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                    <li>
-                      <ul role="list" className="-mx-2 space-y-1">
-                        <HeaderMenuLinks />
-                      </ul>
-                    </li>
-                    <li className="mt-auto flex items-start">
-                      <SwitchTheme className="pointer-events-auto" />
-                    </li>
-                  </ul>
-                </nav>
-              </div>
-            </DialogPanel>
+    <div className="min-h-screen bg-white text-black relative">
+      {/* Navigation Bar */}
+      <nav className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 my-6 rounded-lg shadow-md ">
+        <div className="flex items-center gap-4 w-full justify-between">
+          <div className="flex items-center gap-2 ">
+            <Image src={GyralisLogo} alt="Gyralis Logo" width={40} height={40} />
+            <span className="text-2xl ">Gyralis</span>
           </div>
-        </Dialog>
 
-        {/* Static sidebar for desktop */}
-        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-60 lg:flex-col ">
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
-            <div className="flex h-16 shrink-0 items-center gap-2">
-            <Image alt="Your Company" src={GyralisLogo} width={30} height={30} />
-              <span className="text-xl">Gyralis</span>
-            </div>
-            <nav className="flex flex-1 flex-col ">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                <li>
-                  <ul role="list" className="-mx-2 space-y-3 ">
-                    <HeaderMenuLinks />
-                  </ul>
-                </li>
-                <li className="mt-auto flex items-start">
-                  <SwitchTheme className="pointer-events-auto" />
-                </li>
-              </ul>
-            </nav>
+          <div className="block sm:hidden">
+            <button className="text-gray-700">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
           </div>
         </div>
 
-        <div className="lg:pl-60">
-          <div className="sticky top-0 z-40">
-            <div className="flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8">
-              <button
-                type="button"
-                onClick={() => setSidebarOpen(true)}
-                className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
-              >
-                <span className="sr-only">Open sidebar</span>
-                <Bars3Icon aria-hidden="true" className="size-6" />
-              </button>
-
-              {/* Separator */}
-              <div aria-hidden="true" className="h-6 w-px bg-gray-200 lg:hidden" />
-
-              <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 ">
-                <form action="#" method="GET" className="grid flex-1 grid-cols-1">
-                  <input
-                    disabled
-                    name="search"
-                    type="search"
-                    placeholder="Search"
-                    aria-label="Search"
-                    className="col-start-1 row-start-1 block size-full bg-white pl-8 text-base text-gray-900 outline-none placeholder:text-gray-400 sm:text-sm/6 disabled:cursor-not-allowed"
-                  />
-                  <MagnifyingGlassIcon
-                    aria-hidden="true"
-                    className="pointer-events-none col-start-1 row-start-1 size-5 self-center text-gray-400"
-                  />
-                </form>
-                <div className="flex items-center gap-x-4 lg:gap-x-6">
-                  {/* <button type="button" className="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500">
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon aria-hidden="true" className="size-6" />
-                    </button> */}
-
-                  {/* Separator */}
-                  <div aria-hidden="true" className="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" />
-
-                  <RainbowKitCustomConnectButton />
-                  <FaucetButton />
-                </div>
-              </div>
-            </div>
-            <div className="flex shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 sm:gap-x-6 sm:px-6 lg:px-8 py-1">
-              <div className="flex w-1/2 gap-2">
-                <GoBackButton />
-                <Breadcrumbs />
-              </div>
-              <Button
-                className="ml-auto"
-                btnStyle="filled"
-                color="primary"
-                disabled
-                tooltip="coming soon"
-                tooltipSide="tooltip-left"
-              >
-                {pathSegmentsLength === 3 ? "New Loop" : "Create Organization"}
-              </Button>
-            </div>
+        <div className="hidden md:flex items-center justify-center ml-0 sm:ml-8 space-x-6 md:space-x-14 mt-4 sm:mt-0 w-full ">
+          <div className="relative font-medium text-gray-600 hover:text-black whitespace-nowrap text-sm">
+            Custom Loops
+            <span className="absolute -top-4 -right-8 text-xs bg-[#e2e8ed] px-1.5 py-0.5 rounded-full">Soon</span>
           </div>
-
-          <main>
-            <div className="px-4 sm:px-6 lg:px-8">{children}</div>
-          </main>
+          <div className="relative font-medium text-gray-600 hover:text-black whitespace-nowrap text-sm">
+            Organizations Profile
+            <span className="absolute -top-4 -right-8 text-xs bg-[#e2e8ed] px-1.5 py-0.5 rounded-full">Soon</span>
+          </div>
+          <div className="relative font-medium text-gray-600 hover:text-black whitespace-nowrap text-sm">
+            Tokenomics
+            <span className="absolute -top-4 -right-8 text-xs bg-[#e2e8ed] px-1.5 py-0.5 rounded-full">Soon</span>
+          </div>
         </div>
-      </div>
-    </>
+
+        <div className="flex items-center gap-4 mt-4 sm:mt-0 w-full justify-center sm:justify-end">
+          <RainbowKitCustomConnectButton />
+          {/* <FaucetButton /> */}
+        </div>
+      </nav>
+      {children}
+    </div>
   );
-};
-
-export default Layout;
+}

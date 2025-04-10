@@ -220,6 +220,18 @@ contract LoopFacet is ILoop,Initializable, AccessControlBase {
         return periodMaxPayout / period.totalRegisteredUsers;
     }
 
+    //test this address in the front
+function getClaimerStatus(address user) external view returns (
+    bool isRegistered,
+    bool hasClaimed
+) {
+    LoopStorage.Claimer storage claimer = LoopStorage.layout().claimers[user];
+    uint256 currentPeriod = getCurrentPeriod();
+
+    isRegistered = (claimer.registeredForPeriod == currentPeriod);
+    hasClaimed = (claimer.latestClaimPeriod >= currentPeriod);
+}
+
     /**
      * @notice Verifies that a signature provided by the trusted backend is valid.
      * @param user The user trying to register.

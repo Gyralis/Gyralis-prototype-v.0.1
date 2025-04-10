@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
-import { Address, formatUnits } from "viem";
+import { Address } from "viem";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+
+interface LoopDetails {
+  token: Address;
+  periodLength: number;
+  percentPerPeriod: number;
+  firstPeriodStart: bigint;
+  currentPeriod: number;
+}
 
 export const useLoopData = () => {
   const {
@@ -10,7 +18,7 @@ export const useLoopData = () => {
   } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getLoopDetails",
-    watch: false, // Disable auto-watch, we'll manually refetch
+    watch: false,
   });
 
   const {
@@ -33,46 +41,42 @@ export const useLoopData = () => {
     watch: false,
   });
 
-
-  interface LoopDetails {
-    token: Address;
-    periodLength: number;
-    percentPerPeriod: number;
-    firstPeriodStart: bigint;
-    currentPeriod: number;
-    currentPeriodRegistrations: number;
-  }
-
   const [loopDetails, setLoopDetails] = useState<LoopDetails | undefined>(undefined);
   const isLoading = isLoadingDetails || isLoadingCurrentPeriod || isLoadingCurrentPeriodData;
 
   useEffect(() => {
-    const updateLoopDetails = () => {
-      if (!readContractData) return;
+    if (!readContractData || !currentPeriod) return;
 
-      setLoopDetails({
-        token: readContractData[0] as Address,
-        periodLength: Number(readContractData[1]),
-        percentPerPeriod: +formatUnits(readContractData[2], 18) * 100,
-        firstPeriodStart: readContractData[3] as bigint,
-        currentPeriod: Number(currentPeriod),
-        currentPeriodRegistrations: currentPeriodData ? Number(currentPeriodData[0]) : 0,
-      });
+    setLoopDetails({
+      token: readContractData[0] as Address,
+      periodLength: Number(readContractData[1]),
+      percentPerPeriod: Number(readContractData[2]),
+      firstPeriodStart: readContractData[3] as bigint,
+      currentPeriod: Number(currentPeriod),
+    });
+  }, [readContractData, currentPeriod]);
+
+  useEffect(() => {
+    if (!loopDetails) return;
+
+    let timeout: NodeJS.Timeout;
+
+    const scheduleNextUpdate = () => {
+      const now = Math.floor(Date.now() / 1000);
+      const timeSinceStart = now - Number(loopDetails.firstPeriodStart);
+      const secondsIntoCurrentPeriod = timeSinceStart % loopDetails.periodLength;
+      const secondsUntilNextPeriod = loopDetails.periodLength - secondsIntoCurrentPeriod;
+
+      timeout = setTimeout(async () => {
+        await Promise.all([refetchDetails(), refetchPeriod(), refetchPeriodData()]);
+        scheduleNextUpdate(); // reschedule after refetch
+      }, secondsUntilNextPeriod * 1000);
     };
 
-    updateLoopDetails();
-  }, [readContractData, currentPeriod, currentPeriodData]);
+    scheduleNextUpdate();
 
-  // Refetch every 3 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetchDetails();
-      refetchPeriod();
-      refetchPeriodData();
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, []);
+    return () => clearTimeout(timeout);
+  }, [loopDetails]);
 
   return { loopDetails, isLoading };
 };

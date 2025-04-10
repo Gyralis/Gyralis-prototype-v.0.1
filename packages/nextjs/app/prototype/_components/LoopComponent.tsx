@@ -1,152 +1,246 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useAccount } from "wagmi";
-import { ShieldCheckIcon, ShieldExclamationIcon } from "@heroicons/react/24/solid";
-import { LoopContractUI } from "~~/app/prototype/_components/LoopContractUI";
-import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import BottomCardsSection from "./BottomCardsSection";
+import { ClaimAndRegister } from "./ClaimAndRegister";
+import { motion, useSpring, useTransform } from "framer-motion";
+import { formatUnits } from "viem";
+import { useAccount, useBalance, useChainId } from "wagmi";
+import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useLoopData } from "~~/hooks/useLoopData";
-import { formatTime, secondsToTime } from "~~/utils";
+import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
+import { secondsToTime } from "~~/utils";
+
+const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
+const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
 
 export const LoopComponent = () => {
-  const [clientTime, setClientTime] = useState<bigint | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [loadingScore, setLoadingScore] = useState(true);
+  const [score, setScore] = useState<number | null>(null);
 
+  const chainId = useChainId();
   const { address: connectedAccount } = useAccount();
-  const { writeContractAsync: writeLoopContractAsync } = useScaffoldWriteContract("loop");
+    const { loopDetails } = useLoopData();
 
-  const { loopDetails, isLoading } = useLoopData();
+  const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
+    address: LOOP_ADDRESS,
+    token: TOKEN_ADDRESS as `0x${string}` | undefined,
+    chainId: chainId,
+  });
 
-  const nextPeriodStart = useMemo(() => {
-    if (
-      loopDetails &&
-      loopDetails.currentPeriod !== undefined &&
-      !isNaN(loopDetails.currentPeriod) &&
-      !isNaN(Number(loopDetails.firstPeriodStart)) &&
-      !isNaN(loopDetails.periodLength)
-    ) {
-      return (
-        BigInt(loopDetails.firstPeriodStart) +
-        BigInt(loopDetails.periodLength) * (BigInt(loopDetails.currentPeriod) + 1n)
-      );
+
+
+  const { data: claimAmount, refetch: refetchClaimAmount } = useScaffoldReadContract({
+    contractName: "loop",
+    functionName: "getPeriodIndividualPayout",
+    // 
+    args:[1n],
+    watch:false
+  });
+
+   const handleFetchScore = async () => {
+    setLoadingScore(true);
+    if (!connectedAccount) return;
+
+    try {
+      const response = await fetch(`/api/passport/${connectedAccount.toLowerCase()}`, { method: "GET" });
+      if (!response.ok) {
+        if (response.status === 400) {
+          setHasSubmitted(false);
+        } else {
+          throw new Error("Failed to fetch score");
+        }
+      } else {
+        const data = await response.json();
+        const numericScore = Number(data.score);
+        if (numericScore > 0) {
+          setScore(numericScore);
+          setHasSubmitted(true);
+        } else {
+          setScore(0);
+        }
+      }
+    } catch (error) {
+      console.error("Fetch error:", error);
+    } finally {
+      setLoadingScore(false);
     }
-    return 0n;
-  }, [loopDetails]);
-  
+  };
+
+  const handleSubmitPassport = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/submit-passport", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ connectedAccount }),
+      });
+      if (!response.ok) throw new Error("Submission failed");
+
+      setHasSubmitted(true);
+      handleFetchScore();
+    } catch (err) {
+      console.error("Submission error:", err);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   useEffect(() => {
+    if (connectedAccount) handleFetchScore();
+  }, [connectedAccount]);
+
+  return (
+    <>
+      <div className="rounded-xl p-4 sm:p-8 flex flex-col justify-between group sticky top-8 bg-transparent border-[#0065BD] shadow-md shadow-[#0065BD]/20 backdrop-blur-sm ">
+        <div className="absolute top-0 left-0 -z-10 right-0 bottom-0 h-full w-full flex items-center justify-center">
+          <Image src={GyralisLogo} alt="Gyralis Logo" width={400} height={400} className="-z-10 opacity-5" />
+        </div>
+        <div>
+          <div className="max-w-md lg:max-w-lg mx-auto text-center mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 text-center">
+              Use Gyralis in your organization
+            </h2>
+            <p className="text-center font-medium text-sm sm:text-base">
+              Create custom Loops to reward your community and align incentives with your goals.
+            </p>
+          </div>
+
+          {/* Badges and Loop Balance */}
+
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
+            <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
+              <span className="text-sm font-medium text-[#0065BD]">
+                Period length:{" "}
+                <span className="font-semibold text-lg">{secondsToTime(loopDetails?.periodLength ?? 0)}</span>
+              </span>
+            </div>
+            <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
+              <span className="text-sm font-medium text-[#0065BD]">
+                Period distribution: <span className="font-semibold text-lg">{loopDetails?.percentPerPeriod} %</span>
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="text-center mb-4">
+          <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div> 
+         <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
+        </div>
+
+        {/* Countdown Timer */}
+        <div className="text-center mb-8">
+          <p className="text-sm text-gray-500 mb-2">Next distribution in:</p>
+          {/* <div className="flex justify-center gap-2 sm:gap-4">
+      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
+        <div className="text-xl sm:text-2xl font-bold">{timeLeft.hours.toString().padStart(2, "0")}</div>
+        <div className="text-xs text-gray-300">Hours</div>
+      </div>
+      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
+        <div className="text-xl sm:text-2xl font-bold">{timeLeft.minutes.toString().padStart(2, "0")}</div>
+        <div className="text-xs text-gray-300">Minutes</div>
+      </div>
+      <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
+        <div className="text-xl sm:text-2xl font-bold">{timeLeft.seconds.toString().padStart(2, "0")}</div>
+        <div className="text-xs text-gray-300">Seconds</div>
+      </div>
+    </div> */}
+          <Countdown />
+        </div>
+
+        <ClaimAndRegister score={score} refecthLoopBalance={refetchLoopBalance} />
+      </div>
+      <BottomCardsSection
+        score={score}
+        hasSubmitted={hasSubmitted}
+        loadingScore={loadingScore}
+        isSubmitting={isSubmitting}
+        handleSubmit={handleSubmitPassport}
+      />
+    </>
+  );
+};
+
+const Countdown = () => {
+  // Get the next period start from the custom hook
+  const { nextPeriodStart: nextPeriodStartAlso, loading: loadingNextPeriodStart } = useNextPeriodStart(LOOP_ADDRESS);
+
+  // State to keep track of the current time in seconds
+  const [currentTime, setCurrentTime] = useState<bigint>(BigInt(Date.now()) / 1000n);
+
+  // Update the current time every second for a live countdown
+  useEffect(() => {
     const interval = setInterval(() => {
-      setClientTime(BigInt(Date.now()) / 1000n);
+      setCurrentTime(BigInt(Date.now()) / 1000n);
     }, 1000);
 
     return () => clearInterval(interval);
   }, []);
 
-  const claimBefore = clientTime !== null ? nextPeriodStart - clientTime - 1n : null;
+  // Calculate the time remaining until the next period starts
+  const claimIn = nextPeriodStartAlso !== undefined ? nextPeriodStartAlso - currentTime : undefined;
 
-  //console.log("Im rendering");
+  const displayClaimIn = claimIn !== undefined ? (claimIn < 0n ? 0n : claimIn) : undefined;
+
+  const { hours, minutes, seconds } = formatTime2(Number(displayClaimIn));
+
+  if (loadingNextPeriodStart) {
+    return <div>Loading countdown...</div>;
+  }
 
   return (
-    <main className="px-4 mt-6">
-      <h2 className="text-xl py-1">TEST LOOP:</h2>
-      {/* <div className="mx-auto max-w-3xl lg:max-w-7xl"> */}
-      <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
-        <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-          <section>
-            <div className="card-white flex flex-col items-center justify-between gap-10">
-              <div className="w-full">
-                <div className="flex flex-col items-start w-full">
-                  <div className="flex flex-col gap-1">
-                    <h5>
-                      Loop period length:{" "}
-                      <span>
-                        {loopDetails?.periodLength !== undefined
-                          ? secondsToTime(Number(loopDetails.periodLength))
-                          : "N/A"}
-                      </span>
-                    </h5>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <h5>
-                      Loop distribution: <span>{loopDetails?.percentPerPeriod} %</span>
-                    </h5>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    <h5>
-                      Currento Period: <span>{loopDetails?.currentPeriod}</span>
-                    </h5>
-                  </div>
-                  <div className="flex flex-col gap-1 items-start">
-                    <h5>
-                      Current period registrations: <span>{loopDetails?.currentPeriodRegistrations}</span>
-                    </h5>
-                    <h5>
-                      Estimated claim amount for next period: <span>0</span>
-                    </h5>
-                  </div>
-                </div>
-              </div>
-              <div className="">
-                {clientTime !== null ? `Next period in ${formatTime(Number(claimBefore))}` : "...loading"}
-              </div>
+    <div className="flex justify-center gap-2 sm:gap-4">
+      <TimeBlock label="Hours" value={hours} />
+      <TimeBlock label="Minutes" value={minutes} />
+      <TimeBlock label="Seconds" value={seconds} />
+    </div>
+  );
+};
 
-              <div className="">
-                {/* <button
-                    className="btn btn-primary"
-                    onClick={async () => {
-                      const hashedSignature = await simulateSignature({ message: address ?? "" });
-                      if (!hashedSignature) return;
-                      try {
-                        await writeLoopContractAsync({
-                          functionName: "claimAndRegister",
-                          args: [hashedSignature],
-                        });
-                      } catch (e) {
-                        console.error("Error claim&Register:", e);
-                      }
-                    }}
-                  >
-                    claim & Register
-                  </button> */}
-              </div>
-            </div>
-          </section>
-        </div>
-        <div>
-          {/* <section>
-              <div className="p-6 flex flex-col gap-7 items-start">
-                <LoopContractUI contractName="loop" />
-                <div className="card-white w-full flex flex-col items-start gap-2">
-                  <div className="relative">
-                    <ShieldCheckIcon className="absolute top-0 -left-6 h-5 w-5 text-green-500" />
-                    <h4 className="font-bold">
-                      Loop Shield: <span>Gitcoin Passport</span>
-                    </h4>
-                    <h5>
-                      Score required: <span>15</span>
-                    </h5>
-                    <h5>
-                      Your score: <span>20</span>
-                    </h5>
-                  </div>
-                  <div className="flex flex-col items-start relative">
-                    <ShieldExclamationIcon className="absolute top-0 -left-6 h-5 w-5 text-red-500" />
-                    <h3 className="font-bold">
-                      Participation Criteria:
-                      <a
-                        href="https://app.gardens.fund/gardens/100/0x71850b7e9ee3f13ab46d67167341e4bdc905eef9/0xe2396fe2169ca026962971d3b2e373ba925b6257"
-                        target="_blank"
-                        className="font-normal hover:underline"
-                      >
-                        1hive Member in GardensV2
-                      </a>
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            </section> */}
-        </div>
-      </div>
-      {/* </div> */}
-    </main>
+// Utility to format seconds into { days, hours, minutes, seconds }
+const formatTime2 = (totalSeconds: number) => {
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return { days, hours, minutes, seconds };
+};
+
+type AnimatedNumberProps = {
+  value: number;
+};
+
+const AnimatedNumber = ({ value }: AnimatedNumberProps) => {
+  const spring = useSpring(value, {
+    mass: 0.5,
+    stiffness: 50,
+    damping: 10,
+  });
+
+  const display = useTransform(spring, current =>
+    Number(current).toLocaleString(undefined, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }),
+  );
+
+  useEffect(() => {
+    spring.set(value);
+  }, [value, spring]);
+
+  return <motion.span className="text-5xl sm:text-6xl md:text-7xl font-bold text-[#0065BD]">{display}</motion.span>;
+};
+
+const TimeBlock = ({ label, value }: { label: string; value: number }) => {
+  const display = value != null ? value.toString().padStart(2, "0") : "--";
+  return (
+    <div className="bg-[#0065BD] text-white rounded-lg p-2 sm:p-3 w-16 sm:w-20">
+      <div className="text-xl sm:text-2xl font-bold">{display}</div>
+      <div className="text-xs text-gray-300">{label}</div>
+    </div>
   );
 };

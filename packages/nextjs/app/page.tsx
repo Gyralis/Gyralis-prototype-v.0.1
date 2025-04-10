@@ -8,7 +8,7 @@ const Home: NextPage = () => {
     <>
       <div className="flex items-center flex-col gap-2 flex-grow pt-10">
         <h3>Gyralis</h3>
-        <Link href={`${"/prototype"}`} className="hover:underline">
+        <Link href={`${"/prototype/1hiveDemo"}`} className="hover:underline">
           Go to prototype
         </Link>
         {/* Landing page here */}

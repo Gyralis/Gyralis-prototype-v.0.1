@@ -1,7 +1,6 @@
 // api/eligibility/
 import { NextResponse } from "next/server";
 import { ApolloClient, InMemoryCache, gql } from "@apollo/client";
-
 import {
   Chain,
   createWalletClient,
@@ -22,9 +21,6 @@ const TRUSTED_BACKEND_SIGNER_PK = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88
 const GITCOIN_PASSPORT_API_KEY = process.env.GITCOIN_PASSPORT_API_KEY ?? "";
 const SCORER_ID = process.env.SCORER_ID ?? "";
 const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.13";
-const SCORER_ID = 11228; //process.env.SCORER_ID ?? "";
-const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.12";
-
 
 /**
  * Gets the Viem chain configuration for a given chain ID
@@ -179,14 +175,12 @@ export async function POST(req: Request) {
     try {
       nextPeriod = await fetchNextPeriod(chainId, loopAddress);
       console.log("Next Period...", nextPeriod);
-
     } catch (error) {
       return NextResponse.json(
         { success: false, error: "Failed to fetch current period from Loop contract" },
         { status: 500 },
       );
     }
-
 
     const eligibilityMessage = encodePacked(
       ["address", "uint256", "address"],
