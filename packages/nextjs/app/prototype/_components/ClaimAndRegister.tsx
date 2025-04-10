@@ -2,11 +2,11 @@
 
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { formatUnits } from "viem";
 import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
-import { formatUnits } from "viem";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const CHAIN_ID = 31337;
@@ -25,10 +25,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const { address: connectedAccount } = useAccount();
 
-  const {
-    data: claimerStatus,
-    refetch: refetchClaimerStatus,
-  } = useScaffoldReadContract({
+  const { data: claimerStatus, refetch: refetchClaimerStatus } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getClaimerStatus",
     args: [connectedAccount], // Disable auto-watch, we'll manually refetch
@@ -42,7 +39,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     watch: false,
   });
 
-
   const {
     data: contractData,
     writeContractAsync: writeLoopContractAsync,
@@ -55,7 +51,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
     if (currentPeriod !== undefined && prevPeriod !== currentPeriod) {
       refetchClaimerStatus();
-      console.log("Im rendering ...", currentPeriod);
     }
   }, [currentPeriod]);
 
@@ -136,7 +131,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   useEffect(() => {
     if (Txresult?.status === "success") {
       setButtonState("ok");
-      
     } else if (canClaim) {
       setButtonState("claim");
     } else {
@@ -149,7 +143,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
       reset();
       refecthLoopBalance();
       refetchClaimerStatus();
-      setButtonState("register"); // optional: force fallback
+      setButtonState("register");
     } else {
       claimAndRegister();
     }
@@ -157,7 +151,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const buttonConfig = getButtonConfig();
 
-  // if (loading) return <div className="p-4 text-center">Loading data...</div>;
 
   return (
     <>
@@ -182,7 +175,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
             buttonConfig.text
           )}
         </button>
-        {/* {isRegisteredInCurrentPeriod && <p>You are alredy registered</p>} */}
         {hasClaimedInCurrentPeriod && (
           <div className="mt-2">
             <p className="text-sm text-gray-500 text-center">You already claimed in this period.</p>

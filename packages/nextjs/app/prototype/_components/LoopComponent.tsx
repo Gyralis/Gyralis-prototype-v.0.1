@@ -8,7 +8,6 @@ import { motion, useSpring, useTransform } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useLoopData } from "~~/hooks/useLoopData";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { secondsToTime } from "~~/utils";

@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { Address } from "viem";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 
-
-
-
 interface LoopDetails {
   token: Address;
   periodLength: number;
@@ -34,17 +31,8 @@ export const useLoopData = () => {
     watch: false,
   });
 
-  const {
-    refetch: refetchPeriodData,
-    isLoading: isLoadingCurrentPeriodData,
-  } = useScaffoldReadContract({
-    contractName: "loop",
-    functionName: "getCurrentPeriodData",
-    watch: false,
-  });
-
   const [loopDetails, setLoopDetails] = useState<LoopDetails | undefined>(undefined);
-  const isLoading = isLoadingDetails || isLoadingCurrentPeriod || isLoadingCurrentPeriodData;
+  const isLoading = isLoadingDetails || isLoadingCurrentPeriod;
 
   useEffect(() => {
     if (!readContractData || !currentPeriod) return;
@@ -77,11 +65,7 @@ export const useLoopData = () => {
 
     const timeout = setTimeout(async () => {
       console.log("[useLoopData] Period ended. Triggering refetch...");
-      await Promise.all([
-        refetchDetails(),
-        refetchPeriod(),
-        refetchPeriodData(),
-      ]);
+      await Promise.all([refetchDetails(), refetchPeriod()]);
     }, delay);
 
     return () => clearTimeout(timeout);
