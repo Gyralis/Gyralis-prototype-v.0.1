@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
-import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 
@@ -30,8 +30,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
     watch: false,
   });
 
-
-
   const {
     data: contractData,
     writeContractAsync: writeLoopContractAsync,
@@ -41,7 +39,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
 
   const { users } = useRegisteredUsers(LOOP_ADDRESS);
 
-
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
   });
@@ -49,6 +46,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
   const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
   });
+
+  console.log(waitTransactionStatus, Txresult);
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
@@ -112,7 +111,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
   };
 
   useEffect(() => {
-
     if (Txresult?.status === "success") {
       setButtonState("ok");
     } else if (canClaim) {
@@ -134,7 +132,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
 
   const buttonConfig = getButtonConfig();
 
-  //  if (loading) return <div className="p-4 text-center">Loading data...</div>;
+  // if (loading) return <div className="p-4 text-center">Loading data...</div>;
 
   return (
     <>
@@ -142,7 +140,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score }: ClaimAndRegister
         {connectedAccount && <ClaimStatusMessage state={buttonState} canClaim={canClaim ?? false} />}
 
         <button
-          disabled={!connectedAccount || score === null || score < 15}
+          disabled={!connectedAccount}
           onClick={handleButtonClick}
           className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
