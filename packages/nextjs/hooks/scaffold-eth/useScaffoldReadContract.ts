@@ -32,7 +32,6 @@ export const useScaffoldReadContract = <
   const { data: deployedContract } = useDeployedContractInfo(contractName);
   const { targetNetwork } = useTargetNetwork();
 
-  console.log("targetnetworkbabay", targetNetwork);
   const { query: queryOptions, watch, ...readContractConfig } = readConfig;
   // set watch to true by default
   const defaultWatch = watch ?? true;

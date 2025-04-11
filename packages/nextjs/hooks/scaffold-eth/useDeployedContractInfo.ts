@@ -16,7 +16,6 @@ export const useDeployedContractInfo = <TContractName extends ContractName>(cont
   const [status, setStatus] = useState<ContractCodeStatus>(ContractCodeStatus.LOADING);
   const publicClient = usePublicClient({ chainId });
 
-  console.log(publicClient?.chain, "publicClient");
 
   useEffect(() => {
     const checkContractDeployment = async () => {

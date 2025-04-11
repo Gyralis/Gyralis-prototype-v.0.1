@@ -17,21 +17,19 @@ import { useChainId } from "wagmi";
 
 const BLOCKS_PER_PAGE = 20;
 
-
-
 export function useDynamicTestClient() {
   const chainId = useChainId();
 
   const getClient = () => {
     switch (chainId) {
-      // case hardhat.id:
-      //   return createTestClient({
-      //     chain: hardhat,
-      //     mode: "hardhat",
-      //     transport: webSocket("ws://127.0.0.1:8545"),
-      //   })
-      //     .extend(publicActions)
-      //     .extend(walletActions);
+      case hardhat.id:
+        return createTestClient({
+          chain: hardhat,
+          mode: "hardhat",
+          transport: webSocket("ws://127.0.0.1:8545"),
+        })
+          .extend(publicActions)
+          .extend(walletActions);
       case gnosis.id:
         return createTestClient({
           chain: gnosis,
