@@ -8,12 +8,11 @@ import { motion, useSpring, useTransform } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
+import deployedContracts from "~~/contracts/deployedContracts";
 import { useLoopData } from "~~/hooks/useLoopData";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { secondsToTime } from "~~/utils";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
-const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
 
 export const LoopComponent = () => {
@@ -21,28 +20,31 @@ export const LoopComponent = () => {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [loadingScore, setLoadingScore] = useState(true);
   const [score, setScore] = useState<number | null>(null);
-  const [currentPeriod, setCurrentPeriod]= useState<number | undefined>(undefined);
+  const [currentPeriod, setCurrentPeriod] = useState<number | undefined>(undefined);
 
   const chainId = useChainId();
 
-  const { targetNetwork } = useTargetNetwork();
+  console.log("deploy", deployedContracts);
 
-  console.log("target:", targetNetwork);
+  const contract = deployedContracts[chainId as keyof typeof deployedContracts]?.["loop"];
+
+  // console.log("contract deployed:", contract);
+  // console.log(chainId);
 
   const { address: connectedAccount } = useAccount();
   const { loopDetails, isLoading } = useLoopData();
 
+  console.log(loopDetails);
+
   useEffect(() => {
-    setCurrentPeriod(loopDetails?.currentPeriod);   
+    setCurrentPeriod(loopDetails?.currentPeriod);
   }, [loopDetails]);
 
-
   const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
-    address: LOOP_ADDRESS,
+    address: contract?.address,
     token: TOKEN_ADDRESS as `0x${string}` | undefined,
     chainId: chainId,
   });
-
 
   const handleFetchScore = async () => {
     setLoadingScore(true);

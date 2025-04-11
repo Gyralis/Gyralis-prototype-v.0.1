@@ -4,13 +4,11 @@ import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt, useChainId } from "wagmi";
-import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
 import deployedContracts from "~~/contracts/deployedContracts";
 
-const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
-const CHAIN_ID = 31337;
 
 type ClaimAndRegisterProps = {
   refecthLoopBalance: () => void;
@@ -57,7 +55,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     }
   }, [currentPeriod]);
 
-  const { users } = useRegisteredUsers(LOOP_ADDRESS);
+  const { users } = useRegisteredUsers(contract?.address);
 
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
@@ -79,7 +77,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   };
 
   const claimAndRegister = async () => {
-    if (!connectedAccount || !contract?.address || ! chainId) {
+    if (!connectedAccount || !contract?.address || !chainId) {
       console.error("Missing parameters...");
       return;
     }
