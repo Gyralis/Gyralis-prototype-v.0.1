@@ -148,7 +148,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // //Query the subgraph for membership
+    //Query the subgraph for membership
     // const apolloClient = getApolloClient(chainId);
     // const { data, errors } = await apolloClient.query({
     //   query: gql`

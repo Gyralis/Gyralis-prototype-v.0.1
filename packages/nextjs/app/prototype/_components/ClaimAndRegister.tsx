@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatUnits } from "viem";
-import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt, useChainId } from "wagmi";
 import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
+import deployedContracts from "~~/contracts/deployedContracts";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const CHAIN_ID = 31337;
@@ -22,8 +23,10 @@ type ButtonState = "register" | "claim" | "ok";
 export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: ClaimAndRegisterProps) => {
   const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [checkEligibility, setCheckEligibility] = useState(false);
-
   const { address: connectedAccount } = useAccount();
+  const chainId = useChainId();
+
+  const contract = deployedContracts[chainId as keyof typeof deployedContracts]?.['loop'];
 
   const { data: claimerStatus, refetch: refetchClaimerStatus } = useScaffoldReadContract({
     contractName: "loop",
@@ -76,7 +79,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   };
 
   const claimAndRegister = async () => {
-    if (!connectedAccount || !LOOP_ADDRESS || !CHAIN_ID) {
+    if (!connectedAccount || !contract?.address || ! chainId) {
       console.error("Missing parameters...");
       return;
     }
@@ -87,8 +90,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userAddress: connectedAccount,
-          loopAddress: LOOP_ADDRESS,
-          chainId: CHAIN_ID,
+          loopAddress: contract?.address,
+          chainId: chainId,
         }),
       });
       if (response.ok) {

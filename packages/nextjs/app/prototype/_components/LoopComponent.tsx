@@ -11,6 +11,7 @@ import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
 import { useLoopData } from "~~/hooks/useLoopData";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { secondsToTime } from "~~/utils";
+import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
 const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
@@ -23,6 +24,11 @@ export const LoopComponent = () => {
   const [currentPeriod, setCurrentPeriod]= useState<number | undefined>(undefined);
 
   const chainId = useChainId();
+
+  const { targetNetwork } = useTargetNetwork();
+
+  console.log("target:", targetNetwork);
+
   const { address: connectedAccount } = useAccount();
   const { loopDetails, isLoading } = useLoopData();
 
