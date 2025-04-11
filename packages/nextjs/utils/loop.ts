@@ -1,25 +1,3 @@
-import { useScaffoldContract } from "~~/hooks/scaffold-eth";
-import { useWalletClient } from "wagmi"; 
-import * as deployedContracts  from "~~/contracts/deployedContracts";
-import { useMemo } from "react";
-
-const CONTRACT_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
-const CHAIN_ID = 31337 // Replace with your actual cont address
-
-// const loopAbi = useMemo(() => {
-//     return deployedContracts?.[chainId as keyof typeof deployedContracts]?.loop?.abi ?? [];
-//   }, [chainId]);
-
-export const THRESHOLD = 15
-
-// export async function getNextPeriodStart() {
-//     const [firstPeriodStart, periodLength, currentPeriod] = await Promise.all([
-//       contract.read.firstPeriodStart(),
-//       contract.read.periodLength(),
-//       contract.read.getCurrentPeriod(),
-//     ])
-  
-//     return firstPeriodStart + periodLength * (currentPeriod + 1n)
-//   }
-
+export const LOOP_CONTRACT_ADDRESS = "0x45Ff8659Be1d388E44557181B0D650c2bF3a6112";
+export const TEST_TOKEN_ADDRESS = "0x9342E43201dFbFF41F58228d18d4Cc8f084Bb49C"
 
