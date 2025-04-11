@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTargetNetwork } from "./useTargetNetwork";
 import { useIsMounted } from "usehooks-ts";
-import { usePublicClient } from "wagmi";
+import { usePublicClient, useChainId } from "wagmi";
 import { Contract, ContractCodeStatus, ContractName, contracts } from "~~/utils/scaffold-eth/contract";
 
 /**
@@ -10,10 +10,13 @@ import { Contract, ContractCodeStatus, ContractName, contracts } from "~~/utils/
  */
 export const useDeployedContractInfo = <TContractName extends ContractName>(contractName: TContractName) => {
   const isMounted = useIsMounted();
-  const { targetNetwork } = useTargetNetwork();
-  const deployedContract = contracts?.[targetNetwork.id]?.[contractName as ContractName] as Contract<TContractName>;
+  const chainId = useChainId();
+
+  const deployedContract = contracts?.[chainId]?.[contractName as ContractName] as Contract<TContractName>;
   const [status, setStatus] = useState<ContractCodeStatus>(ContractCodeStatus.LOADING);
-  const publicClient = usePublicClient({ chainId: targetNetwork.id });
+  const publicClient = usePublicClient({ chainId });
+
+  console.log(publicClient?.chain, "publicClient");
 
   useEffect(() => {
     const checkContractDeployment = async () => {
@@ -25,15 +28,15 @@ export const useDeployedContractInfo = <TContractName extends ContractName>(cont
           return;
         }
 
-        const code = await publicClient.getBytecode({
-          address: deployedContract.address,
-        });
+        // const code = await publicClient.getBytecode({
+        //   address: deployedContract.address,
+        // });
 
-        // If contract code is `0x` => no contract deployed on that address
-        if (code === "0x") {
-          setStatus(ContractCodeStatus.NOT_FOUND);
-          return;
-        }
+        // // If contract code is `0x` => no contract deployed on that address
+        // if (code === "0x") {
+        //   setStatus(ContractCodeStatus.NOT_FOUND);
+        //   return;
+        // }
         setStatus(ContractCodeStatus.DEPLOYED);
       } catch (e) {
         console.error(e);

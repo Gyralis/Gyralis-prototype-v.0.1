@@ -17,7 +17,7 @@ import * as chains from "viem/chains";
 import { THRESHOLD } from "~~/utils/loop";
 
 // Backend private key to sign eligibility messages
-const TRUSTED_BACKEND_SIGNER_PK = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"; //process.env.TRUSTED_BACKEND_SIGNER_PK ?? "";
+const TRUSTED_BACKEND_SIGNER_PK = process.env.TRUSTED_BACKEND_SIGNER_PK ?? "";
 const GITCOIN_PASSPORT_API_KEY = process.env.GITCOIN_PASSPORT_API_KEY ?? "";
 const SCORER_ID = process.env.SCORER_ID ?? "";
 const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.13";
@@ -149,26 +149,26 @@ export async function POST(req: Request) {
     }
 
     //Query the subgraph for membership
-    // const apolloClient = getApolloClient(chainId);
-    // const { data, errors } = await apolloClient.query({
-    //   query: gql`
-    //     query CheckMembership($userAddress: String!) {
-    //       memberCommunities(
-    //         where: { registryCommunity: "0xe2396fe2169ca026962971d3b2e373ba925b6257", memberAddress: $userAddress }
-    //       ) {
-    //         memberAddress
-    //       }
-    //     }
-    //   `,
-    //   variables: { userAddress: userAddress.toLowerCase() },
-    // });
+    const apolloClient = getApolloClient(chainId);
+    const { data, errors } = await apolloClient.query({
+      query: gql`
+        query CheckMembership($userAddress: String!) {
+          memberCommunities(
+            where: { registryCommunity: "0xe2396fe2169ca026962971d3b2e373ba925b6257", memberAddress: $userAddress }
+          ) {
+            memberAddress
+          }
+        }
+      `,
+      variables: { userAddress: userAddress.toLowerCase() },
+    });
 
-    // if (errors || !data?.memberCommunities?.length) {
-    //   return NextResponse.json(
-    //     { success: false, error: "User is not a member of the required community" },
-    //     { status: 403 },
-    //   );
-    // }
+    if (errors || !data?.memberCommunities?.length) {
+      return NextResponse.json(
+        { success: false, error: "User is not a member of the required community" },
+        { status: 403 },
+      );
+    }
 
     // Fetch next period number from Loop contract
     let nextPeriod: number;

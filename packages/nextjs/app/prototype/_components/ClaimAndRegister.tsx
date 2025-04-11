@@ -31,6 +31,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     functionName: "getClaimerStatus",
     args: [connectedAccount], // Disable auto-watch, we'll manually refetch
     watch: false,
+
   });
 
   const { data: claimAmount } = useScaffoldReadContract({
@@ -38,6 +39,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     functionName: "getPeriodIndividualPayout",
     args: [currentPeriod !== undefined ? BigInt(currentPeriod) : undefined],
     watch: false,
+   
   });
 
   const {
@@ -59,10 +61,12 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
+
   });
 
   const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
+    confirmations: 1,
   });
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {

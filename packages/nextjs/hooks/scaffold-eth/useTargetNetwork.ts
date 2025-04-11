@@ -10,7 +10,10 @@ import { NETWORKS_EXTRA_DATA } from "~~/utils/scaffold-eth";
  */
 export function useTargetNetwork(): { targetNetwork: ChainWithAttributes } {
   const { chain } = useAccount();
+
+ 
   const targetNetwork = useGlobalState(({ targetNetwork }) => targetNetwork);
+  
   const setTargetNetwork = useGlobalState(({ setTargetNetwork }) => setTargetNetwork);
 
   useEffect(() => {

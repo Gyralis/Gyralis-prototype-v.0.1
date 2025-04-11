@@ -18,7 +18,8 @@ export const useLoopData = () => {
   } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getLoopDetails",
-    watch: false,    
+    watch: false, 
+    
   });
 
   const {

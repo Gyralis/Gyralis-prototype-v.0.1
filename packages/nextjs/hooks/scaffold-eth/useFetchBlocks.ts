@@ -24,14 +24,14 @@ export function useDynamicTestClient() {
 
   const getClient = () => {
     switch (chainId) {
-      case hardhat.id:
-        return createTestClient({
-          chain: hardhat,
-          mode: "hardhat",
-          transport: webSocket("ws://127.0.0.1:8545"),
-        })
-          .extend(publicActions)
-          .extend(walletActions);
+      // case hardhat.id:
+      //   return createTestClient({
+      //     chain: hardhat,
+      //     mode: "hardhat",
+      //     transport: webSocket("ws://127.0.0.1:8545"),
+      //   })
+      //     .extend(publicActions)
+      //     .extend(walletActions);
       case gnosis.id:
         return createTestClient({
           chain: gnosis,
@@ -47,9 +47,6 @@ export function useDynamicTestClient() {
 
   return getClient();
 }
-
-
-
 
 
 export const useFetchBlocks = () => {
