@@ -49,18 +49,16 @@ export const LoopComponent = () => {
       if (!response.ok) {
         if (response.status === 400) {
           setHasSubmitted(false);
+          // console.log("It seems a response 400 infetching score");
         } else {
-          throw new Error("Failed to fetch score");
+          throw new Error("Failed to fetch score in hanldeFetchScore");
         }
       } else {
         const data = await response.json();
         const numericScore = Number(data.score);
-        if (numericScore > 0) {
-          setScore(numericScore);
-          setHasSubmitted(true);
-        } else {
-          setScore(0);
-        }
+        // console.log(`I fetched the score ${connectedAccount}`, numericScore);
+        setScore(numericScore || 0);
+        setHasSubmitted(true);
       }
     } catch (error) {
       console.error("Fetch error:", error);
@@ -77,8 +75,7 @@ export const LoopComponent = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ connectedAccount }),
       });
-      if (!response.ok) throw new Error("Submission failed");
-
+      if (!response.ok) throw new Error("Submission failed while submitting passport");
       setHasSubmitted(true);
       handleFetchScore();
     } catch (err) {
@@ -89,7 +86,10 @@ export const LoopComponent = () => {
   };
 
   useEffect(() => {
-    if (connectedAccount) handleFetchScore();
+    if (connectedAccount) {
+      handleFetchScore();
+      console.log("I have fetched the score in useEffect", connectedAccount);
+    }
   }, [connectedAccount]);
 
   if (isLoading) {

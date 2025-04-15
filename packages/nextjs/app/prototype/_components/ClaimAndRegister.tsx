@@ -3,16 +3,15 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatUnits } from "viem";
-import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt, useChainId } from "wagmi";
+import { useAccount, useChainId, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
+import deployedContracts from "~~/contracts/deployedContracts";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
-import deployedContracts from "~~/contracts/deployedContracts";
-
 
 type ClaimAndRegisterProps = {
   refecthLoopBalance: () => void;
-  score: number | null;
+  score: number;
   currentPeriod: number | undefined;
 };
 
@@ -24,14 +23,13 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   const { address: connectedAccount } = useAccount();
   const chainId = useChainId();
 
-  const contract = deployedContracts[chainId as keyof typeof deployedContracts]?.['loop'];
+  const contract = deployedContracts[chainId as keyof typeof deployedContracts]?.["loop"];
 
   const { data: claimerStatus, refetch: refetchClaimerStatus } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getClaimerStatus",
-    args: [connectedAccount], // Disable auto-watch, we'll manually refetch
+    args: [connectedAccount],
     watch: false,
-
   });
 
   const { data: claimAmount } = useScaffoldReadContract({
@@ -39,7 +37,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     functionName: "getPeriodIndividualPayout",
     args: [currentPeriod !== undefined ? BigInt(currentPeriod) : undefined],
     watch: false,
-   
   });
 
   const {
@@ -59,16 +56,20 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const { users } = useRegisteredUsers(contract?.address);
 
+
+  console.log("writeContractStatus", status);
+
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
-
   });
-
+  
+  console.log("transaction confirmation", transactionConfirmation);
   const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
     hash: contractData as `0x${string}` | undefined,
     confirmations: 1,
   });
-
+  
+  console.log("Tx Result", waitTransactionStatus);
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
       await writeLoopContractAsync({
@@ -106,7 +107,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
         }
       } else {
         const errorData = await response.json();
-
         console.error("Error response:", errorData);
       }
     } catch (error) {
@@ -156,7 +156,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const buttonConfig = getButtonConfig();
 
-
   return (
     <>
       <div className="p-4">
@@ -170,7 +169,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
         )}
 
         <button
-          disabled={!connectedAccount || hasClaimedInCurrentPeriod}
+          disabled={!connectedAccount || hasClaimedInCurrentPeriod || score < 15}
           onClick={handleButtonClick}
           className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
