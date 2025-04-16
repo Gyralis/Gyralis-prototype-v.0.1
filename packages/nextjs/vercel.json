@@ -2,20 +2,21 @@
   "builds": [
     {
       "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "installCommand": "pnpm install",
-        "buildCommand": "pnpm run build"
-      }
+      "use": "@vercel/next"
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/$1.js"
+      "src": "/api/eligibility",
+      "dest": "/app/api/eligibility/route.js"
+    },
+    {
+      "src": "/api/passport",
+      "dest": "/app/api/passport/route.js"
+    },
+    {
+      "src": "/api/submit-passport",
+      "dest": "/app/api/submit-passport/route.js"
     }
   ]
 }
-
-
-
