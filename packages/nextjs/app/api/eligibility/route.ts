@@ -28,7 +28,7 @@ const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---
  * @returns The Chain configuration object
  * @throws Error if chain ID is not found
  */
-export function getViemChain(chainId: string | number): Chain {
+function getViemChain(chainId: string | number): Chain {
   for (const chain of Object.values(chains)) {
     if ("id" in chain && chain.id == chainId) {
       return chain;

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatUnits } from "viem";
-import { useAccount, useChainId, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
+import { useAccount, useChainId, useTransactionConfirmations } from "wagmi";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";

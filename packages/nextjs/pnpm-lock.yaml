@@ -23,6 +23,9 @@ dependencies:
   '@uniswap/v2-sdk':
     specifier: ~4.6.1
     version: 4.6.2
+  '@wagmi/core':
+    specifier: ^2.16.7
+    version: 2.16.7(@types/react@18.3.20)(react@18.3.1)(typescript@5.5.4)(viem@2.21.54)
   blo:
     specifier: ~1.2.0
     version: 1.2.0
@@ -4253,6 +4256,30 @@ packages:
       typescript: 5.5.4
       viem: 2.23.0(typescript@5.5.4)
       zustand: 5.0.0(@types/react@18.3.20)(react@18.3.1)(use-sync-external-store@1.4.0)
+    transitivePeerDependencies:
+      - '@types/react'
+      - immer
+      - react
+      - use-sync-external-store
+    dev: false
+
+  /@wagmi/core@2.16.7(@types/react@18.3.20)(react@18.3.1)(typescript@5.5.4)(viem@2.21.54):
+    resolution: {integrity: sha512-Kpgrw6OXV0VBhDs4toQVKQ0NK5yUO6uxEqnvRGjNjbO85d93Gbfsp5BlxSLeWq6iVMSBFSitdl5i9W7b1miq1g==}
+    peerDependencies:
+      '@tanstack/query-core': '>=5.0.0'
+      typescript: '>=5.0.4'
+      viem: 2.x
+    peerDependenciesMeta:
+      '@tanstack/query-core':
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      eventemitter3: 5.0.1
+      mipd: 0.0.7(typescript@5.5.4)
+      typescript: 5.5.4
+      viem: 2.21.54(typescript@5.5.4)
+      zustand: 5.0.0(@types/react@18.3.20)(react@18.3.1)
     transitivePeerDependencies:
       - '@types/react'
       - immer
@@ -11687,6 +11714,28 @@ packages:
 
   /zen-observable@0.8.15:
     resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
+    dev: false
+
+  /zustand@5.0.0(@types/react@18.3.20)(react@18.3.1):
+    resolution: {integrity: sha512-LE+VcmbartOPM+auOjCCLQOsQ05zUTp8RkgwRzefUk+2jISdMMFnxvyTjA4YNWr5ZGXYbVsEMZosttuxUBkojQ==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+    dependencies:
+      '@types/react': 18.3.20
+      react: 18.3.1
     dev: false
 
   /zustand@5.0.0(@types/react@18.3.20)(react@18.3.1)(use-sync-external-store@1.2.0):
