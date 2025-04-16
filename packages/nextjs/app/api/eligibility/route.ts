@@ -143,7 +143,7 @@ export async function POST(req: Request) {
 
     if (Number(passportScore) <= THRESHOLD) {
       return NextResponse.json(
-        { success: false, error: "User does not meet passport score requirement" },
+        { success: false, error: "Connected account not meet passport score requirement" },
         { status: 403 },
       );
     }
@@ -165,7 +165,7 @@ export async function POST(req: Request) {
 
     if (errors || !data?.memberCommunities?.length) {
       return NextResponse.json(
-        { success: false, error: "User is not a member of the required community" },
+        { success: false, error: "Connected account is not a member of the community" },
         { status: 403 },
       );
     }

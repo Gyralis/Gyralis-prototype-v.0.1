@@ -76,7 +76,7 @@ export const LoopComponent = () => {
         body: JSON.stringify({ connectedAccount }),
       });
       if (!response.ok) throw new Error("Submission failed while submitting passport");
-      setHasSubmitted(true);
+      setHasSubmitted(false);
       handleFetchScore();
     } catch (err) {
       console.error("Submission error:", err);
