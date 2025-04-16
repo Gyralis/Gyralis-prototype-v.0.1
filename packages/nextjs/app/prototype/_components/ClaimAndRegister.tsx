@@ -199,7 +199,9 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
             <p className="text-sm text-gray-500 text-center">You already claimed in this period.</p>
           </div>
         )}
-        {errorMessage && <div className="text-center mt-4 text-red-500 bg-red-100 p-2 rounded-lg text-sm">{errorMessage}</div>}
+        {errorMessage && <div className="text-center mt-4 text-red-500 bg-red-100 p-2 rounded-lg text-sm">
+          {errorMessage}
+          </div>}
       </div>
     </>
   );

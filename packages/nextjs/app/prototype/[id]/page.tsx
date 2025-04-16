@@ -8,7 +8,7 @@ const Page: NextPage<{ params: { id: string } }> = async ({ params }) => {
 
   return (
     <>
-      <main className="p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
+      <main className="p-2 sm:p-4 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mx-auto">
         <InfoSection />
         <LoopComponent />
       </main>
