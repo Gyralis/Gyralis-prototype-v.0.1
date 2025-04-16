@@ -11,19 +11,45 @@ import {
 } from "viem";
 import { hardhat } from "viem/chains";
 import { decodeTransactionData } from "~~/utils/scaffold-eth";
+import {http } from "viem";
+import { gnosis } from "viem/chains";
+import { useChainId } from "wagmi";
 
 const BLOCKS_PER_PAGE = 20;
 
-export const testClient = createTestClient({
-  chain: hardhat,
-  mode: "hardhat",
-  transport: webSocket("ws://127.0.0.1:8545"),
-})
-  .extend(publicActions)
-  .extend(walletActions);
+export function useDynamicTestClient() {
+  const chainId = useChainId();
+
+  const getClient = () => {
+    switch (chainId) {
+      case hardhat.id:
+        return createTestClient({
+          chain: hardhat,
+          mode: "hardhat",
+          transport: webSocket("ws://127.0.0.1:8545"),
+        })
+          .extend(publicActions)
+          .extend(walletActions);
+      case gnosis.id:
+        return createTestClient({
+          chain: gnosis,
+          mode: "anvil", // o "fork", según el entorno de testing que estés usando
+          transport: http("https://rpc.gnosischain.com"),
+        })
+          .extend(publicActions)
+          .extend(walletActions);
+      default:
+        throw new Error(`Unsupported chainId: ${chainId}`);
+    }
+  };
+
+  return getClient();
+}
+
 
 export const useFetchBlocks = () => {
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const testClient = useDynamicTestClient();
   const [transactionReceipts, setTransactionReceipts] = useState<{
     [key: string]: TransactionReceipt;
   }>({});

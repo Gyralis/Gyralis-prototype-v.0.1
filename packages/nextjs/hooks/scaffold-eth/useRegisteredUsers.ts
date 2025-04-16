@@ -15,10 +15,10 @@ export function useRegisteredUsers(loopAddress: `0x${string}`) {
     return deployedContracts?.[chainId as keyof typeof deployedContracts]?.loop?.abi ?? [];
   }, [chainId]);
 
-  const { data: currentPeriod} = useReadContract({
+  const { data: currentPeriod } = useReadContract({
     address: loopAddress,
     abi: loopAbi,
-    functionName: "getCurrentPeriod", 
+    functionName: "getCurrentPeriod",
   });
 
   useEffect(() => {

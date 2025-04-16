@@ -3,13 +3,11 @@
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatUnits } from "viem";
-import { useAccount, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
-import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import { useAccount, useChainId, useTransactionConfirmations, useWaitForTransactionReceipt } from "wagmi";
+import deployedContracts from "~~/contracts/deployedContracts";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
 import { useRegisteredUsers } from "~~/hooks/useRegisteredUsers";
-
-const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
-const CHAIN_ID = 31337;
 
 type ClaimAndRegisterProps = {
   refecthLoopBalance: () => void;
@@ -22,13 +20,17 @@ type ButtonState = "register" | "claim" | "ok";
 export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: ClaimAndRegisterProps) => {
   const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [checkEligibility, setCheckEligibility] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { address: connectedAccount } = useAccount();
+  const chainId = useChainId();
+
+  const contract = deployedContracts[chainId as keyof typeof deployedContracts]?.["loop"];
 
   const { data: claimerStatus, refetch: refetchClaimerStatus } = useScaffoldReadContract({
     contractName: "loop",
     functionName: "getClaimerStatus",
-    args: [connectedAccount], // Disable auto-watch, we'll manually refetch
+    args: [connectedAccount],
     watch: false,
   });
 
@@ -54,15 +56,24 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     }
   }, [currentPeriod]);
 
-  const { users } = useRegisteredUsers(LOOP_ADDRESS);
+  const { users } = useRegisteredUsers(contract?.address);
 
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
   });
+  const transactionConfirmed = transactionConfirmation?.status === "success"
 
-  const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
-    hash: contractData as `0x${string}` | undefined,
-  });
+  // const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
+  //   hash: contractData as `0x${string}` | undefined,
+  //   confirmations: 1,
+  // });
+
+
+  //cpnsoles.logs
+  console.log("WriteContractStatus", status);
+  console.log("Transaction confirmation data", transactionConfirmation?.data);
+  console.log("Transaction confirmed", transactionConfirmed);
+
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
@@ -76,36 +87,43 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   };
 
   const claimAndRegister = async () => {
-    if (!connectedAccount || !LOOP_ADDRESS || !CHAIN_ID) {
+    if (!connectedAccount || !contract?.address || !chainId) {
       console.error("Missing parameters...");
+      setErrorMessage("Missing connection or contract details.");
       return;
     }
+
     setCheckEligibility(true);
+    setErrorMessage(null); // clear previous error
+
     try {
       const response = await fetch("/api/eligibility", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userAddress: connectedAccount,
-          loopAddress: LOOP_ADDRESS,
-          chainId: CHAIN_ID,
+          loopAddress: contract?.address,
+          chainId: chainId,
         }),
       });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setCheckEligibility(false);
-          writeInContract(data.signature);
-        } else {
-          console.error("Error:", data.error);
-        }
-      } else {
-        const errorData = await response.json();
 
-        console.error("Error response:", errorData);
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        const errorText = data?.error || "You’re not a registered 1Hive member.";
+        console.error("Eligibility error:", errorText);
+        setErrorMessage(errorText);
+        setCheckEligibility(false);
+        return;
       }
+
+      // ✅ Eligible — continue
+      setCheckEligibility(false);
+      writeInContract(data.signature);
     } catch (error) {
       console.error("Network error:", error);
+      setErrorMessage("Network error. Please try again.");
+      setCheckEligibility(false);
     }
   };
 
@@ -129,14 +147,14 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   };
 
   useEffect(() => {
-    if (Txresult?.status === "success") {
+    if (transactionConfirmed) {
       setButtonState("ok");
     } else if (canClaim) {
       setButtonState("claim");
     } else {
       setButtonState("register");
     }
-  }, [Txresult, canClaim]);
+  }, [transactionConfirmed, canClaim]);
 
   const handleButtonClick = () => {
     if (buttonState === "ok") {
@@ -151,6 +169,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const buttonConfig = getButtonConfig();
 
+  const scoreNotPassThreshold = score !== null && score < 15;
 
   return (
     <>
@@ -165,9 +184,9 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
         )}
 
         <button
-          disabled={!connectedAccount || hasClaimedInCurrentPeriod}
+          disabled={!connectedAccount || hasClaimedInCurrentPeriod || scoreNotPassThreshold}
           onClick={handleButtonClick}
-          className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
+          className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-300 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
           {status === "pending" || checkEligibility ? (
             <span className="loading loading-spinner loading-md"></span>
@@ -180,6 +199,9 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
             <p className="text-sm text-gray-500 text-center">You already claimed in this period.</p>
           </div>
         )}
+        {errorMessage && <div className="text-center mt-4 text-red-500 bg-red-100 p-2 rounded-lg text-sm">
+          {errorMessage}
+          </div>}
       </div>
     </>
   );

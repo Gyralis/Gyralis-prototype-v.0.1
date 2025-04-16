@@ -8,35 +8,37 @@ import { motion, useSpring, useTransform } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useBalance, useChainId } from "wagmi";
 import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
+import deployedContracts from "~~/contracts/deployedContracts";
 import { useLoopData } from "~~/hooks/useLoopData";
 import { useNextPeriodStart } from "~~/hooks/useNextPeriodStart";
 import { secondsToTime } from "~~/utils";
-
-const LOOP_ADDRESS = "0xED179b78D5781f93eb169730D8ad1bE7313123F4";
-const TOKEN_ADDRESS = "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0";
 
 export const LoopComponent = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [loadingScore, setLoadingScore] = useState(true);
   const [score, setScore] = useState<number | null>(null);
-  const [currentPeriod, setCurrentPeriod]= useState<number | undefined>(undefined);
+  const [currentPeriod, setCurrentPeriod] = useState<number | undefined>(undefined);
 
   const chainId = useChainId();
   const { address: connectedAccount } = useAccount();
   const { loopDetails, isLoading } = useLoopData();
 
+  const contract = deployedContracts[chainId as keyof typeof deployedContracts]?.["loop"];
+
   useEffect(() => {
-    setCurrentPeriod(loopDetails?.currentPeriod);   
+    setCurrentPeriod(loopDetails?.currentPeriod);
   }, [loopDetails]);
 
-
-  const { data: loopBalance, refetch: refetchLoopBalance } = useBalance({
-    address: LOOP_ADDRESS,
-    token: TOKEN_ADDRESS as `0x${string}` | undefined,
+  const {
+    data: loopBalance,
+    refetch: refetchLoopBalance,
+    isLoading: loadingLoopBalance,
+  } = useBalance({
+    address: contract?.address,
+    token: loopDetails?.token as `0x${string}`,
     chainId: chainId,
   });
-
 
   const handleFetchScore = async () => {
     setLoadingScore(true);
@@ -47,18 +49,16 @@ export const LoopComponent = () => {
       if (!response.ok) {
         if (response.status === 400) {
           setHasSubmitted(false);
+          // console.log("It seems a response 400 infetching score");
         } else {
-          throw new Error("Failed to fetch score");
+          throw new Error("Failed to fetch score in hanldeFetchScore");
         }
       } else {
         const data = await response.json();
         const numericScore = Number(data.score);
-        if (numericScore > 0) {
-          setScore(numericScore);
-          setHasSubmitted(true);
-        } else {
-          setScore(0);
-        }
+        // console.log(`I fetched the score ${connectedAccount}`, numericScore);
+        setScore(numericScore || 0);
+        setHasSubmitted(true);
       }
     } catch (error) {
       console.error("Fetch error:", error);
@@ -75,9 +75,8 @@ export const LoopComponent = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ connectedAccount }),
       });
-      if (!response.ok) throw new Error("Submission failed");
-
-      setHasSubmitted(true);
+      if (!response.ok) throw new Error("Submission failed while submitting passport");
+      setHasSubmitted(false);
       handleFetchScore();
     } catch (err) {
       console.error("Submission error:", err);
@@ -87,10 +86,13 @@ export const LoopComponent = () => {
   };
 
   useEffect(() => {
-    if (connectedAccount) handleFetchScore();
+    if (connectedAccount) {
+      handleFetchScore();
+      console.log("I have fetched the score in useEffect", connectedAccount);
+    }
   }, [connectedAccount]);
 
-  if (isLoading || !loopDetails) {
+  if (isLoading) {
     return <p>loading...</p>; // or null
   }
 
@@ -111,33 +113,42 @@ export const LoopComponent = () => {
           </div>
 
           {/* Badges and Loop Balance */}
+          {isLoading || loadingLoopBalance ? (
+            <p>loading dataaa...</p>
+          ) : (
+            <>
+              {/* Loop data */}
+              <div className="flex flex-wrap justify-center gap-3 mb-6">
+                <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
+                  <span className="text-sm font-medium text-[#0065BD]">
+                    Period length:{" "}
+                    <span className="font-semibold text-lg">{secondsToTime(loopDetails?.periodLength ?? 0)}</span>
+                  </span>
+                </div>
+                <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
+                  <span className="text-sm font-medium text-[#0065BD]">
+                    Period distribution:{" "}
+                    <span className="font-semibold text-lg">{loopDetails?.percentPerPeriod} %</span>
+                  </span>
+                </div>
+              </div>
 
-          <div className="flex flex-wrap justify-center gap-3 mb-6">
-            <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
-              <span className="text-sm font-medium text-[#0065BD]">
-                Period length:{" "}
-                <span className="font-semibold text-lg">{secondsToTime(loopDetails?.periodLength ?? 0)}</span>
-              </span>
-            </div>
-            <div className="bg-white rounded-full px-4 py-2 shadow-sm border border-gray-200">
-              <span className="text-sm font-medium text-[#0065BD]">
-                Period distribution: <span className="font-semibold text-lg">{loopDetails?.percentPerPeriod} %</span>
-              </span>
-            </div>
-          </div>
-        </div>
-        <div className="text-center mb-4">
-          <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div>
-          <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
-        </div>
+              {/* Loop Balance */}
+              <div className="text-center mb-4">
+                <div>{<AnimatedNumber value={parseFloat(formatUnits(loopBalance?.value || 0n, 18))} />}</div>
+                <div className="text-xl sm:text-2xl md:text-3xl font-medium text-[#f7cd6f]">{loopBalance?.symbol}</div>
+              </div>
 
-        {/* Countdown Timer */}
-        <div className="text-center mb-8">
-          <p className="text-sm text-gray-500 mb-2">Next distribution in:</p>
-          <Countdown />
+              {/* Countdown Timer */}
+              <div className="text-center mb-8">
+                <p className="text-sm text-gray-500 mb-2">Next distribution in:</p>
+                <Countdown loopAddress={contract.address} />
+              </div>
+              {/* Claim and Register component */}
+              <ClaimAndRegister score={score} refecthLoopBalance={refetchLoopBalance} currentPeriod={currentPeriod} />
+            </>
+          )}
         </div>
-
-        <ClaimAndRegister score={score} refecthLoopBalance={refetchLoopBalance} currentPeriod={currentPeriod} />
       </div>
       <BottomCardsSection
         score={score}
@@ -150,9 +161,9 @@ export const LoopComponent = () => {
   );
 };
 
-const Countdown = () => {
+const Countdown = ({ loopAddress }: { loopAddress: `0x${string}` }) => {
   // Get the next period start from the custom hook
-  const { nextPeriodStart: nextPeriodStartAlso, loading: loadingNextPeriodStart } = useNextPeriodStart(LOOP_ADDRESS);
+  const { nextPeriodStart: nextPeriodStartAlso, loading: loadingNextPeriodStart } = useNextPeriodStart(loopAddress);
 
   // State to keep track of the current time in seconds
   const [currentTime, setCurrentTime] = useState<bigint>(BigInt(Date.now()) / 1000n);

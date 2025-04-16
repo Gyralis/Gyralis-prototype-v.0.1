@@ -11,7 +11,16 @@ type BottomCardsSectionProps = {
   handleSubmit: () => void;
 };
 
-const BottomCardsSection = ({ score, hasSubmitted, loadingScore, handleSubmit, isSubmitting }: BottomCardsSectionProps) => {
+const BottomCardsSection = ({
+  score,
+  hasSubmitted,
+  loadingScore,
+  handleSubmit,
+  isSubmitting,
+}: BottomCardsSectionProps) => {
+  // console.log("hasSubmitted", hasSubmitted);
+  // console.log("score", score);
+
   return (
     <section>
       <div className="flex flex-col gap-4 sm:gap-6  w-full">
@@ -31,13 +40,22 @@ const BottomCardsSection = ({ score, hasSubmitted, loadingScore, handleSubmit, i
               </p>
               {hasSubmitted ? (
                 <p className="text-gray-100 flex items-center gap-2">
-                  Your Score: <span className="font-semibold text-[#f7cd6f] text-lg">{score ?? "no score"}</span>
+                  Your Score:{" "}
+                  <span
+                    className={`${loadingScore ? "loading loading-spinner" : "font-semibold text-[#f7cd6f] text-lg"} `}
+                  >
+                    {score}
+                  </span>
                 </p>
               ) : (
                 <p className="text-gray-100 flex items-center gap-2">
-                 
-                Your score:
-                <button className={`${isSubmitting ? "loading loading-spinner" : "border-none hover:opacity-90 w-fit py-2 px-4 rounded-full text-center font-semibold text-sm text-black first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 bg-[#f7cd6f]"} `} onClick={(handleSubmit)}>submit score</button>
+                  Need to submit your score:
+                  <button
+                    className={`${isSubmitting ? "loading loading-spinner" : "border-none hover:opacity-90 w-fit py-2 px-4 rounded-full text-center font-semibold text-sm text-black first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 bg-[#f7cd6f]"} `}
+                    onClick={handleSubmit}
+                  >
+                    submit score
+                  </button>
                 </p>
               )}
             </div>
