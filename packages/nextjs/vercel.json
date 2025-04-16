@@ -1,3 +1,7 @@
 {
-  "installCommand": "yarn install"
+  "build": {
+    "installCommand": "pnpm install",
+    "command": "pnpm run build"
+  }
 }
+
