@@ -53,5 +53,9 @@
   "packageManager": "yarn@3.2.3",
   "engines": {
     "node": ">=18.18.0"
+  },
+  "dependencies": {
+    "@headlessui/react": "^2.2.0",
+    "framer-motion": "^12.6.3"
   }
 }

@@ -1,7 +1,8 @@
 # Compiler files
 cache/
 out/
-
+# rust target
+client-test/target
 # Ignores development broadcast logs
 /broadcast/*/31337/
 /broadcast/**/dry-run/
@@ -12,3 +13,5 @@ docs/
 # Dotenv file
 .env
 localhost.json
+broadcast
+deployments

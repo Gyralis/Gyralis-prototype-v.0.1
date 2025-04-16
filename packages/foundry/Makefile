@@ -7,7 +7,7 @@ setup-anvil-wallet:
 
 # Start local chain
 chain: setup-anvil-wallet
-	anvil
+	anvil -v -b 3
 
 # Start a fork
 fork: setup-anvil-wallet
@@ -25,8 +25,17 @@ deploy:
 		forge script script/Deploy.s.sol --rpc-url $(RPC_URL) --broadcast --legacy --ffi; \
 	fi
 
+deploy-diamond:
+	@if [ "$(RPC_URL)" = "localhost" ]; then \
+		forge script script/deploy/Deploy.s.sol --rpc-url localhost --password localhost --broadcast --legacy --ffi; \
+	else \
+		forge script script/deploy/Deploy.s.sol --rpc-url $(RPC_URL) --broadcast --legacy --ffi; \
+	fi
+
 # Build and deploy target
 build-and-deploy: build deploy generate-abis
+
+build-and-deploy-diamond: build deploy-diamond generate-abis
 
 # Generate TypeScript ABIs
 generate-abis:
@@ -86,4 +95,3 @@ verify:
 	forge script script/VerifyAll.s.sol --ffi --rpc-url $(RPC_URL)
 
 build-and-verify: build verify
-
