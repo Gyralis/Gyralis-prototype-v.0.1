@@ -15,10 +15,6 @@ import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
-
-
-  const background =
-    "linear-gradient(to bottom,  rgba(0,101,189,1)  50%, rgba(21,24,25,1) 100%)";
   return (
     <>
      
@@ -49,8 +45,8 @@ const subgraphUri = "http://localhost:8000/subgraphs/name/scaffold-eth/your-cont
 // });
 
 export const ScaffoldEthAppWithProviders = ({ children }: { children: React.ReactNode }) => {
-  const { resolvedTheme } = useTheme();
-  const isDarkMode = resolvedTheme === "dark";
+  // const { resolvedTheme } = useTheme();
+  // const isDarkMode = resolvedTheme === "dark";
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -63,7 +59,7 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
         {/* <ProgressBar height="3px" color="#2299dd" /> */}
         <RainbowKitProvider
           avatar={BlockieAvatar}
-          theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
+          // theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
         >
           {/* <ApolloProvider client={apolloClient}> */}
           <ScaffoldEthApp>{children}</ScaffoldEthApp>

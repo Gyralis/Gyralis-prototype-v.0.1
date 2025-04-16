@@ -13,6 +13,7 @@ import scaffoldConfig from "~~/scaffold.config";
 
 const { onlyLocalBurnerWallet, targetNetworks } = scaffoldConfig;
 
+//@ts-ignore
 const wallets = [
   metaMaskWallet,
   walletConnectWallet,
@@ -28,6 +29,7 @@ const wallets = [
 /**
  * wagmi connectors for the wagmi context
  */
+//@ts-ignore
 export const wagmiConnectors = connectorsForWallets(
   [
     {
