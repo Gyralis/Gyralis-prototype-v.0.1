@@ -17,9 +17,9 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
     <html suppressHydrationWarning lang="en" className={`${poppins.variable}`}>
       <body className="min-h-screen font-poppins">
-        <ThemeProvider enableSystem>
+        {/* <ThemeProvider enableSystem> */}
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
-        </ThemeProvider>
+        {/* </ThemeProvider> */}
       </body>
     </html>
   );
