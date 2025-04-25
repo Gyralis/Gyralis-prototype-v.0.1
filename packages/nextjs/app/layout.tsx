@@ -15,7 +15,7 @@ export const metadata = getMetadata({ title: "Gyralis App", description: "Web3 t
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html suppressHydrationWarning lang="en" className={`${poppins.variable}`}>
+    <html suppressHydrationWarning lang="en" className={`${poppins.variable} bg-white mx-auto`}>
       <body className="min-h-screen font-poppins">
         {/* <ThemeProvider enableSystem> */}
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
