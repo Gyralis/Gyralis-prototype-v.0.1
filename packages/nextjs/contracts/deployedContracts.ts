@@ -3896,7 +3896,7 @@ const deployedContracts = {
   },
   100: {
     loop: {
-      address: "0xB337CC1DD3b04000139CdeadaE4AEBE91F16B0d2",
+      address: "0x67BBeDE3F4D1ae743dB4Fe11287eE425a8CD3216",
       abi: [
         {
           type: "function",
