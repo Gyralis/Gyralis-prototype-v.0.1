@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ClaimAndRegister } from "../_components/ClaimAndRegister";
+// import { ClaimAndRegister } from "../_components/ClaimAndRegister";
 import InfoSection from "../_components/InfoSection";
 import { LoopComponent } from "../_components/LoopComponent";
 import { NextPage } from "next";

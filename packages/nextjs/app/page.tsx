@@ -1,36 +1,38 @@
-"use client"
+"use client";
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
 //import { ArrowRight, Mail, MapPin, Phone, Linkedin, Instagram, Youtube, TrendingUp, Users, Target } from "lucide-react"
 //import { Button } from "@/components/ui/button"
-import { motion, useInView, useAnimation } from "framer-motion"
+import { motion, useAnimation, useInView } from "framer-motion";
+import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
 //import { useMobile } from "@/hooks/use-mobile"
-import { ParticleBackground } from "~~/components/landing-page"
-import { InfoSlider } from "~~/components/landing-page"
-import Link from "next/link"
+import { ParticleBackground } from "~~/components/landing-page";
+import { InfoSlider } from "~~/components/landing-page";
 
 export default function Home() {
   //const isMobile = useMobile()
-  const controls = useAnimation()
-  const aboutRef = useRef(null)
-  const divisionsRef = useRef(null)
-  const expertiseRef = useRef(null)
-  const whyUsRef = useRef(null)
-  const contactRef = useRef(null)
-  const performanceRef = useRef(null)
+  const controls = useAnimation();
+  const aboutRef = useRef(null);
+  const divisionsRef = useRef(null);
+  const expertiseRef = useRef(null);
+  const whyUsRef = useRef(null);
+  const contactRef = useRef(null);
+  const performanceRef = useRef(null);
 
-  const aboutInView = useInView(aboutRef, { once: true, amount: 0.3 })
-  const divisionsInView = useInView(divisionsRef, { once: true, amount: 0.1 })
-  const expertiseInView = useInView(expertiseRef, { once: true, amount: 0.3 })
-  const whyUsInView = useInView(whyUsRef, { once: true, amount: 0.3 })
-  const contactInView = useInView(contactRef, { once: true, amount: 0.3 })
-  const performanceInView = useInView(performanceRef, { once: true, amount: 0.3 })
+  const aboutInView = useInView(aboutRef, { once: true, amount: 0.3 });
+  const divisionsInView = useInView(divisionsRef, { once: true, amount: 0.1 });
+  const expertiseInView = useInView(expertiseRef, { once: true, amount: 0.3 });
+  const whyUsInView = useInView(whyUsRef, { once: true, amount: 0.3 });
+  const contactInView = useInView(contactRef, { once: true, amount: 0.3 });
+  const performanceInView = useInView(performanceRef, { once: true, amount: 0.3 });
 
   useEffect(() => {
     if (aboutInView) {
-      controls.start("visible")
+      controls.start("visible");
     }
-  }, [aboutInView, controls])
+  }, [aboutInView, controls]);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 60 },
@@ -39,7 +41,7 @@ export default function Home() {
       y: 0,
       transition: { duration: 0.6, ease: "easeOut" },
     },
-  }
+  };
 
   const staggerContainer = {
     hidden: { opacity: 0 },
@@ -50,7 +52,7 @@ export default function Home() {
         delayChildren: 0.2,
       },
     },
-  }
+  };
 
   const fadeIn = {
     hidden: { opacity: 0 },
@@ -58,7 +60,7 @@ export default function Home() {
       opacity: 1,
       transition: { duration: 0.6 },
     },
-  }
+  };
 
   const scaleUp = {
     hidden: { scale: 0.8, opacity: 0 },
@@ -67,7 +69,7 @@ export default function Home() {
       opacity: 1,
       transition: { duration: 0.5 },
     },
-  }
+  };
 
   const slideInLeft = {
     hidden: { x: -100, opacity: 0 },
@@ -76,7 +78,7 @@ export default function Home() {
       opacity: 1,
       transition: { duration: 0.6, ease: "easeOut" },
     },
-  }
+  };
 
   const slideInRight = {
     hidden: { x: 100, opacity: 0 },
@@ -85,7 +87,7 @@ export default function Home() {
       opacity: 1,
       transition: { duration: 0.6, ease: "easeOut" },
     },
-  }
+  };
 
   return (
     <div className="flex min-h-screen flex-col bg-[#121212] text-white overflow-hidden">
@@ -104,16 +106,17 @@ export default function Home() {
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
             >
               <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-300 flex items-center justify-center text-white font-bold relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <svg viewBox="0 0 24 24" className="w-6 h-6 relative z-10">
+                <div className="absolute inset-0 bg-gradient-to-r from-[#3182C8] to-blue-[#DDE7F0] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <Image src={GyralisLogo} alt="Gyralis Logo" width={30} height={30} />
+                {/* <svg viewBox="0 0 24 24" className="w-6 h-6 relative z-10">
                   <path d="M12,3 L19,7 L19,17 L12,21 L5,17 L5,7 Z" fill="rgba(255, 255, 255, 0.8)" />
                   <circle cx="12" cy="12" r="2" fill="rgba(255, 255, 255, 1)" />
-                </svg>
+                </svg> */}
               </div>
-              <span className="text-xl font-bold text-blue-500">Gyralis</span>
+              <span className="text-2xl font-bold text-blue-500">Gyralis</span>
             </motion.div>
             <nav className="hidden md:flex space-x-8">
-              {["About", "Divisions", "Performance", "Why Us", "Contact"].map((item, i) => (
+              {["What is Gyralis", "Loops Features", "How it Works", "Roadmap", "Contact"].map((item, i) => (
                 <motion.a
                   key={i}
                   href={`#${item.toLowerCase().replace(" ", "-")}`}
@@ -174,7 +177,7 @@ export default function Home() {
                 >
                   Claim
                 </motion.h1>{" "}
-                 Tokens, Every Day.
+                Tokens, Every Day.
               </motion.h1>
               <motion.p
                 className="text-xl md:text-2xl text-gray-300"
@@ -182,7 +185,7 @@ export default function Home() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5, delay: 0.9 }}
               >
-                The fair and transparent future of Web3 rewards starts here.
+                A new, fair and transparent future of Web3 tokens distribution starts here.
               </motion.p>
               <motion.div
                 className="flex flex-col sm:flex-row gap-4 pt-4"
@@ -191,97 +194,25 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 1.1 }}
               >
                 <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                 
-                    <span className="relative z-10">Scroll down</span>
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110"></span>
-               
+                  <span className="relative z-10">Scroll down</span>
+                  <span className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110"></span>
                 </motion.div>
               </motion.div>
             </motion.div>
             <motion.div
-              className="flex justify-center"
+              className="flex justify-center skew-y-12"
               initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.5, type: "spring" }}
+              animate={{ rotate: 360, opacity: 1, scale: 1 }}
+              transition={{
+                opacity: { duration: 0.8, delay: 0.5 },
+                scale: { duration: 0.8, delay: 0.5, type: "spring" },
+                repeat: 1,
+                
+                duration: 200 ,
+              }}
+           
             >
-              <div className="relative h-[350px] w-[350px] md:h-[450px] md:w-[450px]">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-br from-amber-500/20 to-amber-700/10 backdrop-blur-sm flex items-center justify-center animate-pulse-slow"></div>
-                <motion.div
-                  className="absolute inset-4 rounded-full bg-gradient-to-br from-amber-500/10 to-amber-700/5 backdrop-blur-md"
-                  animate={{
-                    boxShadow: [
-                      "0 0 20px 0px rgba(245, 158, 11, 0.3)",
-                      "0 0 60px 10px rgba(245, 158, 11, 0.2)",
-                      "0 0 20px 0px rgba(245, 158, 11, 0.3)",
-                    ],
-                  }}
-                  transition={{ duration: 4, repeat: Number.POSITIVE_INFINITY, repeatType: "reverse" }}
-                ></motion.div>
-                <motion.div
-                  className="absolute inset-0 flex items-center justify-center"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.8 }}
-                >
-                  <div className="relative w-48 h-48">
-                    {/* Abstract Logo */}
-                    <svg viewBox="0 0 200 200" className="w-full h-full">
-                      <motion.path
-                        d="M100,20 L160,50 L160,150 L100,180 L40,150 L40,50 Z"
-                        fill="none"
-                        stroke="rgba(0, 101, 189, 0.8)"
-                        strokeWidth="2"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 2, delay: 1 }}
-                      />
-                      <motion.path
-                        d="M100,40 L140,60 L140,140 L100,160 L60,140 L60,60 Z"
-                        fill="none"
-                        stroke="rgba(0, 101, 189, 0.6)"
-                        strokeWidth="2"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 2, delay: 1.3 }}
-                      />
-                      <motion.path
-                        d="M100,60 L120,70 L120,130 L100,140 L80,130 L80,70 Z"
-                        fill="rgba(0, 101, 189, 0.3)"
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        transition={{ duration: 1, delay: 1.6 }}
-                      />
-                      <motion.circle
-                        cx="100"
-                        cy="100"
-                        r="10"
-                        fill="rgba(0, 101, 189, 1)"
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ duration: 0.5, delay: 2 }}
-                      />
-                      <motion.path
-                        d="M40,50 L100,100 L160,50"
-                        fill="none"
-                        stroke="rgba(0, 101, 189, 0.4)"
-                        strokeWidth="1"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 1.5, delay: 2.2 }}
-                      />
-                      <motion.path
-                        d="M40,150 L100,100 L160,150"
-                        fill="none"
-                        stroke="rgba(0, 101, 189, 0.4)"
-                        strokeWidth="1"
-                        initial={{ pathLength: 0, opacity: 0 }}
-                        animate={{ pathLength: 1, opacity: 1 }}
-                        transition={{ duration: 1.5, delay: 2.4 }}
-                      />
-                    </svg>
-                  </div>
-                </motion.div>
-              </div>
+                <Image src={GyralisLogo} alt="Gyralis Logo" width={400} height={400} />
             </motion.div>
           </div>
         </div>
@@ -289,7 +220,7 @@ export default function Home() {
       </section>
 
       {/* About Section */}
-      {/* <section className="py-16 bg-gray-900" id="about" ref={aboutRef}>
+      <section className="py-16 bg-gray-900" id="about" ref={aboutRef}>
         <div className="container mx-auto px-4 md:px-6">
           <motion.div
             className="flex flex-col items-center text-center max-w-3xl mx-auto"
@@ -298,22 +229,13 @@ export default function Home() {
             animate={aboutInView ? "visible" : "hidden"}
           >
             <motion.h2 className="text-3xl font-bold tracking-tight mb-4" variants={fadeIn}>
-              <motion.span
-                className="text-blue-500 inline-block"
-                animate={{
-                  rotate: [0, 10, 0, -10, 0],
-                }}
-                transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 5 }}
-              >
-                🧭
-              </motion.span>{" "}
               About Us
             </motion.h2>
             <motion.p className="text-gray-300 text-lg mb-6 leading-relaxed" variants={fadeIn}>
               Chiloane Holdings is a South African-based, youth-led holding company investing in the future of business,
               technology, finance, and culture. We develop and manage a dynamic portfolio of innovative ventures that
               empower individuals and businesses to thrive.
-            </motion.p>
+            </motion.p>      
             <motion.p className="text-gray-300 text-lg mb-8 leading-relaxed" variants={fadeIn}>
               From software to soulful soundscapes, from trading floors to creative publishing—we are shaping the next
               generation of African enterprise.
@@ -323,30 +245,11 @@ export default function Home() {
               variants={staggerContainer}
               initial="hidden"
               animate={aboutInView ? "visible" : "hidden"}
-            >
-              {[
-                { value: 6, label: "Divisions" },
-                { value: 20, label: "Projects" },
-                { value: 100, label: "Satisfaction" },
-                { value: 24, label: "Support" },
-              ].map((stat, index) => (
-                <motion.div key={index} className="text-center" variants={scaleUp}>
-                  <div className="text-4xl font-bold text-blue-500">
-                    <AnimatedCounter
-                      from={0}
-                      to={stat.value}
-                      duration={2}
-                      delay={0.5 + index * 0.1}
-                      suffix={stat.label === "Satisfaction" ? "%" : stat.label === "Support" ? "/7" : "+"}
-                    />
-                  </div>
-                  <div className="text-gray-400 mt-2">{stat.label}</div>
-                </motion.div>
-              ))}
+            >            
             </motion.div>
           </motion.div>
         </div>
-      </section> */}
+      </section>
 
       {/* Divisions Section */}
       <section className="py-16 bg-[#121212]" id="divisions" ref={divisionsRef}>
@@ -1060,6 +963,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
-
