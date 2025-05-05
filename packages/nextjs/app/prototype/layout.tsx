@@ -4,11 +4,11 @@ import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaff
 
 export default function GyralisUI({ children }: { children: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-white text-black relative">
+    <div className="min-h-screen bg-[#121212] text-white relative">
       {/* Navigation Bar */}
       <nav className="flex flex-col sm:flex-row items-center justify-between px-4 sm:px-6 py-4 my-6 rounded-lg shadow-md ">
         <div className="flex items-center gap-4 w-full justify-between">
-          <div className="flex items-center gap-2 ">
+          <div className="flex items-center gap-3">
             <Image src={GyralisLogo} alt="Gyralis Logo" width={40} height={40} />
             <span className="text-2xl ">Gyralis</span>
           </div>
@@ -35,17 +35,17 @@ export default function GyralisUI({ children }: { children: React.ReactNode }) {
         </div>
 
         <div className="hidden md:flex items-center justify-center ml-0 sm:ml-8 space-x-6 md:space-x-14 mt-4 sm:mt-0 w-full ">
-          <div className="relative font-medium text-gray-600 hover:text-black whitespace-nowrap text-sm">
+          <div className="relative font-medium text-white hover:text-[#F7DC6F] whitespace-nowrap text-sm">
             Custom Loops
-            <span className="absolute -top-4 -right-8 text-xs bg-[#e2e8ed] px-1.5 py-0.5 rounded-full">Soon</span>
+            <span className="absolute -top-6 border1 -right-8 text-xs  px-1.5 py-0.5 rounded-full">Soon</span>
           </div>
-          <div className="relative font-medium text-gray-600 hover:text-black whitespace-nowrap text-sm">
+          <div className="relative font-medium text-white hover:text-[#F7DC6F] whitespace-nowrap text-sm">
             Organizations Profile
-            <span className="absolute -top-4 -right-8 text-xs bg-[#e2e8ed] px-1.5 py-0.5 rounded-full">Soon</span>
+            <span className="absolute -top-6 border1 -right-8 text-xs  px-1.5 py-0.5 rounded-full">Soon</span>
           </div>
-          <div className="relative font-medium text-gray-600 hover:text-black whitespace-nowrap text-sm">
+          <div className="relative font-medium text-white hover:text-[#F7DC6F] whitespace-nowrap text-sm">
             Tokenomics
-            <span className="absolute -top-4 -right-8 text-xs bg-[#e2e8ed] px-1.5 py-0.5 rounded-full">Soon</span>
+            <span className="absolute -top-6 border1 -right-8 text-xs  px-1.5 py-0.5 rounded-full">Soon</span>
           </div>
         </div>
 

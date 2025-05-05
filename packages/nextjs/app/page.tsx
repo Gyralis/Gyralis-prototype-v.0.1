@@ -112,7 +112,7 @@ export default function Home() {
               <span className="text-2xl font-bold text-blue-500">Gyralis</span>
             </motion.div>
             <nav className="hidden md:flex space-x-8">
-              {["What is Gylaris", "Loops Features", "How it Works", "Roadmap", "Contact"].map((item, i) => (
+              {["What is Gylaris", "Loops", "How it Works", "Roadmap", "Contact"].map((item, i) => (
                 <motion.a
                   key={i}
                   href={`#${item.toLowerCase().replace(" ", "-")}`}
@@ -238,9 +238,9 @@ export default function Home() {
               as Loops
             </motion.p>
             <motion.p className="text-gray-300 text-lg mb-8 leading-relaxed" variants={fadeIn}>
-              Loops: Dynamic Engines for distributing tokens. Modular, customizable contracts that organizations can
-              design to distribute tokens with 4 main settings: Period lenght, distribution per period, sybil
-              verification and elegibility criteria. Lear More
+              Loops are dynamic engines for distributing tokens. Modular, customizable contracts that organizations can
+              design to distribute tokens with 4 main settings: Period Lenght, Distribution Per Period, Sybil
+              Verification and Elegibility Criteria.
             </motion.p>
             <motion.div
               className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full mt-8"
@@ -307,7 +307,7 @@ export default function Home() {
                 />
               </svg>
             </motion.div>{" "}
-            Loop Features
+            Loops Features
           </motion.h2>
           <motion.div
             className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
@@ -456,7 +456,7 @@ export default function Home() {
               {
                 title: "Our Mission",
                 content:
-                  "We’re building Gyralis to empower organizations and users thrive together. Our mission is to turn daily participation into progress — by creating dynamic loops that reward real engagement and power innovation. It’s transparent, fair, and built for long-term growth.",
+                  "We’re building Gyralis to turn daily participation into progress — by creating dynamic loops that reward real engagement and power innovation. It’s transparent, fair, and built for long-term growth.",
                 color: "#0065BD",
               },
               {
@@ -550,141 +550,7 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
-      {/* Contact Section */}
-      <section className="py-16 bg-[#121212]" id="contact" ref={contactRef}>
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid gap-10 lg:grid-cols-2">
-            <motion.div variants={slideInLeft} initial="hidden" animate={contactInView ? "visible" : "hidden"}>
-              <h2 className="text-3xl font-bold tracking-tight mb-6">
-                <motion.span
-                  className="text-blue-500 inline-block"
-                  animate={{
-                    rotate: [0, 10, 0, -10, 0],
-                  }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 5 }}
-                >
-                  💬
-                </motion.span>{" "}
-                Ready to Elevate?
-              </h2>
-              <p className="text-gray-300 mb-8">
-                Whether you are a creator, investor, startup, or entrepreneur—Chiloane Holdings is your growth partner.
-              </p>
-              <div className="space-y-4">
-                <motion.div
-                  className="flex items-center"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={contactInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                  transition={{ duration: 0.5, delay: 0.1 }}
-                >
-                  {/* <MapPin className="h-5 w-5 mr-3 text-blue-500" /> */}
-                  <span className="text-gray-300">Turfloop, Polokwane, South Africa</span>
-                </motion.div>
-                <motion.div
-                  className="flex items-center"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={contactInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                >
-                  {/* <Mail className="h-5 w-5 mr-3 text-blue-500" /> */}
-                  <span className="text-gray-300">audiolab@afrimail.com</span>
-                </motion.div>
-                <motion.div
-                  className="flex items-center"
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={contactInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
-                  transition={{ duration: 0.5, delay: 0.3 }}
-                >
-                  {/* <Phone className="h-5 w-5 mr-3 text-blue-500" /> */}
-                  <span className="text-gray-300">0680813261</span>
-                </motion.div>
-                <motion.div
-                  className="flex space-x-4 pt-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={contactInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                  transition={{ duration: 0.5, delay: 0.4 }}
-                >
-                  {/* {[Linkedin, Instagram, Youtube].map((Icon, index) => (
-                    <motion.a
-                      key={index}
-                      href="#"
-                      className="text-gray-300 hover:text-blue-500 transition-colors"
-                      whileHover={{ scale: 1.2, rotate: 5 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                    >
-                      <Icon className="h-6 w-6" />
-                    </motion.a>
-                  ))} */}
-                </motion.div>
-              </div>
-            </motion.div>
-            <motion.div
-              className="bg-gray-800 p-6 rounded-lg"
-              variants={fadeInUp}
-              initial="hidden"
-              animate={contactInView ? "visible" : "hidden"}
-            >
-              <form className="space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <motion.div className="space-y-2" variants={fadeIn} transition={{ delay: 0.1 }}>
-                    <label htmlFor="name" className="text-sm font-medium text-gray-300">
-                      Name
-                    </label>
-                    <input
-                      id="name"
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:border-amber-500 focus:ring-amber-500 transition-colors"
-                      placeholder="Your name"
-                    />
-                  </motion.div>
-                  <motion.div className="space-y-2" variants={fadeIn} transition={{ delay: 0.2 }}>
-                    <label htmlFor="email" className="text-sm font-medium text-gray-300">
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:border-amber-500 focus:ring-amber-500 transition-colors"
-                      placeholder="Your email"
-                    />
-                  </motion.div>
-                </div>
-                <motion.div className="space-y-2" variants={fadeIn} transition={{ delay: 0.3 }}>
-                  <label htmlFor="subject" className="text-sm font-medium text-gray-300">
-                    Subject
-                  </label>
-                  <input
-                    id="subject"
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:border-amber-500 focus:ring-amber-500 transition-colors"
-                    placeholder="Subject"
-                  />
-                </motion.div>
-                <motion.div className="space-y-2" variants={fadeIn} transition={{ delay: 0.4 }}>
-                  <label htmlFor="message" className="text-sm font-medium text-gray-300">
-                    Message
-                  </label>
-                  <textarea
-                    id="message"
-                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:border-amber-500 focus:ring-amber-500 min-h-[120px] transition-colors"
-                    placeholder="Your message"
-                  ></textarea>
-                </motion.div>
-                <motion.div
-                  variants={fadeIn}
-                  transition={{ delay: 0.5 }}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <button className="w-full bg-blue-500 hover:bg-blue-600 text-white relative overflow-hidden group">
-                    <span className="relative z-10">Let s Work Together</span>
-                    <span className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-400 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:scale-110"></span>
-                  </button>
-                </motion.div>
-              </form>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+ 
 
       {/* Footer */}
       <footer className="py-6 bg-black text-gray-400">

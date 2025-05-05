@@ -7,7 +7,7 @@ const InfoSection: React.FC = () => {
       {/* <div className="absolute inset-0 bg-[url('/placeholder.svg?height=600&width=600')] opacity-10 bg-right-bottom bg-no-repeat"></div> */}
       <div className="relative z-10">
         <p className="text-[#f7cd6f] mb-1">CLAIM TOKENS, EVERY DAY</p>
-        <h1 className="text-[#f7cd6f] text-4xl sm:text-4xl font-bold mb-2 sm:mb-4">1HIVE LOOP</h1>
+        <h1 className="text-[#f7cd6f] text-4xl sm:text-5xl font-bold mb-2 sm:mb-4">1HIVE LOOP</h1>
 
         <p className="mb-2 sm:mb-4 text-gray-100 text-sm sm:text-base">
           Join the 1Hive community in Gardens-V2 and earn{" "}
