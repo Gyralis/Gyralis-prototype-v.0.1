@@ -17,7 +17,7 @@ type InfoSliderProps = {
   interval?: number
 }
 
-export const InfoSlider = ({ slides, autoPlay = true, interval = 5000 }: InfoSliderProps) => {
+export const InfoSlider = ({ slides, autoPlay = true, interval = 20000 }: InfoSliderProps) => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [direction, setDirection] = useState(0)
 

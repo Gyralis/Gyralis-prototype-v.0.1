@@ -116,7 +116,7 @@ export default function Home() {
               <span className="text-2xl font-bold text-blue-500">Gyralis</span>
             </motion.div>
             <nav className="hidden md:flex space-x-8">
-              {["What is Gyralis", "Loops Features", "How it Works", "Roadmap", "Contact"].map((item, i) => (
+              {["What is Gylaris", "Loops Features", "How it Works", "Roadmap", "Contact"].map((item, i) => (
                 <motion.a
                   key={i}
                   href={`#${item.toLowerCase().replace(" ", "-")}`}
@@ -136,17 +136,20 @@ export default function Home() {
                 </motion.a>
               ))}
             </nav>
-            <motion.div
+            <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: 0.5 }}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Link href={"/prototype/1hive"} className="text-white relative overflow-hidden group">
+              <Link
+                href={"/prototype/1hive"}
+                className="btn border-none text-black bg-[#3182C8]  relative overflow-hidden group"
+              >
                 Go to Prototype
               </Link>
-            </motion.div>
+            </motion.button>
           </div>
         </div>
       </motion.header>
@@ -164,20 +167,20 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.3 }}
             >
               <motion.h1
-                className="font-bold tracking-tight sm:text-6xl md:text-7xl"
+                className=" tracking-tight sm:text-6xl md:text-7xl"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
-                <motion.h1
+                <motion.span
                   className="text-blue-500 inline-block sm:text-6xl md:text-7xl"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.7 }}
                 >
-                  Claim
-                </motion.h1>{" "}
-                Tokens, Every Day.
+                  Claim Tokens,
+                </motion.span>{" "}
+                Every Day
               </motion.h1>
               <motion.p
                 className="text-xl md:text-2xl text-gray-300"
@@ -207,12 +210,11 @@ export default function Home() {
                 opacity: { duration: 0.8, delay: 0.5 },
                 scale: { duration: 0.8, delay: 0.5, type: "spring" },
                 repeat: 1,
-                
-                duration: 200 ,
+
+                duration: 200,
               }}
-           
             >
-                <Image src={GyralisLogo} alt="Gyralis Logo" width={400} height={400} />
+              <Image src={GyralisLogo} alt="Gyralis Logo" width={400} height={400} />
             </motion.div>
           </div>
         </div>
@@ -229,29 +231,32 @@ export default function Home() {
             animate={aboutInView ? "visible" : "hidden"}
           >
             <motion.h2 className="text-3xl font-bold tracking-tight mb-4" variants={fadeIn}>
-              About Us
+              What is Gyralis
             </motion.h2>
             <motion.p className="text-gray-300 text-lg mb-6 leading-relaxed" variants={fadeIn}>
-              Chiloane Holdings is a South African-based, youth-led holding company investing in the future of business,
-              technology, finance, and culture. We develop and manage a dynamic portfolio of innovative ventures that
-              empower individuals and businesses to thrive.
-            </motion.p>      
+              Gyralis is an innovative and modular platform designed to transform token distribution into a fair,
+              engaging, and community-driven experience
+            </motion.p>
             <motion.p className="text-gray-300 text-lg mb-8 leading-relaxed" variants={fadeIn}>
-              From software to soulful soundscapes, from trading floors to creative publishing—we are shaping the next
-              generation of African enterprise.
+              We introduce a dynamic system where daily participation directly translates to rewards. Know from now on
+              as Loops
+            </motion.p>
+            <motion.p className="text-gray-300 text-lg mb-8 leading-relaxed" variants={fadeIn}>
+              Loops: Dynamic Engines for distributing tokens. Modular, customizable contracts that organizations can
+              design to distribute tokens with 4 main settings: Period lenght, distribution per period, sybil
+              verification and elegibility criteria. Lear More
             </motion.p>
             <motion.div
               className="grid grid-cols-2 md:grid-cols-4 gap-8 w-full mt-8"
               variants={staggerContainer}
               initial="hidden"
               animate={aboutInView ? "visible" : "hidden"}
-            >            
-            </motion.div>
+            ></motion.div>
           </motion.div>
         </div>
       </section>
 
-      {/* Divisions Section */}
+      {/* Loop Features Section */}
       <section className="py-16 bg-[#121212]" id="divisions" ref={divisionsRef}>
         <div className="container mx-auto px-4 md:px-6">
           <motion.h2
@@ -306,7 +311,7 @@ export default function Home() {
                 />
               </svg>
             </motion.div>{" "}
-            Our Divisions
+            Loop Features
           </motion.h2>
           <motion.div
             className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
@@ -317,8 +322,8 @@ export default function Home() {
             {[
               {
                 icon: "tech",
-                title: "Khoding Technologies",
-                description: "Smart Tech for Smart Living",
+                title: "Loop shield",
+                description: "Ensuring Verified Participation.",
                 content:
                   "A technology hub that builds real-world digital solutions, including mobile apps, smart tools, and next-gen platforms. We believe in solving problems through functionality, simplicity, and speed.",
                 services: [
@@ -330,8 +335,8 @@ export default function Home() {
               },
               {
                 icon: "audio",
-                title: "Audiolab",
-                description: "Sound. Soul. Frequency.",
+                title: "Maintaining Eligibility:",
+                description: "Encouraging Active Participation.",
                 content:
                   "A music production and sound design studio producing high-quality house, soulful, and Afro-inspired music. Perfect for DJs, vocalists, producers, and creatives.",
                 services: [
@@ -343,8 +348,8 @@ export default function Home() {
               },
               {
                 icon: "publishing",
-                title: "Afrimu Publishing",
-                description: "Publish. Promote. Perform.",
+                title: "Daily Claims",
+                description: "Rewarding Consistent Engagement.",
                 content:
                   "Combining traditional publishing with modern music and content marketing strategies to amplify African voices, authors, and artists.",
                 services: [
@@ -400,16 +405,11 @@ export default function Home() {
                 custom={index}
                 whileHover={{ y: -10, transition: { duration: 0.2 } }}
               >
-                <div className="bg-gray-900 card border-gray-800 hover:border-amber-500 transition-colors h-full overflow-hidden group">
-                  <div className="pb-2 relative">
-                    <div className="absolute top-0 right-0 h-20 w-20 bg-gradient-to-bl from-amber-500/10 to-transparent rounded-bl-full"></div>
-                    <div className="card-title text-xl text-white flex items-center">
-                      <div className="mr-2 text-amber-500">
-                        {/* <DivisionIcon type={division.icon as any} className="w-6 h-6" /> */}
-                      </div>
-                      {division.title}
-                    </div>
-                    <div className="text-gray-400">{division.description}</div>
+                <div className="bg-gray-900 card border-2 border-gray-800 hover:border-amber-500 transition-colors h-full overflow-hidden group p-2">
+                  <div className="relative border1 px-4">
+                    <div className="absolute top-0 right-0 h-12 w-12 bg-gradient-to-bl from-[#F6E6A5] to-[#98B2CC] rounded-bl-full opacity-10 border1"></div>
+                    <h4 className="text-xl text-[#F7DC6F] mb-1">{division.title}</h4>
+                    <p className="text-gray-400 text-sm">{division.description}</p>
                   </div>
                   <div className="card-body p-4">
                     <p className="text-sm text-gray-300 mb-4">{division.content}</p>
@@ -559,48 +559,33 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <motion.span
-              className="text-blue-500 inline-block"
-              animate={{
-                rotate: [0, 10, 0, -10, 0],
-              }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 5 }}
-            >
-              ✨
-            </motion.span>{" "}
-            Our Story
+            About us
           </motion.h2>
 
           <InfoSlider
             slides={[
               {
-                title: "Our Beginning",
-                content:
-                  "Chiloane Holdings was founded in 2023 with a vision to create a dynamic ecosystem of businesses that empower the digital, financial, and creative economy of Africa. Starting with just two divisions, we've rapidly expanded to six specialized business units.",
-                color: "#0065BD",
-              },
-              {
                 title: "Our Mission",
                 content:
-                  "We aim to be the leading youth-led holding company in Africa, creating innovative solutions that address real-world challenges while building sustainable wealth and opportunities for the next generation of African entrepreneurs and creatives.",
+                  "We’re building Gyralis to empower organizations and users thrive together. Our mission is to turn daily participation into progress — by creating dynamic loops that reward real engagement and power innovation. It’s transparent, fair, and built for long-term growth.",
                 color: "#0065BD",
               },
               {
-                title: "Our Approach",
+                title: "Our Vision",
                 content:
-                  "We believe in the power of multidisciplinary thinking. By combining expertise across technology, finance, media, and consulting, we create unique synergies that allow our divisions to thrive independently while benefiting from shared resources and knowledge.",
+                  "To become the a leading platform for decentralized orgnization-driven engagement, where organizations, users, and sponsors collaborate seamlessly in a self-sustaining economy. .",
                 color: "#0065BD",
               },
               {
-                title: "Our Future",
+                title: "The Road Ahead",
                 content:
-                  "Looking ahead, we're focused on strategic expansion across the African continent, forming key partnerships with industry leaders, and investing in emerging technologies that will shape the future of business and creativity in Africa.",
+                  "Our focus is on growing Gyralis and bringing it to new DAOs, communities, and users. As we scale, we’ll support a wider range of sybil-resistance verification methods to ensure fair participation while at the same time, expand eligibility criteria to allow more flexible participation requirements — such as token staking, NFT ownership, or custom community conditions.",
                 color: "#0065BD",
               },
               {
-                title: "Join Our Journey",
+                title: "Be Part of Gyralis",
                 content:
-                  "Whether you're a potential client, partner, or team member, we invite you to be part of our growth story. Together, we can build innovative solutions that drive economic empowerment and creative excellence across Africa.",
+                  "Whether you're a DAO seeking to reward your community, a user eager to engage meaningfully, or a verification provider looking to integrate — Gyralis is your platform. Together, we can build sustainable engagement loops powered by a shared economy that rewards participation.",
                 color: "#0065BD",
               },
             ]}
@@ -608,99 +593,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Skills/Expertise Section */}
-      <section className="py-16 bg-[#121212]" ref={expertiseRef}>
-        <div className="container mx-auto px-4 md:px-6">
-          <motion.h2
-            className="text-3xl font-bold tracking-tight text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={expertiseInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.span
-              className="text-blue-500 inline-block"
-              animate={{
-                rotate: [0, 10, 0, -10, 0],
-              }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 5 }}
-            >
-              💪
-            </motion.span>{" "}
-            Our Expertise
-          </motion.h2>
-          <div className="grid gap-10 lg:grid-cols-2">
-            <div className="space-y-8">
-              {[
-                { skill: "Technology & Development", percentage: 95 },
-                { skill: "Financial Markets", percentage: 92 },
-                { skill: "Music & Audio Production", percentage: 98 },
-                { skill: "Publishing & Content", percentage: 90 },
-                { skill: "Business Consulting", percentage: 94 },
-              ].map((skill, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={expertiseInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -50 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <div className="flex justify-between mb-2">
-                    <span className="text-gray-300">{skill.skill}</span>
-                    <span className="text-blue-500">{skill.percentage}%</span>
-                  </div>
-                  <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-2 bg-blue-500 rounded-full"
-                      initial={{ width: "0%" }}
-                      animate={expertiseInView ? { width: `${skill.percentage}%` } : { width: "0%" }}
-                      transition={{ duration: 1, delay: 0.3 + index * 0.1, ease: "easeOut" }}
-                    ></motion.div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            <motion.div
-              className="space-y-6"
-              variants={slideInRight}
-              initial="hidden"
-              animate={expertiseInView ? "visible" : "hidden"}
-            >
-              <h3 className="text-2xl font-semibold text-white">Why We Excel</h3>
-              <p className="text-gray-300">
-                Our multidisciplinary approach allows us to bring diverse perspectives to every project. We combine
-                technical expertise with creative thinking to deliver solutions that not only meet but exceed
-                expectations.
-              </p>
-              <motion.div
-                className="grid grid-cols-2 gap-4"
-                variants={staggerContainer}
-                initial="hidden"
-                animate={expertiseInView ? "visible" : "hidden"}
-              >
-                {[
-                  { value: "10+", label: "Years Combined Experience" },
-                  { value: "50+", label: "Satisfied Clients" },
-                  { value: "6", label: "Specialized Divisions" },
-                  { value: "100%", label: "Client Satisfaction" },
-                ].map((stat, index) => (
-                  <motion.div
-                    key={index}
-                    className="bg-gray-800 p-4 rounded-lg"
-                    variants={scaleUp}
-                    whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(245, 158, 11, 0.1)" }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <div className="text-2xl font-bold text-blue-500 mb-2">{stat.value}</div>
-                    <div className="text-gray-300">{stat.label}</div>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </motion.div>
-          </div>
-        </div>
-      </section>
 
       {/* Why Choose Us */}
-      <section className="py-16 bg-gray-900" id="why-us" ref={whyUsRef}>
+      <section className="py-16 bg-[#121212]" id="why-us" ref={whyUsRef}>
         <div className="container mx-auto px-4 md:px-6">
           <motion.h2
             className="text-3xl font-bold tracking-tight text-center mb-12"
@@ -708,19 +603,10 @@ export default function Home() {
             animate={whyUsInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             transition={{ duration: 0.5 }}
           >
-            <motion.span
-              className="text-blue-500 inline-block"
-              animate={{
-                rotate: [0, 10, 0, -10, 0],
-              }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 5 }}
-            >
-              🌟
-            </motion.span>{" "}
-            Why Choose Us?
+            How It Works
           </motion.h2>
           <motion.div
-            className="grid gap-8 md:grid-cols-2 lg:grid-cols-4"
+            className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
             variants={staggerContainer}
             initial="hidden"
             animate={whyUsInView ? "visible" : "hidden"}
@@ -728,28 +614,23 @@ export default function Home() {
             {[
               {
                 icon: "🌍",
-                title: "Pan-African Vision",
+                title: "Step 1 - Register",
                 description:
-                  "Youth-led with a bold, pan-African vision that drives innovation and growth across the continent.",
+                  "Pass the Loop shield and join the Loop. Everytime you register in a period, you wil be able to claim in the next one.",
               },
               {
                 icon: "💡",
-                title: "Innovative Approach",
+                title: "Step 2 - Claim",
                 description:
-                  "We combine creativity with technical expertise to deliver cutting-edge solutions across all our divisions.",
+                  "Sign a transaction diaily and claim your share of token distributions.​ If you claim, you automatically register for the next period.",
               },
               {
                 icon: "⚡",
-                title: "Affordable Excellence",
+                title: "Step 3 - Maintain Eligibility",
                 description:
-                  "Premium quality services at competitive rates, making excellence accessible to businesses of all sizes.",
+                  "Consistently engage to remain eligible; missing a claim period requires re-registration.",
               },
-              {
-                icon: "🔮",
-                title: "Future-Focused",
-                description:
-                  "We don't just solve today's problems—we anticipate tomorrow's opportunities and prepare you to capitalize on them.",
-              },
+             
             ].map((feature, index) => (
               <motion.div
                 key={index}
