@@ -108,10 +108,6 @@ export default function Home() {
               <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-300 flex items-center justify-center text-white font-bold relative overflow-hidden group">
                 <div className="absolute inset-0 bg-gradient-to-r from-[#3182C8] to-blue-[#DDE7F0] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 <Image src={GyralisLogo} alt="Gyralis Logo" width={30} height={30} />
-                {/* <svg viewBox="0 0 24 24" className="w-6 h-6 relative z-10">
-                  <path d="M12,3 L19,7 L19,17 L12,21 L5,17 L5,7 Z" fill="rgba(255, 255, 255, 0.8)" />
-                  <circle cx="12" cy="12" r="2" fill="rgba(255, 255, 255, 1)" />
-                </svg> */}
               </div>
               <span className="text-2xl font-bold text-blue-500">Gyralis</span>
             </motion.div>
@@ -593,7 +589,6 @@ export default function Home() {
         </div>
       </section>
 
-
       {/* Why Choose Us */}
       <section className="py-16 bg-[#121212]" id="why-us" ref={whyUsRef}>
         <div className="container mx-auto px-4 md:px-6">
@@ -616,7 +611,7 @@ export default function Home() {
                 icon: "🌍",
                 title: "Step 1 - Register",
                 description:
-                  "Pass the Loop shield and join the Loop. Everytime you register in a period, you wil be able to claim in the next one.",
+                  "Pass the Loop shield and match the eligibily criteria. Everytime you register in a period, you wil be able to claim in the next one.",
               },
               {
                 icon: "💡",
@@ -627,10 +622,8 @@ export default function Home() {
               {
                 icon: "⚡",
                 title: "Step 3 - Maintain Eligibility",
-                description:
-                  "Consistently engage to remain eligible; missing a claim period requires re-registration.",
+                description: "Consistently engage and remain eligible, missing a claim period requires re-registration.",
               },
-             
             ].map((feature, index) => (
               <motion.div
                 key={index}
@@ -811,34 +804,25 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <div className="mb-4 md:mb-0 flex items-center space-x-2">
-              <motion.div
-                className="h-8 w-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold text-xs"
-                whileHover={{ rotate: 10 }}
-              >
-                <svg viewBox="0 0 24 24" className="w-5 h-5">
-                  <path d="M12,3 L19,7 L19,17 L12,21 L5,17 L5,7 Z" fill="rgba(255, 255, 255, 0.8)" />
-                  <circle cx="12" cy="12" r="2" fill="rgba(255, 255, 255, 1)" />
-                </svg>
-              </motion.div>
-              <p className="text-sm">© {new Date().getFullYear()} Chiloane Holdings. All rights reserved.</p>
+
+
+           
+                <Image src={GyralisLogo} alt="Gyralis Logo" width={30} height={30} />
+              
+             
+
+
+            
+              <p className="text-sm">Gyralis 2025 - All rights reserved.</p>
             </div>
             <div className="flex space-x-4">
-              <motion.a
-                href="#"
+              <motion.p
                 className="text-gray-400 hover:text-blue-500 transition-colors text-sm"
                 whileHover={{ x: 3 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
-                Privacy Policy
-              </motion.a>
-              <motion.a
-                href="#"
-                className="text-gray-400 hover:text-blue-500 transition-colors text-sm"
-                whileHover={{ x: 3 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                Terms of Service
-              </motion.a>
+                Prototype v.1.0
+              </motion.p>
             </div>
           </motion.div>
         </div>
