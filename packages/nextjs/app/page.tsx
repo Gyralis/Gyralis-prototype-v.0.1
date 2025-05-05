@@ -262,7 +262,7 @@ export default function Home() {
             transition={{ duration: 0.5 }}
           >
             <motion.div
-              className="inline-block text-amber-500"
+              className="inline-block text-[#f7cd6f]"
               animate={{
                 rotate: [0, 10, 0, -10, 0],
               }}
@@ -401,8 +401,8 @@ export default function Home() {
                 custom={index}
                 whileHover={{ y: -10, transition: { duration: 0.2 } }}
               >
-                <div className="bg-gray-900 card border-2 border-gray-800 hover:border-amber-500 transition-colors h-full overflow-hidden group p-2">
-                  <div className="relative border1 px-4">
+                <div className="bg-gray-900 card border-[1px] border-gray-800 hover:border-[#f7cd6f] transition-colors h-full overflow-hidden group p-2">
+                  <div className="relative px-4">
                     <div className="absolute top-0 right-0 h-12 w-12 bg-gradient-to-bl from-[#F6E6A5] to-[#98B2CC] rounded-bl-full opacity-10 border1"></div>
                     <h4 className="text-xl text-[#F7DC6F] mb-1">{division.title}</h4>
                     <p className="text-gray-400 text-sm">{division.description}</p>
@@ -420,7 +420,7 @@ export default function Home() {
                           viewport={{ once: true }}
                         >
                           <motion.span
-                            className="h-1.5 w-1.5 rounded-full bg-amber-500 mr-2"
+                            className="h-1.5 w-1.5 rounded-full bg-[#f7cd6f] mr-2"
                             initial={{ scale: 0 }}
                             whileInView={{ scale: 1 }}
                             transition={{ delay: 0.1 * i + 0.2, duration: 0.3 }}
@@ -438,114 +438,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Performance Section */}
-      {/* <section className="py-16 bg-gray-900" id="performance" ref={performanceRef}>
-        <div className="container mx-auto px-4 md:px-6">
-          <motion.h2
-            className="text-3xl font-bold tracking-tight text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={performanceInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            transition={{ duration: 0.5 }}
-          >
-            <motion.span
-              className="text-blue-500 inline-block"
-              animate={{
-                rotate: [0, 10, 0, -10, 0],
-              }}
-              transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, repeatDelay: 5 }}
-            >
-              📊
-            </motion.span>{" "}
-            Future Projections
-          </motion.h2>
-
-          <motion.div
-            className="grid gap-8 md:grid-cols-2 mb-12"
-            variants={staggerContainer}
-            initial="hidden"
-            animate={performanceInView ? "visible" : "hidden"}
-          >
-            <motion.div variants={fadeInUp}>
-              <PerformanceChart
-                title="Revenue Projections (ZAR)"
-                type="bar"
-                currency={true}
-                data={[
-                  { label: "2024", value: 2500000, color: "rgba(0, 101, 189, 0.8)" },
-                  { label: "2025", value: 5800000, color: "rgba(0, 101, 189, 0.8)" },
-                  { label: "2026", value: 9500000, color: "rgba(0, 101, 189, 0.8)" },
-                  { label: "2027", value: 15000000, color: "rgba(0, 101, 189, 0.7)" },
-                  { label: "2028", value: 22000000, color: "rgba(0, 101, 189, 0.6)" },
-                ]}
-              />
-            </motion.div>
-
-            <motion.div variants={fadeInUp}>
-              <PerformanceChart
-                title="Projected Division Growth"
-                type="pie"
-                data={[
-                  { label: "Khoding Technologies", value: 35, color: "rgba(0, 101, 189, 0.9)" },
-                  { label: "Trading101 FX", value: 25, color: "rgba(0, 101, 189, 0.7)" },
-                  { label: "Audiolab", value: 15, color: "rgba(0, 101, 189, 0.5)" },
-                  { label: "Trading101 Capital", value: 12, color: "rgba(0, 101, 189, 0.4)" },
-                  { label: "VisionSpark", value: 8, color: "rgba(0, 101, 189, 0.3)" },
-                  { label: "Afrimu Publishing", value: 5, color: "rgba(0, 101, 189, 0.2)" },
-                ]}
-              />
-            </motion.div>
-          </motion.div>
-
-          <motion.div
-            className="grid gap-8 md:grid-cols-3"
-            variants={staggerContainer}
-            initial="hidden"
-            animate={performanceInView ? "visible" : "hidden"}
-          >
-            {[
-              {
-                icon: <TrendingUp className="h-8 w-8 text-blue-500" />,
-                title: "Projected Growth",
-                value: "45%",
-                description: "Annual growth target across all divisions",
-              },
-              {
-                icon: <Users className="h-8 w-8 text-blue-500" />,
-                title: "Target Client Base",
-                value: "200+",
-                description: "Clients across South Africa by end of 2025",
-              },
-              {
-                icon: <Target className="h-8 w-8 text-blue-500" />,
-                title: "5-Year Target",
-                value: "R22M",
-                description: "Projected annual revenue by 2028",
-              },
-            ].map((stat, index) => (
-              <motion.div
-                key={index}
-                className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-amber-500/50 transition-all"
-                variants={fadeInUp}
-                whileHover={{ y: -5, boxShadow: "0 10px 25px -5px rgba(245, 158, 11, 0.1)" }}
-              >
-                <div className="flex flex-col items-center text-center">
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.5, delay: 0.2 * index }}
-                  >
-                    {stat.icon}
-                  </motion.div>
-                  <h3 className="mt-4 text-lg font-medium text-white">{stat.title}</h3>
-                  <div className="mt-2 text-3xl font-bold text-blue-500">{stat.value}</div>
-                  <p className="mt-2 text-sm text-gray-400">{stat.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </section> */}
-
+      
       {/* Company Info Slider */}
       <section className="py-16 bg-[#121212]">
         <div className="container mx-auto px-4 md:px-6">
@@ -627,7 +520,7 @@ export default function Home() {
             ].map((feature, index) => (
               <motion.div
                 key={index}
-                className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-amber-500 transition-colors group"
+                className="bg-gray-800 p-6 rounded-lg border border-gray-700 hover:border-[#f7cd6f] transition-colors group"
                 variants={fadeInUp}
                 whileHover={{ y: -10, transition: { duration: 0.2 } }}
               >

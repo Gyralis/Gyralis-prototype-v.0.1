@@ -73,7 +73,7 @@ export const LoopComponent = () => {
       const response = await fetch("/api/submit-passport", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ connectedAccount }),
+        body: JSON.stringify({ address: connectedAccount }),
       });
       if (!response.ok) throw new Error("Submission failed while submitting passport");
       setHasSubmitted(false);

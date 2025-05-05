@@ -89,7 +89,7 @@ export const InfoSlider = ({ slides, autoPlay = true, interval = 20000 }: InfoSl
             )}
 
             <h3 className="mb-4 text-2xl font-bold text-white">
-              <span className="text-amber-500">{slides[currentIndex].title.split(" ")[0]}</span>{" "}
+              <span className="text-[#f7cd6f]">{slides[currentIndex].title.split(" ")[0]}</span>{" "}
               {slides[currentIndex].title.split(" ").slice(1).join(" ")}
             </h3>
 
@@ -107,7 +107,7 @@ export const InfoSlider = ({ slides, autoPlay = true, interval = 20000 }: InfoSl
               setCurrentIndex(index)
             }}
             className={`h-2 w-2 rounded-full transition-all ${
-              index === currentIndex ? "bg-amber-500 w-6" : "bg-gray-600"
+              index === currentIndex ? "bg-[#f7cd6f] w-6" : "bg-gray-600"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />
@@ -115,7 +115,7 @@ export const InfoSlider = ({ slides, autoPlay = true, interval = 20000 }: InfoSl
       </div>
 
       <button
-        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700 hover:text-amber-500"
+        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700 hover:text-[#f7cd6f]"
         onClick={handlePrevious}
         aria-label="Previous slide"
       >
@@ -124,7 +124,7 @@ export const InfoSlider = ({ slides, autoPlay = true, interval = 20000 }: InfoSl
 
       <button
      
-        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700 hover:text-amber-500"
+        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full border-gray-700 bg-gray-800/50 text-white hover:bg-gray-700 hover:text-[#f7cd6f]"
         onClick={handleNext}
         aria-label="Next slide"
       >
