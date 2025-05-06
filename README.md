@@ -1,4 +1,4 @@
-# 🏗Gyralis Protype
+#Gyralis - prototype v.1.0
 
 <h4 align="center">
   <a href="https://www.gyralis.xyz/">Website</a>
