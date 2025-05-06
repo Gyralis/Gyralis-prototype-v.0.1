@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { motion, useAnimation, useInView } from "framer-motion";
+import { ArrowPathIcon, ClockIcon, Cog6ToothIcon, ShieldCheckIcon, SparklesIcon } from "@heroicons/react/20/solid";
 import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
 import { ParticleBackground } from "~~/components/landing-page";
 import { InfoSlider } from "~~/components/landing-page";
@@ -247,81 +248,77 @@ export default function Home() {
           >
             {[
               {
-                icon: "tech",
+                icon: <ShieldCheckIcon className="h-7 w-7 text-[#f7cd6f]" />,
                 title: "Loop shield",
                 description: "Ensuring Verified Participation.",
                 content:
-                  "A technology hub that builds real-world digital solutions, including mobile apps, smart tools, and next-gen platforms. We believe in solving problems through functionality, simplicity, and speed.",
+                  "Loop Shield protects the integrity of Loops by requiring users to verify their identity. This ensures that only real, unique individuals can participate in token claiming—helping making rewards distribution fairer.",
                 services: [
-                  "Web & Mobile App Development",
-                  "Software Engineering & Tool Creation",
-                  "Platform Design",
-                  "UI/UX Strategy",
+                  "Gitcoin Passport integration",
+                  "Minimum score requirement: 15 points",
+                  "Future support for additional verification methods",
                 ],
               },
               {
-                icon: "audio",
-                title: "Maintaining Eligibility:",
+                icon: <ArrowPathIcon className="h-7 w-7 text-[#f7cd6f]" />,
+                title: "Eligibility Criteria:",
                 description: "Encouraging Active Participation.",
                 content:
-                  "A music production and sound design studio producing high-quality house, soulful, and Afro-inspired music. Perfect for DJs, vocalists, producers, and creatives.",
+                  "Gyralis allows communities to define who can participate in Loops by setting eligibility requirements. These criteria ensure that participants are meaningfully aligned with the community's goals and values",
                 services: [
-                  "Music Production & Remixes",
-                  "Professional Mixing & Mastering",
-                  "Vocal Processing & Audio Engineering",
-                  "Sound Branding",
+                  "Default criteria like token staking and NFT ownership (Coming Soon)",
+                  "Custom eligibility logic built with the Gyralis team",
                 ],
               },
               {
-                icon: "publishing",
+                icon: <ClockIcon className="h-7 w-7 text-[#f7cd6f]" />,
                 title: "Daily Claims",
                 description: "Rewarding Consistent Engagement.",
                 content:
-                  "Combining traditional publishing with modern music and content marketing strategies to amplify African voices, authors, and artists.",
+                  "Gyralis encourages regular user participation through a daily claim system. This powerful mechanic ensures continuous community involvement and makes rewards predictable and transparent.",
                 services: [
-                  "Book Publishing & eBook Development",
-                  "Artist Branding & Digital Marketing",
-                  "Social Media Content Strategy",
-                  "Content Writing & Distribution Support",
+                  "Daily claim period (currently 24 hours for prototype)",
+                  "10% of the Loop balance is distributed daily among registered users",
+                  "Missed a claim? Re-register to join the next cycle",
                 ],
               },
               {
-                icon: "forex",
-                title: "Trading101 FX",
-                description: "Trade Smarter, Live Freer",
+                icon: <Cog6ToothIcon className="h-7 w-7 text-[#f7cd6f]" />,
+                title: "Period Length",
+                description: "Time Setting for Claims.",
                 content:
-                  "Our forex and crypto arm focuses on high-precision trading tools, mentorship, and automated systems for consistent performance in volatile markets.",
+                  "Each loop runs on a defined period that determines the frequency of claims.",
                 services: [
-                  "Forex & Crypto Strategy (Smart Money Concepts)",
-                  "Expert Advisor (EA) Development for MT4/MT5",
-                  "Market Mentorship & Analysis",
-                  "Trading Content & Education",
+                 "Current demo uses a 24-hour period per claim window",
+                 "Period settings align with community rhythms and objectives",
+                 "Future support for dynamic period adjustments (Coming Soon)"
                 ],
               },
               {
-                icon: "capital",
-                title: "Trading101 Capital",
-                description: "Build Wealth. Think Long-Term.",
+                icon: <Cog6ToothIcon className="h-7 w-7 text-[#f7cd6f]" />,
+                title: "Distribution Per Period",
+                description: "Predictable, Fair Token Distribution.",
                 content:
-                  "Focused on strategic investments in property and equities, Trading101 Capital supports individuals and entities looking to grow wealth sustainably.",
+                  "A fixed percentage of the loop’s token balance is allocated for each distribution cycle, rewarding active participants during that period evenly.",
                 services: [
-                  "Share & Property Investment",
-                  "Portfolio Strategy & Management",
-                  "Investment Research & Reports",
-                  "Passive Income Guidance",
+                  "10% of the loop’s balance allocation is released every period",
+                  "Tokens are evenly split among all eligible claimants",
+                 
+                  "Adjustable distribution rates per campaign (Coming Soon)"
                 ],
               },
+            
               {
-                icon: "consulting",
-                title: "VisionSpark Consulting",
-                description: "Ignite Your Business Potential",
+                icon: <SparklesIcon className="h-7 w-7 text-[#f7cd6f]" />,
+                title: "Boosted Loops",
+                description: "Powering the Gyra-Economy (Coming Soon).",
                 content:
-                  "VisionSpark is our premium business consulting agency helping startups, creatives, and enterprises grow through strategic thinking, data-backed insights, and future-focused development.",
+                  " A new layer is coming to Gyralis... where loops aren’t just about distribution—they're about strategy, gamification, and token utility. Boosted Loops will introduce the native Gyralis Token into the ecosystem, unlocking new mechanics and deeper incentive design for communities.",
                 services: [
-                  "Business & Brand Strategy",
-                  "Market Research & Competitor Analysis",
-                  "Process Optimization",
-                  "Startup Support & Business Growth Planning",
+                  "Gamified token distribution using the Gyralis Token",
+                  "Loop creators gain new tools to amplify engagement",
+                  "Exclusive utility and multipliers tied to user actions",
+                 
                 ],
               },
             ].map((division, index) => (
@@ -333,7 +330,7 @@ export default function Home() {
               >
                 <div className="bg-gray-900 card border-[1px] border-gray-800 hover:border-[#f7cd6f] transition-colors h-full overflow-hidden group p-2">
                   <div className="relative px-4">
-                    <div className="absolute top-0 right-0 h-12 w-12 bg-gradient-to-bl from-[#F6E6A5] to-[#98B2CC] rounded-bl-full opacity-10 border1"></div>
+                    <div className="absolute top-0 right-2">{division.icon}</div>
                     <h4 className="text-xl text-[#F7DC6F] mb-1">{division.title}</h4>
                     <p className="text-gray-400 text-sm">{division.description}</p>
                   </div>
@@ -368,51 +365,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Company Info Slider */}
-      <section className="py-16 bg-[#121212]">
-        <div className="container mx-auto px-4 md:px-6">
-          <motion.h2
-            className="text-3xl font-bold tracking-tight text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            About us
-          </motion.h2>
-
-          <InfoSlider
-            slides={[
-              {
-                title: "Our Mission",
-                content:
-                  "We’re building Gyralis to turn daily participation into progress — by creating dynamic loops that reward real engagement and power innovation. It’s transparent, fair, and built for long-term growth.",
-                color: "#0065BD",
-              },
-              {
-                title: "Our Vision",
-                content:
-                  "To become the a leading platform for decentralized orgnization-driven engagement, where organizations, users, and sponsors collaborate seamlessly in a self-sustaining economy. .",
-                color: "#0065BD",
-              },
-              {
-                title: "The Road Ahead",
-                content:
-                  "Our focus is on growing Gyralis and bringing it to new DAOs, communities, and users. As we scale, we’ll support a wider range of sybil-resistance verification methods to ensure fair participation while at the same time, expand eligibility criteria to allow more flexible participation requirements — such as token staking, NFT ownership, or custom community conditions.",
-                color: "#0065BD",
-              },
-              {
-                title: "Be Part of Gyralis",
-                content:
-                  "Whether you're a DAO seeking to reward your community, a user eager to engage meaningfully, or a verification provider looking to integrate — Gyralis is your platform. Together, we can build sustainable engagement loops powered by a shared economy that rewards participation.",
-                color: "#0065BD",
-              },
-            ]}
-          />
-        </div>
-      </section>
-
-      {/* Why Choose Us */}
-      <section className="py-16 bg-[#121212]" id="why-us" ref={whyUsRef}>
+        {/* How It Works */}
+        <section className="py-16 bg-[#121212]" id="why-us" ref={whyUsRef}>
         <div className="container mx-auto px-4 md:px-6">
           <motion.h2
             className="text-3xl font-bold tracking-tight text-center mb-12"
@@ -480,6 +434,51 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* About Us Info Slider */}
+      <section className="py-16 bg-[#121212]">
+        <div className="container mx-auto px-4 md:px-6">
+          <motion.h2
+            className="text-3xl font-bold tracking-tight text-center mb-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            About us
+          </motion.h2>
+
+          <InfoSlider
+            slides={[
+              {
+                title: "Our Mission",
+                content:
+                  "We’re building Gyralis to turn daily participation into progress — by creating dynamic loops that reward real engagement and power innovation. It’s transparent, fair, and built for long-term growth.",
+                color: "#0065BD",
+              },
+              {
+                title: "Our Vision",
+                content:
+                  "To become the a leading platform for decentralized orgnization-driven engagement, where organizations, users, and sponsors collaborate seamlessly in a self-sustaining economy. .",
+                color: "#0065BD",
+              },
+              {
+                title: "The Road Ahead",
+                content:
+                  "Our focus is on growing Gyralis and bringing it to new DAOs, communities, and users. As we scale, we’ll support a wider range of sybil-resistance verification methods to ensure fair participation while at the same time, expand eligibility criteria to allow more flexible participation requirements — such as token staking, NFT ownership, or custom community conditions.",
+                color: "#0065BD",
+              },
+              {
+                title: "Be Part of Gyralis",
+                content:
+                  "Whether you're a DAO seeking to reward your community, a user eager to engage meaningfully, or a verification provider looking to integrate — Gyralis is your platform. Together, we can build sustainable engagement loops powered by a shared economy that rewards participation.",
+                color: "#0065BD",
+              },
+            ]}
+          />
+        </div>
+      </section>
+
+    
     </div>
   );
 }

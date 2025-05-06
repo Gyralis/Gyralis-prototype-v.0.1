@@ -98,7 +98,7 @@ export const Header = () => {
           </motion.a>
           {isHomePage && (
             <nav className="hidden md:flex space-x-8">
-              {["What is Gylaris", "Loops", "How it Works", "Roadmap", "Contact"].map((item, i) => (
+              {["What is Gylaris", "Loops", "How it Works", "About us", "Contact"].map((item, i) => (
                 <motion.a
                   key={i}
                   href={`#${item.toLowerCase().replace(" ", "-")}`}
