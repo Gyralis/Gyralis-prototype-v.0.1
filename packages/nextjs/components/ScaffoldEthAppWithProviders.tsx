@@ -12,19 +12,15 @@ import { Footer } from "~~/components/Footer";
 import { BlockieAvatar } from "~~/components/scaffold-eth";
 import { useInitializeNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
+import { Header } from "./Header";
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   useInitializeNativeCurrencyPrice();
   return (
     <>
-     
-        {/* <Header /> */}
-        <main className="relative flex flex-col flex-1 px-4">
-          
-          {children}
-        </main>
-        {/* <Footer /> */}
-     
+      <Header />
+      <main className="relative flex flex-col flex-1">{children}</main>
+      <Footer />
       <Toaster />
     </>
   );

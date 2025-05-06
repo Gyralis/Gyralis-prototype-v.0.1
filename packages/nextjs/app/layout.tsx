@@ -1,9 +1,10 @@
 import { Poppins } from "next/font/google";
 import "@rainbow-me/rainbowkit/styles.css";
 import { ScaffoldEthAppWithProviders } from "~~/components/ScaffoldEthAppWithProviders";
-import { ThemeProvider } from "~~/components/ThemeProvider";
+// import { ThemeProvider } from "~~/components/ThemeProvider";
 import "~~/styles/globals.css";
 import { getMetadata } from "~~/utils/scaffold-eth/getMetadata";
+import { Header } from "~~/components/Header";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -15,8 +16,9 @@ export const metadata = getMetadata({ title: "Gyralis App", description: "Web3 t
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html suppressHydrationWarning lang="en" className={`${poppins.variable}`}>
+    <html suppressHydrationWarning lang="en" className={`${poppins.variable} bg-[#121212] mx-auto`}>
       <body className="min-h-screen font-poppins">
+        
         {/* <ThemeProvider enableSystem> */}
           <ScaffoldEthAppWithProviders>{children}</ScaffoldEthAppWithProviders>
         {/* </ThemeProvider> */}
@@ -24,5 +26,6 @@ const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
     </html>
   );
 };
+
 
 export default ScaffoldEthApp;

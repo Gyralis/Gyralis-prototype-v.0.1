@@ -92,6 +92,10 @@ button {
   @apply shadow-none;
 }
 
+.border1{
+  border: 2px solid white;
+}
+
 .border2 {
  border: 2px solid black;
 }
