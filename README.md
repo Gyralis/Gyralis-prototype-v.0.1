@@ -1,8 +1,40 @@
-#Gyralis - prototype v.1.0
+# Gyralis  
+### *Reimagining Token Distribution Through Daily Participation*
 
-<h4 align="center">
-  <a href="https://www.gyralis.xyz/">Website</a>
-</h4>
+**Prototype v0.1**
 
-![Claim Token, Every Day](https://github.com/user-attachments/assets/43d19619-6901-4c8c-8489-d8facce43570)
+🌐 [gyralis.xyz](https://gyralis.xyz)
+
+**Gyralis** is a modular, gamified token distribution platform designed for DAOs and Web3 communities.  
+Instead of relying on flawed airdrops, Gyralis introduces dynamic reward loops that align incentives between organizations and users.
+
+---
+
+## ✨ Key Features
+
+- 🧩 **Modular Architecture**  
+  Create token distribution campaigns aligned with your community’s values, incentives, and engagement strategies.
+
+- 🔐 **Flexible Eligibility Criteria**  
+Define who can participate using built-in strategies like token staking and NFT ownership (Coming Soon), or collaborate with our team to create fully custom eligibility criteria tailored to your community’s needs.
+- 🛡️ **Sybil-Resistant Verification**  
+  Ensure fair participation using verification tools. Currently integrates [Gitcoin Passport](https://passport.gitcoin.co/) (15+ score required in prototype).  
+  More identity and sybil-resistance methods are planned for future versions.
+
+- 🎮 **Gamified Claiming** *(Coming Soon)*  
+  Turn token claiming into a rewarding daily habit to keep communities engaged and active.
+
+- 🤝 **Shared Incentives for DAOs** *(Coming Soon)*  
+  Organizations will be rewarded as they distribute tokens—fueling a mutually beneficial ecosystem.
+
+---
+
+> Build sustainable engagement loops.  
+> Reward daily participation.  
+> Shape the future of token utility.
+
+
+
+
+![Gyralis](https://github.com/user-attachments/assets/83605fcc-016a-45ed-a1dd-711bf2afc104)
 
