@@ -4,8 +4,10 @@ import React, { useCallback, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { ArrowRightIcon, Bars3Icon, BugAntIcon, HomeModernIcon, LifebuoyIcon } from "@heroicons/react/24/outline";
-import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
+import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
+import { RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 
 type HeaderMenuLink = {
@@ -74,40 +76,73 @@ export const Header = () => {
   const isHomePage = pathname === "/";
 
   return (
-    <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
-      <div className="navbar-start w-auto lg:w-1/2">
-        <div className="lg:hidden dropdown" ref={burgerMenuRef}>
-          <label
-            tabIndex={0}
-            className={`ml-1 btn btn-ghost ${isDrawerOpen ? "hover:bg-secondary" : "hover:bg-transparent"}`}
-            onClick={() => {
-              setIsDrawerOpen(prevIsOpenState => !prevIsOpenState);
-            }}
+    <motion.header
+      className={`border-b border-gray-800 z-50 backdrop-blur-md bg-[#121212]/80 ${isHomePage ? "sticky top-0" : "relative"}`}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, delay: 0.2 }}
+    >
+      <div className="container mx-auto px-4 md:px-6 py-4 ">
+        <div className="flex justify-between items-center ">
+          <motion.a
+            href="/"
+            className="flex items-center space-x-2"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            <Bars3Icon className="h-1/2" />
-          </label>
+            <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-300 flex items-center justify-center text-white font-bold relative overflow-hidden group">
+              <div className="absolute inset-0 bg-gradient-to-r from-[#3182C8] to-blue-[#DDE7F0] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <Image src={GyralisLogo} alt="Gyralis Logo" width={30} height={30} />
+            </div>
+            <span className="text-2xl font-bold text-blue-500">Gyralis</span>
+          </motion.a>
+          {isHomePage && (
+            <nav className="hidden md:flex space-x-8">
+              {["What is Gylaris", "Loops", "How it Works", "Roadmap", "Contact"].map((item, i) => (
+                <motion.a
+                  key={i}
+                  href={`#${item.toLowerCase().replace(" ", "-")}`}
+                  className="text-gray-300 hover:text-blue-500 transition-colors relative"
+                  whileHover={{ scale: 1.1 }}
+                  initial={{ opacity: 0, y: -20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.1 * i }}
+                >
+                  {item}
+                  <motion.span
+                    className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-500"
+                    initial={{ width: 0 }}
+                    whileHover={{ width: "100%" }}
+                    transition={{ duration: 0.2 }}
+                  />
+                </motion.a>
+              ))}
+            </nav>
+          )}
+          <div className=" flex items-center space-x-4">
+            {!isHomePage ? (
+              <>
+                <RainbowKitCustomConnectButton />
+              </>
+            ) : (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.3, delay: 0.5 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  href={"/prototype/1hive"}
+                  className="btn border-none text-black bg-[#3182C8]  relative overflow-hidden group"
+                >
+                  Go to Prototype
+                </Link>
+              </motion.button>
+            )}
+          </div>
         </div>
-        <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
-          <div className="flex relative w-10 h-10">
-            <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
-          </div>
-          <div className="flex flex-col">
-            <span className="font-bold leading-tight">Gyralis</span>
-          </div>
-        </Link>
       </div>
-      <div className="navbar-end flex-grow mr-4">
-        {!isHomePage ? (
-          <>
-            <RainbowKitCustomConnectButton />
-            <FaucetButton />
-          </>
-        ) : (
-          <Link href={"/prototype"} className="flex items-center justify-center gap-1 hover:opacity-85">
-            <ArrowRightIcon width={16} height={16} /> Prototype
-          </Link>
-        )}
-      </div>
-    </div>
+    </motion.header>
   );
 };

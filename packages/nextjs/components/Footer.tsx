@@ -1,17 +1,35 @@
 import React from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
 
 export const Footer = () => {
-
   return (
-    <div className="min-h-0 py-5 px-1 mb-11 lg:mb-0">
-      <div>
-        <div className="fixed flex justify-center items-center w-full z-10 p-4 bottom-0 left-0 pointer-events-noxs">
-       
-            <p className="text-xs">
-            {`${new Date().getFullYear()} Gyralis. All rights reserved - Powered by 1hive`}
-            </p>
-        </div>
+    <footer className="py-6 bg-black text-gray-400">
+      <div className="container mx-auto px-4 md:px-6">
+        <motion.div
+          className="flex flex-col md:flex-row justify-between items-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+        >
+          <div className="mb-4 md:mb-0 flex items-center space-x-2">
+            <Image src={GyralisLogo} alt="Gyralis Logo" width={30} height={30} />
+
+            <p className="text-sm">Gyralis 2025 - All rights reserved.</p>
+          </div>
+          <div className="flex space-x-4">
+            <motion.p
+              className="text-gray-400 hover:text-blue-500 transition-colors text-sm"
+              whileHover={{ x: 3 }}
+              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            >
+              Prototype v.1.0
+            </motion.p>
+          </div>
+        </motion.div>
       </div>
-    </div>
+    </footer>
   );
 };

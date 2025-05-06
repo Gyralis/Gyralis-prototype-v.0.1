@@ -2,31 +2,20 @@
 
 import { useEffect, useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
-//import { ArrowRight, Mail, MapPin, Phone, Linkedin, Instagram, Youtube, TrendingUp, Users, Target } from "lucide-react"
-//import { Button } from "@/components/ui/button"
 import { motion, useAnimation, useInView } from "framer-motion";
 import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
-//import { useMobile } from "@/hooks/use-mobile"
 import { ParticleBackground } from "~~/components/landing-page";
 import { InfoSlider } from "~~/components/landing-page";
 
 export default function Home() {
-  //const isMobile = useMobile()
   const controls = useAnimation();
   const aboutRef = useRef(null);
   const divisionsRef = useRef(null);
-  const expertiseRef = useRef(null);
   const whyUsRef = useRef(null);
-  const contactRef = useRef(null);
-  const performanceRef = useRef(null);
 
   const aboutInView = useInView(aboutRef, { once: true, amount: 0.3 });
   const divisionsInView = useInView(divisionsRef, { once: true, amount: 0.1 });
-  const expertiseInView = useInView(expertiseRef, { once: true, amount: 0.3 });
   const whyUsInView = useInView(whyUsRef, { once: true, amount: 0.3 });
-  const contactInView = useInView(contactRef, { once: true, amount: 0.3 });
-  const performanceInView = useInView(performanceRef, { once: true, amount: 0.3 });
 
   useEffect(() => {
     if (aboutInView) {
@@ -91,65 +80,6 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-[#121212] text-white overflow-hidden">
-      {/* Navigation */}
-      <motion.header
-        className="border-b border-gray-800 sticky top-0 z-50 backdrop-blur-md bg-[#121212]/80"
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
-      >
-        <div className="container mx-auto px-4 md:px-6 py-4">
-          <div className="flex justify-between items-center">
-            <motion.div
-              className="flex items-center space-x-2"
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-              <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-500 to-blue-300 flex items-center justify-center text-white font-bold relative overflow-hidden group">
-                <div className="absolute inset-0 bg-gradient-to-r from-[#3182C8] to-blue-[#DDE7F0] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                <Image src={GyralisLogo} alt="Gyralis Logo" width={30} height={30} />
-              </div>
-              <span className="text-2xl font-bold text-blue-500">Gyralis</span>
-            </motion.div>
-            <nav className="hidden md:flex space-x-8">
-              {["What is Gylaris", "Loops", "How it Works", "Roadmap", "Contact"].map((item, i) => (
-                <motion.a
-                  key={i}
-                  href={`#${item.toLowerCase().replace(" ", "-")}`}
-                  className="text-gray-300 hover:text-blue-500 transition-colors relative"
-                  whileHover={{ scale: 1.1 }}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, delay: 0.1 * i }}
-                >
-                  {item}
-                  <motion.span
-                    className="absolute bottom-0 left-0 w-0 h-0.5 bg-blue-500"
-                    initial={{ width: 0 }}
-                    whileHover={{ width: "100%" }}
-                    transition={{ duration: 0.2 }}
-                  />
-                </motion.a>
-              ))}
-            </nav>
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.5 }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Link
-                href={"/prototype/1hive"}
-                className="btn border-none text-black bg-[#3182C8]  relative overflow-hidden group"
-              >
-                Go to Prototype
-              </Link>
-            </motion.button>
-          </div>
-        </div>
-      </motion.header>
-
       {/* Hero Section */}
       <section className="py-20 relative overflow-hidden min-h-[90vh] flex items-center">
         <ParticleBackground />
@@ -438,7 +368,6 @@ export default function Home() {
         </div>
       </section>
 
-      
       {/* Company Info Slider */}
       <section className="py-16 bg-[#121212]">
         <div className="container mx-auto px-4 md:px-6">
@@ -515,7 +444,8 @@ export default function Home() {
               {
                 icon: "⚡",
                 title: "Step 3 - Maintain Eligibility",
-                description: "Consistently engage and remain eligible, missing a claim period requires re-registration.",
+                description:
+                  "Consistently engage and remain eligible, missing a claim period requires re-registration.",
               },
             ].map((feature, index) => (
               <motion.div
@@ -550,42 +480,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
- 
-
-      {/* Footer */}
-      <footer className="py-6 bg-black text-gray-400">
-        <div className="container mx-auto px-4 md:px-6">
-          <motion.div
-            className="flex flex-col md:flex-row justify-between items-center"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-          >
-            <div className="mb-4 md:mb-0 flex items-center space-x-2">
-
-
-           
-                <Image src={GyralisLogo} alt="Gyralis Logo" width={30} height={30} />
-              
-             
-
-
-            
-              <p className="text-sm">Gyralis 2025 - All rights reserved.</p>
-            </div>
-            <div className="flex space-x-4">
-              <motion.p
-                className="text-gray-400 hover:text-blue-500 transition-colors text-sm"
-                whileHover={{ x: 3 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                Prototype v.1.0
-              </motion.p>
-            </div>
-          </motion.div>
-        </div>
-      </footer>
     </div>
   );
 }
