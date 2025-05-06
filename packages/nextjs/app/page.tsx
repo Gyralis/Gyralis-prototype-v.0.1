@@ -148,7 +148,7 @@ export default function Home() {
         <div className="absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#121212] to-transparent"></div>
       </section>
 
-      {/* About Section */}
+      {/* What is Gylaris */}
       <section className="py-16 bg-gray-900" id="about" ref={aboutRef}>
         <div className="container mx-auto px-4 md:px-6">
           <motion.div
@@ -252,7 +252,7 @@ export default function Home() {
                 title: "Loop shield",
                 description: "Ensuring Verified Participation.",
                 content:
-                  "Loop Shield protects the integrity of Loops by requiring users to verify their identity. This ensures that only real, unique individuals can participate in token claiming—helping making rewards distribution fairer.",
+                  "Loop Shield protects the integrity of Loops by requiring users to verify their identity. This ensures that  unique individuals can claim, making rewards distribution fairer.",
                 services: [
                   "Gitcoin Passport integration",
                   "Minimum score requirement: 15 points",
@@ -275,7 +275,7 @@ export default function Home() {
                 title: "Daily Claims",
                 description: "Rewarding Consistent Engagement.",
                 content:
-                  "Gyralis encourages regular user participation through a daily claim system. This powerful mechanic ensures continuous community involvement and makes rewards predictable and transparent.",
+                  "Gyralis encourages regular user participation through a daily claim system. This powerful mechanic ensures continuous community momentum and makes rewards predictable and transparent.",
                 services: [
                   "Daily claim period (currently 24 hours for prototype)",
                   "10% of the Loop balance is distributed daily among registered users",
@@ -286,12 +286,11 @@ export default function Home() {
                 icon: <Cog6ToothIcon className="h-7 w-7 text-[#f7cd6f]" />,
                 title: "Period Length",
                 description: "Time Setting for Claims.",
-                content:
-                  "Each loop runs on a defined period that determines the frequency of claims.",
+                content: "Each loop runs on a defined period that determines the frequency of claims.",
                 services: [
-                 "Current demo uses a 24-hour period per claim window",
-                 "Period settings align with community rhythms and objectives",
-                 "Future support for dynamic period adjustments (Coming Soon)"
+                  "Current demo uses a 24-hour period per claim window",
+                  "Period settings align with community rhythms and objectives",
+                  "Future support for dynamic period adjustments (Coming Soon)",
                 ],
               },
               {
@@ -303,22 +302,21 @@ export default function Home() {
                 services: [
                   "10% of the loop’s balance allocation is released every period",
                   "Tokens are evenly split among all eligible claimants",
-                 
-                  "Adjustable distribution rates per campaign (Coming Soon)"
+
+                  "Adjustable distribution rates per campaign (Coming Soon)",
                 ],
               },
-            
+
               {
                 icon: <SparklesIcon className="h-7 w-7 text-[#f7cd6f]" />,
-                title: "Boosted Loops",
-                description: "Powering the Gyra-Economy (Coming Soon).",
+                title: "Boosted Loops (coming soon)",
+                description: "Powering the Gyra-Economy.",
                 content:
                   " A new layer is coming to Gyralis... where loops aren’t just about distribution—they're about strategy, gamification, and token utility. Boosted Loops will introduce the native Gyralis Token into the ecosystem, unlocking new mechanics and deeper incentive design for communities.",
                 services: [
-                  "Gamified token distribution using the Gyralis Token",
+                  "Gamified token distribution using the Gyralis Token to power the Gyra-Economy",
                   "Loop creators gain new tools to amplify engagement",
                   "Exclusive utility and multipliers tied to user actions",
-                 
                 ],
               },
             ].map((division, index) => (
@@ -365,8 +363,8 @@ export default function Home() {
         </div>
       </section>
 
-        {/* How It Works */}
-        <section className="py-16 bg-[#121212]" id="why-us" ref={whyUsRef}>
+      {/* How It Works */}
+      <section className="py-16 bg-[#121212]" id="why-us" ref={whyUsRef}>
         <div className="container mx-auto px-4 md:px-6">
           <motion.h2
             className="text-3xl font-bold tracking-tight text-center mb-12"
@@ -464,21 +462,19 @@ export default function Home() {
               {
                 title: "The Road Ahead",
                 content:
-                  "Our focus is on growing Gyralis and bringing it to new DAOs, communities, and users. As we scale, we’ll support a wider range of sybil-resistance verification methods to ensure fair participation while at the same time, expand eligibility criteria to allow more flexible participation requirements — such as token staking, NFT ownership, or custom community conditions.",
+                  "Our focus is on growing Gyralis and bringing it to new DAOs, communities, and users. As we scale, we’ll support a wider range of sybil-resistance verification methods while at the same time expand eligibility criteria to allow more flexible participation requirements.",
                 color: "#0065BD",
               },
               {
                 title: "Be Part of Gyralis",
                 content:
-                  "Whether you're a DAO seeking to reward your community, a user eager to engage meaningfully, or a verification provider looking to integrate — Gyralis is your platform. Together, we can build sustainable engagement loops powered by a shared economy that rewards participation.",
+                  "Whether you're a DAO seeking to reward your community, a user eager to engage meaningfully, or a verification provider looking to integrate or chain looking for new project — Gyralis is your platform. Together, we can build sustainable engagement loops powered by a shared economy that rewards daily participation.",
                 color: "#0065BD",
               },
             ]}
           />
         </div>
       </section>
-
-    
     </div>
   );
 }
