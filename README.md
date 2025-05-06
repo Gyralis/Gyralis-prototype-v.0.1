@@ -1,9 +1,8 @@
 # 🏗Gyralis Protype
 
 <h4 align="center">
-  <a href="https://localh](http://localhost:3000">Website</a>
+  <a href="https://www.gyralis.xyz/">Website</a>
 </h4>
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
-
+![Claim Token, Every Day](https://github.com/user-attachments/assets/43d19619-6901-4c8c-8489-d8facce43570)
 
