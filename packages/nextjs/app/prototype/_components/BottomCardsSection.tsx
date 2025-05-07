@@ -35,8 +35,8 @@ const BottomCardsSection = ({
               <h3 className="text-xl sm:text-xl font-bold text-[#f7cd6f] mb-4">GITCOIN PASSPORT</h3>
             </div>
             <div className="space-y-2">
-              <p className="text-gray-100 flex items-center gap-2">
-                Min score required: <span className="font-semibold text-white text-lg">15</span>
+              <p className="flex items-center gap-2">
+                Score required: <span className="font-semibold text-lg text-[#f7cd6f]">15</span>
               </p>
               {hasSubmitted ? (
                 <p className="text-gray-100 flex items-center gap-2">
@@ -67,7 +67,7 @@ const BottomCardsSection = ({
           <div className="">
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <h3 className="text-xl sm:text-2xl font-bold text-[#f7cd6f] mb-4">ELIGIBILITY:</h3>
-              <h3 className="text-xl sm:text-xl font-bold text-[#f7cd6f] mb-4">1HIVE MEMBER</h3>
+              <h3 className="text-xl sm:text-xl font-bold text-[#f7cd6f] mb-4">1HIVE MEMBER IN GARDENS V2</h3>
             </div>
             <a
               target="_blank"

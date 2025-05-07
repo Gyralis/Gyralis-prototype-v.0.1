@@ -1,5 +1,5 @@
 import React from "react";
-import { ArrowPathIcon, ClockIcon, ShieldCheckIcon } from "@heroicons/react/20/solid";
+import { ArrowPathIcon, ChevronDownIcon, ClockIcon, ShieldCheckIcon } from "@heroicons/react/20/solid";
 
 const InfoSection: React.FC = () => {
   return (
@@ -15,7 +15,7 @@ const InfoSection: React.FC = () => {
           consistent daily participation.
         </p>
 
-        <h3 className="text-lg sm:text-xl font-medium mb-3 sm:mb-4">To claim:</h3>
+        <h3 className="text-md sm:text-lg font-medium mb-3 sm:mb-4">Register & Claim:</h3>
 
         <div className="space-y-4">
           <div className="bg-[#629fd3]/20 p-3 rounded-lg border-l-4 border-[#f7cd6f]">
@@ -50,12 +50,15 @@ const InfoSection: React.FC = () => {
               <div>
                 <h4 className="font-semibold text-[#f7cd6f] mb-1">Maintain Eligibility</h4>
                 <p className="text-sm text-gray-100">
-                  Ensure your ongoing status as a 1Hive member to continue
-                  claiming rewards
+                  Ensure your ongoing status as a 1Hive member in Gardens V2 to continue claiming rewards.
                 </p>
               </div>
             </div>
           </div>
+        </div>
+        <div className="flex justify-center items-center mt-4 gap-1">
+          <p className="text-xs">Submit or view your Passport score</p>
+          <ChevronDownIcon className="w-5 h-5 text-[#f7cd6f] animate-bounce" />
         </div>
       </div>
     </section>
