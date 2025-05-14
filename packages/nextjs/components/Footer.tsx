@@ -6,7 +6,7 @@ import GyralisLogo from "~~/components/assets/GyralisLogo.svg";
 
 export const Footer = () => {
   return (
-    <footer className="py-3 bg-[#121212] text-gray-400 ">
+    <footer className="py-6 bg-[#121212] text-gray-400 ">
       <div className="container mx-auto px-4 md:px-6">
         <motion.div
           className="flex flex-col md:flex-row justify-between items-center"

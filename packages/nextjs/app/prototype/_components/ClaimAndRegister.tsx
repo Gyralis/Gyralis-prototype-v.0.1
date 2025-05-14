@@ -1,9 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { ModalAnimated } from "./ModalAnimated";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useChainId, useTransactionConfirmations } from "wagmi";
+import { EyeIcon } from "@heroicons/react/24/outline";
+import { Address } from "~~/components/scaffold-eth";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
 import { useScaffoldWriteContract } from "~~/hooks/scaffold-eth/useScaffoldWriteContract";
@@ -19,6 +22,7 @@ type ButtonState = "register" | "claim" | "ok";
 
 export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: ClaimAndRegisterProps) => {
   const [buttonState, setButtonState] = useState<ButtonState>("register");
+  const [openModal, setOpenModal] = useState(false);
   const [checkEligibility, setCheckEligibility] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -33,6 +37,10 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     args: [connectedAccount],
     watch: false,
   });
+
+  const { users: registeredUsers, loading: loadingUsers } = useRegisteredUsers(contract?.address);
+
+  console.log("users", registeredUsers);
 
   const { data: claimAmount } = useScaffoldReadContract({
     contractName: "loop",
@@ -61,19 +69,17 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   const transactionConfirmation = useTransactionConfirmations({
     hash: contractData as `0x${string}` | undefined,
   });
-  const transactionConfirmed = transactionConfirmation?.status === "success"
+  const transactionConfirmed = transactionConfirmation?.status === "success";
 
   // const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
   //   hash: contractData as `0x${string}` | undefined,
   //   confirmations: 1,
   // });
 
-
   //cpnsoles.logs
   console.log("WriteContractStatus", status);
   console.log("Transaction confirmation data", transactionConfirmation?.data);
   console.log("Transaction confirmed", transactionConfirmed);
-
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
@@ -199,9 +205,35 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
             <p className="text-sm text-gray-500 text-center">You already claimed in this period.</p>
           </div>
         )}
-        {errorMessage && <div className="text-center mt-4 text-red-500 bg-red-100 p-2 rounded-lg text-sm">
-          {errorMessage}
-          </div>}
+        {errorMessage && (
+          <div className="text-center mt-4 text-red-500 bg-red-100 p-2 rounded-lg text-sm">{errorMessage}</div>
+        )}
+        <div className="absolute bottom-2 left-0 text-[#0065BD] gap-2 flex items-center justify-center w-full">
+          <p className="text-sm">Check out registered users: </p>
+          <button onClick={() => setOpenModal(true)}>
+            <EyeIcon className="w-5 h-5" />
+          </button>
+          <ModalAnimated isOpen={openModal} setIsOpen={setOpenModal}>
+            <div
+              className="flex justify-between
+              items-center text-sm font-semibold text-[#0065BD] mb-4"
+            >
+              <h4>Users registered for current period:</h4>
+              <h4>{registeredUsers?.length || 0}</h4>
+            </div>
+            <div className="flex flex-col gap-2">
+              {loadingUsers ? (
+                <p className="text-sm text-gray-500 text-center">Loading...</p>
+              ) : (
+                registeredUsers?.map((user, index) => (
+                  <div key={index} className="flex justify-between items-center gap-4">
+                    <Address address={user as `0x${string}`} size="sm" onlyEnsOrAddress={true} />
+                  </div>
+                ))
+              )}
+            </div>
+          </ModalAnimated>
+        </div>
       </div>
     </>
   );
