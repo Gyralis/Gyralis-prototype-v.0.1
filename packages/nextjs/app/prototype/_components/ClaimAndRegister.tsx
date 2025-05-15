@@ -5,7 +5,7 @@ import { ModalAnimated } from "./ModalAnimated";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useChainId, useTransactionConfirmations } from "wagmi";
-import { EyeIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { ChevronLeftIcon, ChevronRightIcon, EyeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
@@ -192,6 +192,8 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const scoreNotPassThreshold = score !== null && score < 15;
 
+  console.log("selected", selectPeriod.period);
+
   return (
     <>
       <div className="p-4">
@@ -226,21 +228,45 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
         <div className="absolute bottom-2 left-0 text-[#0065BD] gap-2 flex items-center justify-center w-full">
           <p className="text-xs">Check out registered users: </p>
           <button onClick={() => setOpenModal(true)}>
-            <EyeIcon className="w-6 h-6" />
+            <EyeIcon className="w-4 h-4" />
           </button>
           <ModalAnimated isOpen={openModal} setIsOpen={setOpenModal}>
             <div
               className="flex
-              items-center justify-between text-xs font-semibold text-[#0065BD] mb-4"
+              items-center justify-between text-xs font-semibold text-[#0065BD] mb-6"
             >
-              <div className="flex items-baseline gap-2">
-                <h4>{`Users registered in ${selectPeriod.title} period`}:</h4>
+              <div className="flex items-center gap-1">
+                <h4>Registered:</h4>
                 <h4>{registeredUsers?.length || 0}</h4>
               </div>
-              <button onClick={() => updateSelectPeriod(0n, "current", () => setOpenModal(false))}>
-                <XMarkIcon className="w-5 h-5 text-white hover:opacity-60" />
-              </button>
+              <div>
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => updateSelectPeriod(-1n, "Previous")}
+                    disabled={selectPeriod.period === -1n}
+                    className="disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronLeftIcon className="w-5 h-5" />
+                  </button>
+                  <h5>Period: {selectPeriod.title}</h5>
+                  <button
+                    onClick={() =>
+                      updateSelectPeriod(selectPeriod.period + 1n, selectPeriod.period == -1n ? "Current" : "Next")
+                    }
+                    disabled={selectPeriod.period === 1n}
+                    className="disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <ChevronRightIcon className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
             </div>
+            <button
+              className="absolute top-2 right-2"
+              onClick={() => updateSelectPeriod(0n, "Current", () => setOpenModal(false))}
+            >
+              <XMarkIcon className="w-5 h-5 text-white hover:opacity-60" />
+            </button>
             <div className="flex flex-col gap-2">
               {loadingUsers ? (
                 <p className="text-sm text-gray-500 text-center">Loading...</p>
@@ -252,9 +278,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
                 ))
               )}
             </div>
-            <div className="mt-4">
-              <ButtonTabs updateSelectPeriod={updateSelectPeriod} />
-            </div>
+    
           </ModalAnimated>
         </div>
       </div>
@@ -327,37 +351,38 @@ export const ClaimStatusMessage = ({ state, canClaim, hasClaimed, claimAmount }:
   );
 };
 
-type ButtonTabsProps = {
-  updateSelectPeriod: (period: bigint, text: string) => void;
-};
-const ButtonTabs = ({ updateSelectPeriod }: ButtonTabsProps) => {
-  const [selected, setSelected] = useState(periodSelectionButtons[0].text);
+//not delete
+// type ButtonTabsProps = {
+//   updateSelectPeriod: (period: bigint, text: string) => void;
+// };
+// const ButtonTabs = ({ updateSelectPeriod }: ButtonTabsProps) => {
+//   const [selected, setSelected] = useState(periodSelectionButtons[0].text);
 
-  return (
-    <div className="flex items-center flex-wrap justify-between">
-      {periodSelectionButtons.map(btn => {
-        const isActive = selected === btn.text;
-        return (
-          <button
-            key={btn.text}
-            onClick={() => updateSelectPeriod(btn.period, btn.text)}
-            className={`${
-              isActive
-                ? "text-black font-bold"
-                : "text-slate-300 hover:text-slate-200 hover:bg-slate-700 hover:rounded-full"
-            } text-xs transition-colors px-2 py-0.5 relative`}
-          >
-            <span className="relative z-10">{btn.text}</span>
-            {isActive && (
-              <motion.span
-                layoutId="pill-btn"
-                transition={{ type: "spring", duration: 0.5 }}
-                className="absolute inset-0 z-0 bg-[#f7cd6f] rounded-full text-xs text-black"
-              />
-            )}
-          </button>
-        );
-      })}
-    </div>
-  );
-};
+//   return (
+//     <div className="flex items-center flex-wrap justify-between">
+//       {periodSelectionButtons.map(btn => {
+//         const isActive = selected === btn.text;
+//         return (
+//           <button
+//             key={btn.text}
+//             onClick={() => updateSelectPeriod(btn.period, btn.text)}
+//             className={`${
+//               isActive
+//                 ? "text-black font-bold"
+//                 : "text-slate-300 hover:text-slate-200 hover:bg-slate-700 hover:rounded-full"
+//             } text-xs transition-colors px-2 py-0.5 relative`}
+//           >
+//             <span className="relative z-10">{btn.text}</span>
+//             {isActive && (
+//               <motion.span
+//                 layoutId="pill-btn"
+//                 transition={{ type: "spring", duration: 0.5 }}
+//                 className="absolute inset-0 z-0 bg-[#f7cd6f] rounded-full text-xs text-black"
+//               />
+//             )}
+//           </button>
+//         );
+//       })}
+//     </div>
+//   );
+// };
