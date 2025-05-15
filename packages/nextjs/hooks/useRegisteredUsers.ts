@@ -5,7 +5,7 @@ import deployedContracts from "~~/contracts/deployedContracts";
 
 const registerEventAbiItem = parseAbiItem("event Register(address indexed sender, uint256 indexed periodNumber)");
 
-export function useRegisteredUsers(loopAddress: `0x${string}`) {
+export function useRegisteredUsers(loopAddress: `0x${string}`, periodNumber?: bigint) {
   const chainId = useChainId();
   const publicClient = usePublicClient();
   const [users, setUsers] = useState<string[]>([]);
@@ -31,7 +31,7 @@ export function useRegisteredUsers(loopAddress: `0x${string}`) {
           address: loopAddress,
           event: registerEventAbiItem,
           args: {
-            periodNumber: currentPeriod,
+            periodNumber: currentPeriod + (periodNumber ?? 0n),
           },
           fromBlock: 0n,
           toBlock: "latest",
@@ -47,7 +47,7 @@ export function useRegisteredUsers(loopAddress: `0x${string}`) {
     };
 
     fetchLogs();
-  }, [publicClient, loopAddress, currentPeriod]);
+  }, [publicClient, loopAddress, currentPeriod, periodNumber]);
 
   return { users, loading };
 }

@@ -75,7 +75,7 @@ const BottomCardsSection = ({
               href="https://app.gardens.fund/gardens/100/0x71850b7e9ee3f13ab46d67167341e4bdc905eef9/0xe2396fe2169ca026962971d3b2e373ba925b6257"
               className="inline-flex items-center gap-2 bg-[#f7cd6f]/20 hover:bg-[#f7cd6f]/30 text-[#f7cd6f] px-4 py-3 rounded-lg transition-colors"
             >
-              Register in 1hive Gardens V2
+              Register in 1Hive Gardens V2
               <LinkIcon className="h-4 w-4" />
             </a>
           </div>
@@ -84,5 +84,7 @@ const BottomCardsSection = ({
     </section>
   );
 };
+
+
 
 export default BottomCardsSection;

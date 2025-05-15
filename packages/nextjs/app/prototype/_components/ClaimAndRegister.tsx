@@ -5,7 +5,7 @@ import { ModalAnimated } from "./ModalAnimated";
 import { AnimatePresence, motion } from "framer-motion";
 import { formatUnits } from "viem";
 import { useAccount, useChainId, useTransactionConfirmations } from "wagmi";
-import { EyeIcon } from "@heroicons/react/24/outline";
+import { EyeIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import deployedContracts from "~~/contracts/deployedContracts";
 import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
@@ -20,11 +20,21 @@ type ClaimAndRegisterProps = {
 
 type ButtonState = "register" | "claim" | "ok";
 
+const periodSelectionButtons = [
+  { text: "Last", period: -1n },
+  { text: "Current", period: 0n },
+  { text: "Next", period: 1n },
+];
+
 export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: ClaimAndRegisterProps) => {
   const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [openModal, setOpenModal] = useState(false);
   const [checkEligibility, setCheckEligibility] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [selectPeriod, setSelectPeriod] = useState({
+    period: 0n as bigint,
+    title: "current",
+  });
 
   const { address: connectedAccount } = useAccount();
   const chainId = useChainId();
@@ -38,7 +48,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     watch: false,
   });
 
-  const { users: registeredUsers, loading: loadingUsers } = useRegisteredUsers(contract?.address);
+  const { users: registeredUsers, loading: loadingUsers } = useRegisteredUsers(contract?.address, selectPeriod?.period);
 
   console.log("users", registeredUsers);
 
@@ -139,6 +149,11 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   const hasClaimedInCurrentPeriod = connectedAccount && claimerStatus !== undefined ? claimerStatus?.[1] : undefined;
   // const isRegisteredInCurrentPeriod = connectedAccount && claimerStatus !== undefined ? claimerStatus?.[0] : undefined;
 
+  const updateSelectPeriod = (period: bigint, title: string, callback?: () => void) => {
+    setSelectPeriod({ period, title });
+    if (callback) callback();
+  };
+
   const getButtonConfig = () => {
     switch (buttonState) {
       case "register":
@@ -209,17 +224,22 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
           <div className="text-center mt-4 text-red-500 bg-red-100 p-2 rounded-lg text-sm">{errorMessage}</div>
         )}
         <div className="absolute bottom-2 left-0 text-[#0065BD] gap-2 flex items-center justify-center w-full">
-          <p className="text-sm">Check out registered users: </p>
+          <p className="text-xs">Check out registered users: </p>
           <button onClick={() => setOpenModal(true)}>
-            <EyeIcon className="w-5 h-5" />
+            <EyeIcon className="w-6 h-6" />
           </button>
           <ModalAnimated isOpen={openModal} setIsOpen={setOpenModal}>
             <div
-              className="flex justify-between
-              items-center text-sm font-semibold text-[#0065BD] mb-4"
+              className="flex
+              items-center justify-between text-xs font-semibold text-[#0065BD] mb-4"
             >
-              <h4>Users registered for current period:</h4>
-              <h4>{registeredUsers?.length || 0}</h4>
+              <div className="flex items-baseline gap-2">
+                <h4>{`Users registered in ${selectPeriod.title} period`}:</h4>
+                <h4>{registeredUsers?.length || 0}</h4>
+              </div>
+              <button onClick={() => updateSelectPeriod(0n, "current", () => setOpenModal(false))}>
+                <XMarkIcon className="w-5 h-5 text-white hover:opacity-60" />
+              </button>
             </div>
             <div className="flex flex-col gap-2">
               {loadingUsers ? (
@@ -231,6 +251,9 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
                   </div>
                 ))
               )}
+            </div>
+            <div className="mt-4">
+              <ButtonTabs updateSelectPeriod={updateSelectPeriod} />
             </div>
           </ModalAnimated>
         </div>
@@ -301,5 +324,40 @@ export const ClaimStatusMessage = ({ state, canClaim, hasClaimed, claimAmount }:
         </motion.div>
       )}
     </AnimatePresence>
+  );
+};
+
+type ButtonTabsProps = {
+  updateSelectPeriod: (period: bigint, text: string) => void;
+};
+const ButtonTabs = ({ updateSelectPeriod }: ButtonTabsProps) => {
+  const [selected, setSelected] = useState(periodSelectionButtons[0].text);
+
+  return (
+    <div className="flex items-center flex-wrap justify-between">
+      {periodSelectionButtons.map(btn => {
+        const isActive = selected === btn.text;
+        return (
+          <button
+            key={btn.text}
+            onClick={() => updateSelectPeriod(btn.period, btn.text)}
+            className={`${
+              isActive
+                ? "text-black font-bold"
+                : "text-slate-300 hover:text-slate-200 hover:bg-slate-700 hover:rounded-full"
+            } text-xs transition-colors px-2 py-0.5 relative`}
+          >
+            <span className="relative z-10">{btn.text}</span>
+            {isActive && (
+              <motion.span
+                layoutId="pill-btn"
+                transition={{ type: "spring", duration: 0.5 }}
+                className="absolute inset-0 z-0 bg-[#f7cd6f] rounded-full text-xs text-black"
+              />
+            )}
+          </button>
+        );
+      })}
+    </div>
   );
 };
