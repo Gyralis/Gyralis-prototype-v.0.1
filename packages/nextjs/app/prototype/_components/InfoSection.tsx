@@ -57,7 +57,7 @@ const InfoSection: React.FC = () => {
           </div>
         </div>
         <div className="flex justify-center items-center mt-4 gap-1">
-          <p className="text-xs">Submit or view your Passport score</p>
+          <p className="text-xs">Scroll down</p>
           <ChevronDownIcon className="w-5 h-5 text-[#f7cd6f] animate-bounce" />
         </div>
       </div>

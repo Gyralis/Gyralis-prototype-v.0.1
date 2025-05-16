@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
+import { useAccount } from "wagmi";
 import { ArrowTopRightOnSquareIcon, CheckCircleIcon, LinkIcon } from "@heroicons/react/20/solid";
+import { Address } from "~~/components/scaffold-eth";
 
 type BottomCardsSectionProps = {
   score: number | null;
@@ -21,6 +23,8 @@ const BottomCardsSection = ({
   // console.log("hasSubmitted", hasSubmitted);
   // console.log("score", score);
 
+  const { address: connectedAccount } = useAccount();
+
   return (
     <section>
       <div className="flex flex-col gap-4 sm:gap-6  w-full">
@@ -34,8 +38,44 @@ const BottomCardsSection = ({
               <h3 className="text-xl sm:text-2xl font-bold text-[#f7cd6f] mb-4">LOOP SHIELD:</h3>
               <h3 className="text-xl sm:text-xl font-bold text-[#f7cd6f] mb-4">GITCOIN PASSPORT</h3>
             </div>
-            <div className="space-y-2">
-              <p className="flex items-center gap-2">
+            <div className="space-y-6">
+              <div className=" bg-[#f7cd6f]/20 px-4 py-3 rounded-lg flex justify-between items-center">
+                {!connectedAccount ? (
+                  <p className="text-xs text-[#f7cd6f]">Connect Wallet</p>
+                ) : (
+                  <Address address={connectedAccount} onlyEnsOrAddress />
+                )}
+                <h4 className={`${loadingScore ? "loading loading-spinner" : "text-[#f7cd6f] font-semibold text-xl"}`}>
+                  {score ?? "0"}
+                </h4>
+              </div>
+              <div className="flex flex-col gap-4">
+                <button
+                  className="border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-300 bg-[#f7cd6f] text-black"
+                  onClick={handleSubmit}
+                >
+                  {isSubmitting ? (
+                    <span className="loading loading-spinner loading-md"></span>
+                  ) : hasSubmitted ? (
+                    "Recalculate"
+                  ) : (
+                    "Submit Score"
+                  )}
+                </button>
+
+                <div className="text-[#f7cd6f] text-xs flex items-center justify-between gap-2 hover:opacity-90">
+                  <p className="text-xs">
+                    Score required: <span className="text-sm">15</span>
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <a href="https://app.passport.xyz/" target="_blank">
+                      Score too low? Visit Passport app
+                    </a>{" "}
+                    <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+              {/* <p className="flex items-center gap-2">
                 Score required: <span className="font-semibold text-lg text-[#f7cd6f]">15</span>
               </p>
               <div className="flex justify-between items-baseline">
@@ -78,7 +118,7 @@ const BottomCardsSection = ({
                     </div>
                   </>
                 ) : null}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
