@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CheckCircleIcon, LinkIcon } from "@heroicons/react/20/solid";
+import { ArrowTopRightOnSquareIcon, CheckCircleIcon, LinkIcon } from "@heroicons/react/20/solid";
 
 type BottomCardsSectionProps = {
   score: number | null;
@@ -38,26 +38,47 @@ const BottomCardsSection = ({
               <p className="flex items-center gap-2">
                 Score required: <span className="font-semibold text-lg text-[#f7cd6f]">15</span>
               </p>
-              {hasSubmitted ? (
-                <p className="text-gray-100 flex items-center gap-2">
-                  Your Score:{" "}
-                  <span
-                    className={`${loadingScore ? "loading loading-spinner" : "font-semibold text-[#f7cd6f] text-lg"} `}
-                  >
-                    {score}
-                  </span>
-                </p>
-              ) : (
-                <p className="text-gray-100 flex items-center gap-2">
-                  Need to submit your score:
-                  <button
-                    className={`${isSubmitting ? "loading loading-spinner" : "border-none hover:opacity-90 w-fit py-2 px-4 rounded-full text-center font-semibold text-sm text-black first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 bg-[#f7cd6f]"} `}
-                    onClick={handleSubmit}
-                  >
-                    submit score
-                  </button>
-                </p>
-              )}
+              <div className="flex justify-between items-baseline">
+                {hasSubmitted ? (
+                  <p className="text-gray-100 flex items-center gap-2">
+                    Your Score:{" "}
+                    <span
+                      className={`${loadingScore ? "loading loading-spinner" : "font-semibold text-[#f7cd6f] text-lg"} `}
+                    >
+                      {score}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-gray-100 flex items-center gap-2">
+                    Need to submit your score:
+                    <button
+                      className={`${isSubmitting ? "loading loading-spinner" : "border-none hover:opacity-90 w-fit py-2 px-4 rounded-full text-center font-semibold text-sm text-black first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 bg-[#f7cd6f]"} `}
+                      onClick={handleSubmit}
+                    >
+                      submit score
+                    </button>
+                  </p>
+                )}
+                {score != null && score <= 15 ? (
+                  <>
+                    <div className="text-[#f7cd6f] text-xs flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                      <a href="https://app.passport.xyz/" target="_blank">
+                        Score too low? Visit Passport app 
+                      </a>{" "}
+                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                      and
+                      </div>
+                      <button
+                        className={`${isSubmitting ? "loading loading-spinner" : "border-none hover:opacity-90 w-fit py-1 px-2 rounded-full text-center font-semibold text-xs text-black first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 bg-[#f7cd6f]"} `}
+                        onClick={handleSubmit}
+                      >
+                        Submit again
+                      </button>
+                    </div>
+                  </>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
@@ -84,7 +105,5 @@ const BottomCardsSection = ({
     </section>
   );
 };
-
-
 
 export default BottomCardsSection;
