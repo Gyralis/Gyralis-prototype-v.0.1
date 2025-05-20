@@ -4,7 +4,7 @@ import { ArrowPathIcon, ChevronDownIcon, ClockIcon, ShieldCheckIcon } from "@her
 const InfoSection: React.FC = () => {
   return (
     <section className="bg-[#0065bd] text-white p-4 sm:p-8 rounded-xl overflow-hidden">
-      {/* <div className="absolute inset-0 bg-[url('/placeholder.svg?height=600&width=600')] opacity-10 bg-right-bottom bg-no-repeat"></div> */}
+
       <div className="relative z-10">
         <p className="text-[#f7cd6f] mb-1">CLAIM TOKENS, EVERY DAY</p>
         <h1 className="text-[#f7cd6f] text-4xl sm:text-5xl font-bold mb-2 sm:mb-4">1HIVE LOOP</h1>
@@ -57,7 +57,7 @@ const InfoSection: React.FC = () => {
           </div>
         </div>
         <div className="flex justify-center items-center mt-4 gap-1">
-          <p className="text-xs">Submit or view your Passport score</p>
+          <p className="text-xs">Scroll down</p>
           <ChevronDownIcon className="w-5 h-5 text-[#f7cd6f] animate-bounce" />
         </div>
       </div>

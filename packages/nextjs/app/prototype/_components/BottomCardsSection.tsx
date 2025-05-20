@@ -1,7 +1,9 @@
 "use client";
 
 import React from "react";
-import { CheckCircleIcon, LinkIcon } from "@heroicons/react/20/solid";
+import { useAccount } from "wagmi";
+import { ArrowTopRightOnSquareIcon, CheckCircleIcon, LinkIcon } from "@heroicons/react/20/solid";
+import { Address } from "~~/components/scaffold-eth";
 
 type BottomCardsSectionProps = {
   score: number | null;
@@ -21,6 +23,8 @@ const BottomCardsSection = ({
   // console.log("hasSubmitted", hasSubmitted);
   // console.log("score", score);
 
+  const { address: connectedAccount } = useAccount();
+
   return (
     <section>
       <div className="flex flex-col gap-4 sm:gap-6  w-full">
@@ -34,30 +38,85 @@ const BottomCardsSection = ({
               <h3 className="text-xl sm:text-2xl font-bold text-[#f7cd6f] mb-4">LOOP SHIELD:</h3>
               <h3 className="text-xl sm:text-xl font-bold text-[#f7cd6f] mb-4">GITCOIN PASSPORT</h3>
             </div>
-            <div className="space-y-2">
-              <p className="flex items-center gap-2">
+            <div className="space-y-6">
+              <div className=" bg-[#f7cd6f]/20 px-4 py-3 rounded-lg flex justify-between items-center">
+                {!connectedAccount ? (
+                  <p className="text-xs text-[#f7cd6f]">Connect Wallet</p>
+                ) : (
+                  <Address address={connectedAccount} onlyEnsOrAddress />
+                )}
+
+                <h4
+                  className={`${loadingScore || isSubmitting ? "loading loading-spinner" : "text-[#f7cd6f] font-semibold text-xl"}`}
+                >
+                  {score !== null && connectedAccount ? score : "0"}
+                </h4>
+              </div>
+              <div className="flex flex-col gap-4">
+                <button
+                  disabled={!connectedAccount}
+                  className="border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-300 bg-[#f7cd6f] text-black"
+                  onClick={handleSubmit}
+                >
+                 {hasSubmitted ? "Recalculate" : "Submit"} Score
+                </button>
+
+                <div className="text-[#f7cd6f] text-xs flex items-center justify-between gap-2 hover:opacity-90">
+                  <p className="text-xs">
+                    Score required: <span className="text-sm">15</span>
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <a href="https://app.passport.xyz/" target="_blank">
+                      Score too low? Visit Passport app
+                    </a>{" "}
+                    <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
+              {/* <p className="flex items-center gap-2">
                 Score required: <span className="font-semibold text-lg text-[#f7cd6f]">15</span>
               </p>
-              {hasSubmitted ? (
-                <p className="text-gray-100 flex items-center gap-2">
-                  Your Score:{" "}
-                  <span
-                    className={`${loadingScore ? "loading loading-spinner" : "font-semibold text-[#f7cd6f] text-lg"} `}
-                  >
-                    {score}
-                  </span>
-                </p>
-              ) : (
-                <p className="text-gray-100 flex items-center gap-2">
-                  Need to submit your score:
-                  <button
-                    className={`${isSubmitting ? "loading loading-spinner" : "border-none hover:opacity-90 w-fit py-2 px-4 rounded-full text-center font-semibold text-sm text-black first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 bg-[#f7cd6f]"} `}
-                    onClick={handleSubmit}
-                  >
-                    submit score
-                  </button>
-                </p>
-              )}
+              <div className="flex justify-between items-baseline">
+                {hasSubmitted ? (
+                  <p className="text-gray-100 flex items-center gap-2">
+                    Your Score:{" "}
+                    <span
+                      className={`${loadingScore ? "loading loading-spinner" : "font-semibold text-[#f7cd6f] text-lg"} `}
+                    >
+                      {score}
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-gray-100 flex items-center gap-2">
+                    Need to submit your score:
+                    <button
+                      className={`${isSubmitting ? "loading loading-spinner" : "border-none hover:opacity-90 w-fit py-2 px-4 rounded-full text-center font-semibold text-sm text-black first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 bg-[#f7cd6f]"} `}
+                      onClick={handleSubmit}
+                    >
+                      submit score
+                    </button>
+                  </p>
+                )}
+                {score != null && score <= 15 ? (
+                  <>
+                    <div className="text-[#f7cd6f] text-xs flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                      <a href="https://app.passport.xyz/" target="_blank">
+                        Score too low? Visit Passport app 
+                      </a>{" "}
+                      <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                      and
+                      </div>
+                      <button
+                        className={`${isSubmitting ? "loading loading-spinner" : "border-none hover:opacity-90 w-fit py-1 px-2 rounded-full text-center font-semibold text-xs text-black first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-500 bg-[#f7cd6f]"} `}
+                        onClick={handleSubmit}
+                      >
+                        Submit again
+                      </button>
+                    </div>
+                  </>
+                ) : null}
+              </div> */}
             </div>
           </div>
         </div>
@@ -75,7 +134,7 @@ const BottomCardsSection = ({
               href="https://app.gardens.fund/gardens/100/0x71850b7e9ee3f13ab46d67167341e4bdc905eef9/0xe2396fe2169ca026962971d3b2e373ba925b6257"
               className="inline-flex items-center gap-2 bg-[#f7cd6f]/20 hover:bg-[#f7cd6f]/30 text-[#f7cd6f] px-4 py-3 rounded-lg transition-colors"
             >
-              Register in 1hive Gardens V2
+              Register in 1Hive Gardens V2
               <LinkIcon className="h-4 w-4" />
             </a>
           </div>

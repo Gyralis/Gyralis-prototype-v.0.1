@@ -382,19 +382,19 @@ export default function Home() {
           >
             {[
               {
-                icon: "🌍",
+                icon: "🛡️",
                 title: "Step 1 - Register",
                 description:
                   "Pass the Loop shield and match the eligibily criteria. Everytime you register in a period, you wil be able to claim in the next one.",
               },
               {
-                icon: "💡",
+                icon: "💰",
                 title: "Step 2 - Claim",
                 description:
                   "Sign a transaction diaily and claim your share of token distributions.​ If you claim, you automatically register for the next period.",
               },
               {
-                icon: "⚡",
+                icon: "🔄",
                 title: "Step 3 - Maintain Eligibility",
                 description:
                   "Consistently engage and remain eligible, missing a claim period requires re-registration.",
@@ -456,7 +456,7 @@ export default function Home() {
               {
                 title: "Our Vision",
                 content:
-                  "To become the a leading platform for decentralized orgnization-driven engagement, where organizations, users, and sponsors collaborate seamlessly in a self-sustaining economy. .",
+                  "To become the leading platform for decentralized orgnization-driven engagement, where organizations, users, and sponsors collaborate seamlessly in a self-sustaining economy.",
                 color: "#0065BD",
               },
               {
