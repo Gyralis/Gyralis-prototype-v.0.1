@@ -20,17 +20,22 @@ export const Footer = () => {
 
             <p className="text-sm">Gyralis 2025 - All rights reserved.</p>
           </div>
-       
+
           <div className="flex space-x-4 items-center justify-between text-sm">
             <motion.p
               className="text-gray-400 hover:text-blue-500 transition-colors text-sm"
               whileHover={{ x: 3 }}
               transition={{ type: "spring", stiffness: 400, damping: 10 }}
-            >
-            </motion.p>
-            <div className="flex items-center gap-1">{" "}
-              Prototype v.1.0 - <a href="https://x.com/1HiveOrg" target="_blank" className="underlined"> Powered by 1Hive </a> <ArrowTopRightOnSquareIcon className="h-4 w-4" />
-              </div>
+            ></motion.p>
+            <div className="flex items-center gap-1">
+              {" "}
+              Prototype v.1.1 -{" "}
+              <a href="https://x.com/1HiveOrg" target="_blank" className="underlined">
+                {" "}
+                Powered by 1Hive{" "}
+              </a>{" "}
+              <ArrowTopRightOnSquareIcon className="h-4 w-4" />
+            </div>
           </div>
         </motion.div>
       </div>

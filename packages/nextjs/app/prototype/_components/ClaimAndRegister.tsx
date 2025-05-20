@@ -205,21 +205,29 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
             buttonConfig.text
           )}
         </button>
-        {scoreNotPassThreshold && (
+        {!connectedAccount && (
+          <div className="mt-2">
+            <p className="text-sm text-gray-500 text-center"> Please connect your wallet to continue.</p>
+          </div>
+        )}
+        {connectedAccount && scoreNotPassThreshold && (
           <div className="mt-2">
             <p className="text-sm text-gray-500 text-center">
-              You need a score of 15 or more to register. Your score: {score}
+            A minimum score of 15 is required to register. Your current score: {score}.
             </p>
           </div>
         )}
         {connectedAccount && isRegisteredForNextPeriod && (
           <div className="mt-2">
-            <p className="text-sm text-gray-500 text-center">You are registered. Claim next period!</p>
+            <p className="text-sm text-gray-500 text-center">
+            You&apos;re already registered for the next period. See you then for claiming!
+            </p>
           </div>
         )}
-        {hasClaimedInCurrentPeriod && (
+        {connectedAccount && hasClaimedInCurrentPeriod && (
           <div className="mt-2">
-            <p className="text-sm text-gray-500 text-center">You already claimed in this period.</p>
+            <p className="text-sm text-gray-500 text-center">You&apos;ve already claimed during this period.
+    </p>
           </div>
         )}
         {errorMessage && (
