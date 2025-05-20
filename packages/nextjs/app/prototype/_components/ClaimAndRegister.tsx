@@ -20,12 +20,6 @@ type ClaimAndRegisterProps = {
 
 type ButtonState = "register" | "claim" | "ok";
 
-const periodSelectionButtons = [
-  { text: "Last", period: -1n },
-  { text: "Current", period: 0n },
-  { text: "Next", period: 1n },
-];
-
 export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: ClaimAndRegisterProps) => {
   const [buttonState, setButtonState] = useState<ButtonState>("register");
   const [openModal, setOpenModal] = useState(false);
@@ -49,8 +43,10 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
   });
 
   const { users: registeredUsers, loading: loadingUsers } = useRegisteredUsers(contract?.address, selectPeriod?.period);
-
-  console.log("users", registeredUsers);
+  const { users: registeredUsersNextPeriod, loading: loadingUsersNextPeriod } = useRegisteredUsers(
+    contract?.address,
+    1n,
+  );
 
   const { data: claimAmount } = useScaffoldReadContract({
     contractName: "loop",
@@ -80,16 +76,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
     hash: contractData as `0x${string}` | undefined,
   });
   const transactionConfirmed = transactionConfirmation?.status === "success";
-
-  // const { data: Txresult, status: waitTransactionStatus } = useWaitForTransactionReceipt({
-  //   hash: contractData as `0x${string}` | undefined,
-  //   confirmations: 1,
-  // });
-
-  //cpnsoles.logs
-  console.log("WriteContractStatus", status);
-  console.log("Transaction confirmation data", transactionConfirmation?.data);
-  console.log("Transaction confirmed", transactionConfirmed);
 
   const writeInContract = async (signature: `0x${string}` | undefined) => {
     try {
@@ -192,7 +178,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const scoreNotPassThreshold = score !== null && score < 15;
 
-  console.log("selected", selectPeriod.period);
+  const isRegisteredForNextPeriod = connectedAccount && registeredUsersNextPeriod.includes(connectedAccount);
 
   return (
     <>
@@ -207,7 +193,9 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
         )}
 
         <button
-          disabled={!connectedAccount || hasClaimedInCurrentPeriod || scoreNotPassThreshold}
+          disabled={
+            !connectedAccount || hasClaimedInCurrentPeriod || scoreNotPassThreshold || isRegisteredForNextPeriod
+          }
           onClick={handleButtonClick}
           className={`border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-300 ${buttonConfig.bgColor} ${buttonConfig.textColor} `}
         >
@@ -217,6 +205,18 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
             buttonConfig.text
           )}
         </button>
+        {scoreNotPassThreshold && (
+          <div className="mt-2">
+            <p className="text-sm text-gray-500 text-center">
+              You need a score of 15 or more to register. Your score: {score}
+            </p>
+          </div>
+        )}
+        {connectedAccount && isRegisteredForNextPeriod && (
+          <div className="mt-2">
+            <p className="text-sm text-gray-500 text-center">You are registered. Claim next period!</p>
+          </div>
+        )}
         {hasClaimedInCurrentPeriod && (
           <div className="mt-2">
             <p className="text-sm text-gray-500 text-center">You already claimed in this period.</p>
@@ -226,9 +226,9 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
           <div className="text-center mt-4 text-red-500 bg-red-100 p-2 rounded-lg text-sm">{errorMessage}</div>
         )}
         <div className="absolute bottom-2 left-0 text-[#0065BD] gap-2 flex items-center justify-center w-full">
-          <p className="text-xs">Check out registered users: </p>
-          <button onClick={() => setOpenModal(true)}>
-            <EyeIcon className="w-4 h-4" />
+          {/* <p className="text-xs">Check out registered users: </p> */}
+          <button onClick={() => setOpenModal(true)} className="flex items-center gap-1 text-sm hover:opacity-90">
+            Check out registered users: <EyeIcon className="w-4 h-4" />
           </button>
           <ModalAnimated isOpen={openModal} setIsOpen={setOpenModal}>
             <div
@@ -278,7 +278,6 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
                 ))
               )}
             </div>
-    
           </ModalAnimated>
         </div>
       </div>

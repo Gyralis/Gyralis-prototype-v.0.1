@@ -45,22 +45,20 @@ const BottomCardsSection = ({
                 ) : (
                   <Address address={connectedAccount} onlyEnsOrAddress />
                 )}
-                <h4 className={`${loadingScore ? "loading loading-spinner" : "text-[#f7cd6f] font-semibold text-xl"}`}>
-                  {score ?? "0"}
+
+                <h4
+                  className={`${loadingScore || isSubmitting ? "loading loading-spinner" : "text-[#f7cd6f] font-semibold text-xl"}`}
+                >
+                  {score !== null && connectedAccount ? score : "0"}
                 </h4>
               </div>
               <div className="flex flex-col gap-4">
                 <button
+                  disabled={!connectedAccount}
                   className="border-none hover:opacity-90 w-full py-4 px-8 rounded-full text-center font-semibold first-letter:uppercase disabled:cursor-not-allowed disabled:bg-gray-300 bg-[#f7cd6f] text-black"
                   onClick={handleSubmit}
                 >
-                  {isSubmitting ? (
-                    <span className="loading loading-spinner loading-md"></span>
-                  ) : hasSubmitted ? (
-                    "Recalculate"
-                  ) : (
-                    "Submit Score"
-                  )}
+                 {hasSubmitted ? "Recalculate" : "Submit"} Score
                 </button>
 
                 <div className="text-[#f7cd6f] text-xs flex items-center justify-between gap-2 hover:opacity-90">
