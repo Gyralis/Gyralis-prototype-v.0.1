@@ -24,6 +24,7 @@ export const LoopComponent = () => {
   const { address: connectedAccount } = useAccount();
   const { loopDetails, isLoading } = useLoopData();
 
+
   const contract = deployedContracts[chainId as keyof typeof deployedContracts]?.["loop"];
 
   useEffect(() => {
@@ -88,7 +89,6 @@ export const LoopComponent = () => {
   useEffect(() => {
     if (connectedAccount) {
       handleFetchScore();
-      console.log("I have fetched the score in useEffect", connectedAccount);
     }
   }, [connectedAccount]);
 

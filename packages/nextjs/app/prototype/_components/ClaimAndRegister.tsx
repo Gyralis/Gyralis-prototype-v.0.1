@@ -180,6 +180,7 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
 
   const isRegisteredForNextPeriod = connectedAccount && registeredUsersNextPeriod.includes(connectedAccount);
 
+
   return (
     <>
       <div className="p-4">
@@ -213,21 +214,20 @@ export const ClaimAndRegister = ({ refecthLoopBalance, score, currentPeriod }: C
         {connectedAccount && scoreNotPassThreshold && (
           <div className="mt-2">
             <p className="text-sm text-gray-500 text-center">
-            A minimum score of 15 is required to register. Your current score: {score}.
+              A minimum score of 15 is required to register. Your current score: {score}.
             </p>
           </div>
         )}
-        {connectedAccount && isRegisteredForNextPeriod && (
+        {connectedAccount && isRegisteredForNextPeriod && !hasClaimedInCurrentPeriod && (
           <div className="mt-2">
             <p className="text-sm text-gray-500 text-center">
-            You&apos;re already registered for the next period. See you then for claiming!
+              You&apos;re already registered for the next period. See you then for claiming!
             </p>
           </div>
         )}
         {connectedAccount && hasClaimedInCurrentPeriod && (
           <div className="mt-2">
-            <p className="text-sm text-gray-500 text-center">You&apos;ve already claimed during this period.
-    </p>
+            <p className="text-sm text-gray-500 text-center">You&apos;ve already claimed during this period.</p>
           </div>
         )}
         {errorMessage && (
