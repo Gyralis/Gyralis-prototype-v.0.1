@@ -13,9 +13,10 @@
     "start": "next dev",
     "vercel": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1",
     "vercel:yolo": "vercel --build-env YARN_ENABLE_IMMUTABLE_INSTALLS=false --build-env ENABLE_EXPERIMENTAL_COREPACK=1 --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true",
-    "query-passport-account": "curl -X GET http://localhost:3000/api/passport/0x584ddfb0bdd922ff1fbf3e85e7e781d5816b4f23",
+    "query-passport-account": "ACCOUNT=0x9492575586917f1d3564bF812980dB9786a993d2 && curl -L -X GET https://gyralis.xyz/api/passport/$ACCOUNT",
+
     "test:eligibility": "node scripts/testEligibility.ts",
-    "submit-passport": "curl -X POST http://localhost:3000/api/submit-passport -H 'Content-Type: application/json' -d '{\"address\":\"0xa25211B64D041F690C0c818183E32f28ba9647Dd\"}'",
+    "submit-passport": "ADDRESS=0x9492575586917f1d3564bF812980dB9786a993d2 && curl -L -X POST https://gyralis.xyz/api/submit-passport -H 'Content-Type: application/json' -d '{\"address\":\"'$ADDRESS'\"}'",
     "test:claimAndRegister": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"NodeNext\"}' ts-node scripts/testClaimAndRegister.ts"
   },
   "dependencies": {
