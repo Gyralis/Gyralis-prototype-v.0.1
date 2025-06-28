@@ -2,8 +2,16 @@
 
 import React from "react";
 import { useAccount } from "wagmi";
+import { celo, fuse } from "viem/chains";
 import { ArrowTopRightOnSquareIcon, CheckCircleIcon, LinkIcon } from "@heroicons/react/20/solid";
 import { Address } from "~~/components/scaffold-eth";
+import { IdentitySDK } from '@goodsdks/citizen-sdk';
+import {Address as AddressType} from "viem";
+import { createPublicClient, createWalletClient, http, custom } from "viem";
+// import { initializeIdentityContract, IdentitySDK } from "./viem-sdk"
+
+
+
 
 type BottomCardsSectionProps = {
   score: number | null;
@@ -24,7 +32,44 @@ const BottomCardsSection = ({
   // console.log("score", score);
 
   const { address: connectedAccount } = useAccount();
+  const celoPublicClient = createPublicClient({
+    chain: celo,
+    transport: http('https://forno.celo.org'),
+  });
+  
+  const celoWalletClient = createWalletClient({
+    chain: celo,
+    transport: custom(celoPublicClient.transport),
+  });
 
+  // const client = createPublicClient({
+  //   chain: chain,
+  //   transport: http(chainConfig?.rpcUrl ?? LOCAL_RPC),
+  // });
+
+  // const walletClient = createWalletClient({
+  //   account: privateKeyToAccount(
+  //     (`${LIST_MANAGER_PRIVATE_KEY}` as Address) || "",
+  //   ),
+  //   chain: chain,
+  //   transport: custom(client.transport),
+  // });
+
+
+
+
+  
+  // const celoIdentitySDK = new IdentitySDK(publicClient, walletClient, "production")
+  const celoIdentitySDK = new IdentitySDK(celoPublicClient, celoWalletClient, "production");
+  const checkWhitelistedRoot = async (account: AddressType) => {
+    try {
+      console.log("CALLED");
+      const { isWhitelisted, root } = await celoIdentitySDK!.getWhitelistedRoot(account as AddressType);
+      console.log(`Is Whitelisted: ${isWhitelisted}, Root: ${root}`);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   return (
     <section>
       <div className="flex flex-col gap-4 sm:gap-6  w-full">
@@ -117,6 +162,51 @@ const BottomCardsSection = ({
                   </>
                 ) : null}
               </div> */}
+            </div>
+          </div>
+        </div>
+
+        {/* GOODDOLLAR Card */}
+        <div className="bg-[#0065BD] text-white px-4 sm:py-6 rounded-xl relative overflow-hidden">
+          {/* <div className="absolute top-4 left-4">
+            <CheckCircleIcon className="h-6 w-6 text-[#f7cd6f]" />
+          </div> */}
+          <div className="">
+            <div className="flex flex-col sm:flex-row items-center gap-2">
+              <h3 className="text-xl sm:text-2xl font-bold text-[#f7cd6f] mb-4">LOOP SHIELD:</h3>
+              <h3 className="text-xl sm:text-xl font-bold text-[#f7cd6f] mb-4">GOODDOLLAR VERIFICATION</h3>
+            </div>
+            <div className="space-y-6">
+              <div className=" bg-[#f7cd6f]/20 px-4 py-3 rounded-lg flex justify-between items-center">
+                {!connectedAccount ? (
+                  <p className="text-xs text-[#f7cd6f]">Connect Wallet</p>
+                ) : (
+                  <Address address={connectedAccount} onlyEnsOrAddress />
+                )}
+
+                <h4
+                  className={`${loadingScore || isSubmitting ? "loading loading-spinner" : "text-[#f7cd6f] font-semibold text-xl"}`}
+                >
+                  {score !== null && connectedAccount ? score : "0"}
+                </h4>
+              </div>
+              <div className="flex flex-col gap-4">
+              <div>
+                  <button onClick={() => checkWhitelistedRoot(connectedAccount!)}>Check Whitelisted Root</button>
+              </div>
+
+                <div className="text-[#f7cd6f] text-xs flex items-center justify-between gap-2 hover:opacity-90">
+                  <p className="text-xs">
+                    Score required: <span className="text-sm">15</span>
+                  </p>
+                  <div className="flex items-center gap-1">
+                    <a href="https://app.passport.xyz/" target="_blank">
+                      Score too low? Visit Passport app
+                    </a>{" "}
+                    <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -1,0 +1,49 @@
+{
+    "folders": [
+      {
+        "name": "Frontend",
+        "path": "./packages/nextjs",
+      },
+      {
+        "name": "Foundry",
+        "path": "./packages/foundry",
+      },
+      {
+        "name": "Subgraph",
+        "path": "./packages/subgraph",
+      },
+      {
+        "name": "Root",
+        "path": ".",
+      }
+    ],
+    "settings": {
+      "editor.tabSize": 2,
+      "prettier.tabWidth": 4,
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
+      "[solidity]": {
+        "editor.defaultFormatter": "NomicFoundation.hardhat-solidity",
+      },
+      "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features",
+      },
+      "solidity.remappings": [
+        "forge-std/=lib/forge-std/src/",
+      ],
+      "[typescriptreact]": {
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+      },
+      "[typescript]": {
+        "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+      },
+      "solidity.formatter": "forge",
+      "openctx.enable": false
+    },
+    "extensions": {
+      "recommendations": [
+        "tintinweb.vscode-solidity-language",
+        "tintinweb.solidity-visual-auditor",
+        "tintinweb.solidity-metrics",
+      ],
+    },
+  }
