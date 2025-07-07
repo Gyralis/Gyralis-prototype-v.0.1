@@ -1,11 +1,11 @@
 # Gyralis  
 ### *Reimagining Token Distribution Through Daily Participation*
 
-**Prototype v0.1**
+**Prototype v.0.1**
 
 🌐 [gyralis.xyz](https://gyralis.xyz)
 
-**Gyralis** is a modular, gamified token distribution platform designed for DAOs and Web3 communities.  
+**Gyralis** is a modular token distribution platform designed for any web3 organization, protocol and community.  
 Instead of relying on flawed airdrops, Gyralis introduces dynamic reward loops that align incentives between organizations and users.
 
 ---
