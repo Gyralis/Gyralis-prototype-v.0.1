@@ -20,7 +20,7 @@ import { THRESHOLD } from "~~/utils/loop";
 const TRUSTED_BACKEND_SIGNER_PK = process.env.TRUSTED_BACKEND_SIGNER_PK ?? "";
 const GITCOIN_PASSPORT_API_KEY = process.env.GITCOIN_PASSPORT_API_KEY ?? "";
 const SCORER_ID = process.env.SCORER_ID ?? "";
-const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.13";
+const SUBGRAPH_URL = "https://api.studio.thegraph.com/query/102093/gardens-v2---gnosis/0.1.23";
 
 /**
  * Gets the Viem chain configuration for a given chain ID
